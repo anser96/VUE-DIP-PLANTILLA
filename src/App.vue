@@ -1,39 +1,40 @@
 <script setup>
-
-import { RouterLink, RouterView } from 'vue-router'
+import { ref } from 'vue'
+import { RouterView } from 'vue-router'
 import HeaderPage from './components/HeaderPage.vue'
 import SideBar from './components/SideBar.vue'
 
+// Control del modo oscuro
+const isDarkMode = ref(false)
 
+function toggleDarkMode() {
+  isDarkMode.value = !isDarkMode.value
+  if (isDarkMode.value) {
+    document.documentElement.classList.add('dark')
+  } else {
+    document.documentElement.classList.remove('dark')
+  }
+}
 </script>
 
 <template>
-    
-    <div>
-        <div class="md:flex md:flex-col">
-          <div class="md:flex md:flex-col md:h-screen">
+  <div :class="{'dark': isDarkMode}" class="flex flex-col h-screen">
+    <!-- Encabezado -->
+    <HeaderPage :toggleDarkMode="toggleDarkMode" />
 
-            <HeaderPage/>
+    <!-- Contenedor principal -->
+    <div class="flex flex-1 overflow-hidden bg-white dark:bg-gray-900">
+      <!-- Barra lateral -->
+      <SideBar />
 
-            <!-- BODY -->
-            <div class="md:flex md:flex-grow md:overflow-hidden">
-              
-                <SideBar/>
-
-                <div class="px-4 py-8 md:flex-1 md:p-12 md:overflow-y-auto">
-                    
-                  <router-view></router-view>
-
-                </div>
-                
-            </div>
-            <!-- // BODY -->
-
-          </div>
-        </div>
-      </div>
-
+      <!-- Contenido principal -->
+      <main class="flex-1 px-4 py-8 md:px-12 md:py-12 overflow-y-auto bg-gray-100 dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-700 shadow-md">
+        <RouterView />
+      </main>
+    </div>
+  </div>
 </template>
 
-<style>
+<style scoped>
+/* Puedes agregar estilos adicionales aquí si es necesario */
 </style>
