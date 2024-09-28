@@ -30,3 +30,50 @@
     height: 50vh; /* Ajustar la altura para pantallas más pequeñas */
   }
 }
+
+/* Contenedor que fija el contenido superior (título y dropdown) */
+.sticky-top-container {
+    position: sticky;
+    top: 0; /* Fija el contenido al principio de la página */
+    z-index: 50; /* Asegura que esté encima de otros elementos */
+    background-color: inherit; /* Mantiene el fondo */
+  }
+  
+  /* Fija el contenido (título y filtro) en la parte superior */
+  .sticky-top-content {
+    background-color: inherit;
+    padding: 1rem;
+  }
+  
+  /* Hace que el encabezado de la tabla sea fijo */
+  .sticky-table-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #f9fafb; /* Fondo claro para el encabezado */
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1); /* Añade una sombra sutil */
+  }
+  
+  /* Contenedor de la tabla con scroll horizontal */
+  .table-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Mejora el desplazamiento en móviles */
+  }
+  
+  .table-wrapper {
+    width: 100%;
+    display: block;
+  }
+  
+  table th, table td {
+    white-space: nowrap; /* Evita que el contenido de las celdas se desborde */
+    padding: 0.75rem 1.5rem;
+  }
+  
+  /* Ajuste para pantallas más pequeñas */
+  @media (max-width: 768px) {
+    table th, table td {
+      padding: 0.5rem;
+    }
+  }
