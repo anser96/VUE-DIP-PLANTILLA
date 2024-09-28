@@ -1,74 +1,54 @@
 <script setup>
-import { ref, watch, onMounted, computed } from 'vue'
-import BreadCrumb from '../components/BreadCrumb.vue'
-import { BuildingOfficeIcon } from '@heroicons/vue/24/solid'
-import axios from 'axios'
-import Dropdown from '../components/Dropdown.vue' // Importa tu componente de Dropdown personalizado
+import { ref, watch, onMounted, computed } from 'vue';
+import BreadCrumb from '../components/BreadCrumb.vue';
+import { BuildingOfficeIcon } from '@heroicons/vue/24/solid';
+import Dropdown from '../components/Dropdown.vue';
+import { getDatos, getFacultades, filtrarPorFacultad } from '@/services/dataServices';
 
-const datos = ref([])
-const facultades = ref([])
-const facultadSeleccionada = ref('') // Facultad seleccionada para el filtro
-const datosFiltrados = ref([]) // Datos que se mostrarán en la tabla
-const loading = ref(false) // Indicador de carga
-const error = ref('') // Manejar posibles errores
+const datos = ref([]);
+const facultades = ref([]);
+const facultadSeleccionada = ref('');
+const datosFiltrados = ref([]);
+const loading = ref(false);
+const error = ref('');
 
 // Paginación
-const currentPage = ref(1)
-const itemsPerPage = ref(10) // Número de elementos por página
-const totalPages = computed(() => Math.ceil(datosFiltrados.value.length / itemsPerPage.value))
+const currentPage = ref(1);
+const itemsPerPage = ref(10);
+const totalPages = computed(() => Math.ceil(datosFiltrados.value.length / itemsPerPage.value));
 
-// Filtrar los datos según la página actual
 const paginatedData = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage.value
-  const end = start + itemsPerPage.value
-  return datosFiltrados.value.slice(start, end)
-})
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return datosFiltrados.value.slice(start, end);
+});
 
-// Cambiar a la página siguiente
-function nextPage() {
-  if (currentPage.value < totalPages.value) {
-    currentPage.value += 1
-  }
-}
-
-// Cambiar a la página anterior
-function prevPage() {
-  if (currentPage.value > 1) {
-    currentPage.value -= 1
-  }
-}
-
-// Cargar los datos de la API
+// Función para cargar los datos usando el servicio
 async function loadData() {
-  loading.value = true
-  error.value = ''
+  loading.value = true;
+  error.value = '';
   try {
-    const response = await axios.get('https://www.datos.gov.co/resource/tnus-a4s5.json')
-    datos.value = response.data
-    facultades.value = [...new Set(response.data.map(item => item.facultad))]
-    datosFiltrados.value = datos.value
+    datos.value = await getDatos();
+    facultades.value = getFacultades(datos.value);
+    datosFiltrados.value = datos.value;
   } catch (err) {
-    error.value = 'Error al cargar los datos. Inténtalo de nuevo más tarde.'
-    console.error(err)
+    error.value = 'Error al cargar los datos. Inténtalo de nuevo más tarde.';
+    console.error(err);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
 // Watch para aplicar el filtro cuando cambie la facultad seleccionada
 watch(facultadSeleccionada, (nuevaFacultad) => {
-  currentPage.value = 1 // Reiniciar la paginación al cambiar el filtro
-  if (nuevaFacultad === '') {
-    datosFiltrados.value = datos.value
-  } else {
-    datosFiltrados.value = datos.value.filter(item => item.facultad === nuevaFacultad)
-  }
-})
+  currentPage.value = 1;
+  datosFiltrados.value = filtrarPorFacultad(datos.value, nuevaFacultad);
+});
 
 // Cargar los datos al montar el componente
 onMounted(() => {
-  loadData()
-})
+  loadData();
+});
 </script>
 
 <template>
@@ -80,11 +60,7 @@ onMounted(() => {
       <h2 class="ml-4 text-3xl font-bold dark:text-white">Listado de Hoteles</h2>
     </div>
     <div class="flex justify-end items-center space-x-4">
-      <!-- Componente Dropdown personalizado -->
-      <Dropdown 
-        v-model="facultadSeleccionada" 
-        :programas="facultades" 
-      />
+      <Dropdown v-model="facultadSeleccionada" :programas="facultades" />
     </div>
   </div>
 
@@ -95,10 +71,7 @@ onMounted(() => {
 
   <!-- Mostrar spinner de carga mientras se cargan los datos -->
   <div v-if="loading" class="text-center my-4">
-    <svg class="animate-spin h-8 w-8 text-blue-500 dark:text-blue-300 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0116 0h-4a4 4 0 00-8 0H4z"></path>
-    </svg>
+    <svg class="animate-spin h-8 w-8 text-blue-500 dark:text-blue-300 mx-auto"></svg>
   </div>
 
   <div class="relative overflow-x-auto shadow-md rounded-lg">
@@ -142,22 +115,11 @@ onMounted(() => {
 
   <!-- Controles de paginación -->
   <div class="flex justify-between items-center mt-4">
-    <button 
-      @click="prevPage" 
-      :disabled="currentPage === 1" 
-      class="bg-gray-300 dark:bg-gray-700 dark:text-gray-300 px-4 py-2 rounded-md hover:bg-gray-400 dark:hover:bg-gray-600 disabled:bg-gray-200 dark:disabled:bg-gray-800">
-      Anterior
-    </button>
+    <button @click="prevPage" :disabled="currentPage === 1" class="bg-gray-300 px-4 py-2 rounded-md">Anterior</button>
     <span>Página {{ currentPage }} de {{ totalPages }}</span>
-    <button 
-      @click="nextPage" 
-      :disabled="currentPage === totalPages" 
-      class="bg-gray-300 dark:bg-gray-700 dark:text-gray-300 px-4 py-2 rounded-md hover:bg-gray-400 dark:hover:bg-gray-600 disabled:bg-gray-200 dark:disabled:bg-gray-800">
-      Siguiente
-    </button>
+    <button @click="nextPage" :disabled="currentPage === totalPages" class="bg-gray-300 px-4 py-2 rounded-md">Siguiente</button>
   </div>
 
-  <!-- Mostrar mensaje si no hay datos después de filtrar -->
   <div v-if="datosFiltrados.length === 0 && !loading" class="text-center my-4 text-gray-500 dark:text-gray-400">
     No se encontraron datos para la facultad seleccionada.
   </div>

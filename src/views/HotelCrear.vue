@@ -1,112 +1,111 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
-import axios from 'axios'
-import Dropdown from '@/components/Dropdown.vue'
-import { Bar } from 'vue-chartjs'
-import {
-  Chart as ChartJS,
-  Title,
-  Tooltip,
-  Legend,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-} from 'chart.js'
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { Bar } from 'vue-chartjs';
+import Dropdown from '@/components/Dropdown.vue';
+import { getDatos, getProgramas, obtenerDatosPorPrograma } from '@/services/dataServices';
+import { generarDatosGraficoEstratos, generarOpcionesGrafico } from '@/services/chartService';
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
 
-// Registrar los componentes de Chart.js
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
-const datos = ref([]) // Datos completos de la API
-const programas = ref([]) // Lista de programas únicos
-const programaSeleccionado = ref('') // Programa seleccionado para el gráfico
-const chartData = ref({}) // Datos del gráfico
-const chartOptions = ref({}) // Opciones del gráfico
-const error = ref('') // Variable para manejar errores
+// Variables y referencias reactivas
+const datos = ref([]);
+const programas = ref([]);
+const periodos = ref([]);
+const programaSeleccionado = ref('');
+const periodoSeleccionado = ref('');
+const chartData = ref({});
+const chartOptions = ref({});
+const chartInstance = ref(null);  // Guardamos la instancia del gráfico
+const error = ref('');
 
 // Función para cargar los datos desde la API
 async function loadData() {
   try {
-    const response = await axios.get('https://www.datos.gov.co/resource/tnus-a4s5.json')
-    datos.value = response.data
-    // Extraer los programas únicos
-    programas.value = [...new Set(response.data.map(item => item.programa))]
-    error.value = '' // Limpiar cualquier error previo
+    datos.value = await getDatos();
+    programas.value = getProgramas(datos.value);
+    error.value = '';
   } catch (err) {
-    error.value = 'Error al cargar los datos. Inténtalo de nuevo más tarde.'
-    console.error(err)
+    error.value = 'Error al cargar los datos. Inténtalo de nuevo más tarde.';
+    console.error(err);
   }
 }
 
-// Función para generar el gráfico basado en el programa seleccionado
-function generateChartData(programa) {
-  const programaDatos = datos.value.find(item => item.programa === programa)
+// Función para actualizar la lista de periodos disponibles según el programa seleccionado
+function updatePeriodos(programa) {
+  const programaDatos = datos.value.filter(item => item.programa === programa);
+  periodos.value = [...new Set(programaDatos.map(item => item.periodo))];
+}
 
-  // Si no hay datos, limpiar el gráfico
+// Función para generar el gráfico basado en el programa y el periodo seleccionados
+function generateChartData(programa, periodo) {
+  const programaDatos = datos.value.find(item => item.programa === programa && item.periodo === periodo);
+
   if (!programaDatos) {
-    chartData.value = {}
-    return
+    chartData.value = {};
+    return;
   }
 
-  // Definir los estratos y sus valores
-  const estratos = ['estrato_1', 'estrato_2', 'estrato_3', 'estrato_4', 'estrato_5', 'estrato_6']
-  const valoresEstratos = estratos.map(estrato => programaDatos[estrato] ? parseInt(programaDatos[estrato]) : 0)
+  chartData.value = generarDatosGraficoEstratos(programaDatos);
+  chartOptions.value = generarOpcionesGrafico(`${programa} - ${periodo}`);
+}
 
-  chartData.value = {
-    labels: estratos.map(estrato => estrato.replace('_', ' ').toUpperCase()), // Etiquetas de los estratos
-    datasets: [{
-      label: `Distribución de Estratos en ${programa}`,
-      backgroundColor: '#42a5f5',
-      data: valoresEstratos,
-    }],
-  }
-
-  chartOptions.value = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      title: {
-        display: true,
-        text: `Distribución de Estratos en ${programa}`,
-      },
-    },
+// Función para redimensionar el gráfico cuando la ventana cambie de tamaño
+function handleResize() {
+  if (chartInstance.value) {
+    chartInstance.value.resize();  // Forzar redimensionado
   }
 }
 
 // Cargar los datos cuando el componente se monta
 onMounted(() => {
-  loadData()
-})
+  loadData();
+  window.addEventListener('resize', handleResize);  // Escuchar el evento resize
+});
 
-// Detectar el cambio en la selección del programa y regenerar el gráfico
+// Limpiar el evento resize cuando se destruya el componente
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize);
+});
+
+// Detectar el cambio en la selección del programa y actualizar los periodos
 watch(programaSeleccionado, (nuevoPrograma) => {
   if (nuevoPrograma) {
-    generateChartData(nuevoPrograma)
+    updatePeriodos(nuevoPrograma);
+    periodoSeleccionado.value = '';  // Reiniciar la selección del periodo
   }
-})
+});
+
+// Detectar el cambio en la selección del periodo y regenerar el gráfico
+watch([programaSeleccionado, periodoSeleccionado], ([nuevoPrograma, nuevoPeriodo]) => {
+  if (nuevoPrograma && nuevoPeriodo) {
+    generateChartData(nuevoPrograma, nuevoPeriodo);
+  }
+});
 </script>
 
 <template>
   <div class="container mx-auto p-4">
-    <h2 class="text-3xl font-bold mb-4">Gráfico de Estratos por Programa</h2>
+    <h2 class="text-3xl font-bold mb-4">Gráfico de Estratos por Programa y Periodo</h2>
 
     <!-- Mostrar error si ocurre -->
     <div v-if="error" class="mb-4 text-red-500">{{ error }}</div>
 
     <div class="flex justify-between items-center mb-4">
-      <Dropdown 
-        v-model="programaSeleccionado" 
-        :programas="programas" 
-      />
+      <!-- Dropdown para seleccionar el Programa -->
+      <Dropdown v-model="programaSeleccionado" :programas="programas" placeholder="Selecciona un programa" />
+
+      <!-- Dropdown para seleccionar el Periodo basado en el programa seleccionado -->
+      <Dropdown v-if="periodos.length > 0" v-model="periodoSeleccionado" :programas="periodos" placeholder="Selecciona un periodo" />
     </div>
 
-    <!-- Mostrar gráfico o mensaje si no hay datos -->
-    <div v-if="chartData && chartData.datasets && chartData.datasets.length > 0">
-      <Bar :data="chartData" :options="chartOptions" />
-    </div>
-    <div v-else>
-      <p class="text-gray-500">Selecciona un programa para ver el gráfico</p>
+    <!-- Contenedor del gráfico ajustado -->
+    <div class="chart-container">
+      <div class="chart-wrapper">
+        <Bar v-if="chartData && chartData.datasets && chartData.datasets.length > 0" :data="chartData" :options="chartOptions" />
+        <p v-else class="text-gray-500">Selecciona un programa y un periodo para ver el gráfico</p>
+      </div>
     </div>
   </div>
 </template>
+
