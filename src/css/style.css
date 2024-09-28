@@ -6,3 +6,27 @@
 .boton-1 {
     @apply text-white bg-orange-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-1 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800;
 }
+
+/* Asegurarse de que el contenedor del gráfico sea flexiblemente responsivo */
+.chart-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  max-width: 100%; /* Se asegura de que el ancho no exceda la pantalla */
+}
+
+/* Añadir un ancho máximo y hacer el gráfico responsivo */
+.chart-wrapper {
+  width: 100%;
+  max-width: 1000px; /* Limita el ancho del gráfico a 1000px, puedes ajustarlo según tu necesidad */
+  height: 60vh; /* Ajustar la altura del gráfico basado en el viewport height (60% de la altura de la ventana) */
+}
+
+@media (max-width: 768px) {
+  /* Para pantallas más pequeñas */
+  .chart-wrapper {
+    height: 50vh; /* Ajustar la altura para pantallas más pequeñas */
+  }
+}

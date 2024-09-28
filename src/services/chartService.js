@@ -17,6 +17,7 @@ export function generarDatosGraficoEstratos(programaDatos) {
   export function generarOpcionesGrafico(programa) {
     return {
       responsive: true,
+      maintainAspectRatio: false, // Permite ajustar la altura/anchura libremente
       plugins: {
         legend: {
           position: 'top',

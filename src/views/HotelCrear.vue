@@ -60,8 +60,11 @@ watch(programaSeleccionado, (nuevoPrograma) => {
       <Dropdown v-model="programaSeleccionado" :programas="programas" />
     </div>
 
-    <div v-if="chartData && chartData.datasets && chartData.datasets.length > 0">
-      <Bar :data="chartData" :options="chartOptions" />
+    <div v-if="chartData && chartData.datasets && chartData.datasets.length > 0" class="chart-container">
+      <!-- Contenedor responsivo para el gráfico -->
+      <div class="chart-wrapper">
+        <Bar :data="chartData" :options="chartOptions" />
+      </div>
     </div>
     <div v-else>
       <p class="text-gray-500">Selecciona un programa para ver el gráfico</p>
