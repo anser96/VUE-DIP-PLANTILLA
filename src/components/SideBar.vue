@@ -1,21 +1,59 @@
 <template>
-    <div class="hidden md:block w-64 bg-white dark:bg-gray-800 shadow-lg p-2 overflow-y-auto border-r border-gray-300 dark:border-gray-700">
-      <div class="text-2xl font-bold text-gray-800 dark:text-white px-4 mb-6">Hoteles</div>
-      <div class="space-y-3">
-        <div class="px-4">
-          <router-link to="/hotel-crear" class="block w-full bg-gray-100 dark:bg-gray-700 hover:bg-blue-500 hover:text-white text-gray-700 dark:text-gray-300 rounded-lg px-4 py-2 transition-colors duration-300 shadow">
-            Crear Hoteles
-          </router-link>
-        </div>
-        <div class="px-4">
-          <router-link to="/hotel-listado" class="block w-full bg-gray-100 dark:bg-gray-700 hover:bg-blue-500 hover:text-white text-gray-700 dark:text-gray-300 rounded-lg px-4 py-2 transition-colors duration-300 shadow">
-            Listado
-          </router-link>
-        </div>
-      </div>
-    </div>
-  </template>
-  
-  <style scoped>
-  </style>
-  
+  <aside class="menu p-4 w-64 bg-base-100 text-base-content">
+    <ul class="menu">
+      <!-- Enlace a Dashboard -->
+      <li class="mb-4">
+        <a 
+          href="/" 
+          :class="getLinkClass('/')"
+          >Dashboard</a>
+      </li>
+      
+      <!-- Enlace a Tasks -->
+      <li class="mb-4">
+        <a 
+          href="/tasks" 
+          :class="getLinkClass('/tasks')"
+          >Tasks</a>
+      </li>
+      
+      <!-- Enlace a Requests -->
+      <li class="mb-4">
+        <a 
+          href="/requests" 
+          :class="getLinkClass('/requests')"
+          >Requests</a>
+      </li>
+      
+      <!-- Enlace a Sessions -->
+      <li class="mb-4">
+        <a 
+          href="/sessions" 
+          :class="getLinkClass('/sessions')"
+          >Sessions</a>
+      </li>
+      
+      <!-- Agrega más enlaces a otras secciones -->
+    </ul>
+  </aside>
+</template>
+<script setup lang="ts">
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
+
+// Función para obtener clases dinámicas basadas en la ruta actual
+const getLinkClass = (path: string) => {
+  // Si la ruta actual coincide con el 'path', agregar clases de botón activo
+  return route.path === path 
+    ? 'bg-primary text-primary-content hover:bg-primary'  // Estilo para ruta activa
+    : 'hover:bg-primary';  // Estilo por defecto con hover
+}
+</script>
+
+<style scoped>
+/* Estilos adicionales */
+.menu li a {
+  transition: background-color 0.3s ease;  /* Animación suave para el hover */
+}
+</style>
