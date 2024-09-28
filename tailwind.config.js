@@ -8,5 +8,8 @@ export default {
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [require('daisyui')],
+  daisyui: {
+    themes: ["dim","emerald"],  // Usa los nombres de los temas directamente
+  },
 }
