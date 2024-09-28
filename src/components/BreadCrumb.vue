@@ -1,8 +1,8 @@
-<script setup>
-const props = defineProps({
-  modulo: String,
-  accion: String
-})
+<script setup lang="ts">
+const props = defineProps<{
+  modulo: string,
+  accion: string
+}>()
 </script>
 
 <template>
