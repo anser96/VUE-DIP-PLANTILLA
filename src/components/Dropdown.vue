@@ -11,6 +11,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  placeholder: {
+    type: String,
+    default: 'Selecciona una opción',  // Añadir un valor predeterminado para la prop placeholder
+  },
 })
 
 // Variables internas del componente
@@ -39,7 +43,7 @@ const emit = defineEmits(['update:modelValue'])
 <template>
   <div class="relative">
     <button @click="toggleDropdown" class="w-full border border-gray-300 dark:border-gray-600 px-4 py-2 rounded bg-transparent text-black dark:text-white focus:outline-none">
-      {{ programaSeleccionado || 'Selecciona un programa' }}
+      {{ programaSeleccionado || placeholder }} <!-- Usamos la prop placeholder aquí -->
     </button>
     
     <div v-if="isOpen" class="absolute w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 mt-2 rounded shadow-lg z-10">
