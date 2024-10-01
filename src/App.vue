@@ -54,6 +54,7 @@ onMounted(() => {
         <main class="flex-1 px-4 py-2 md:px-12 md:py-4 overflow-y-auto bg-base-100 dark:bg-base-300 text-base-content dark:text-gray-100 shadow-md">
           <!-- Breadcrumb Component -->
           <Breadcrumb />
+          <!-- El router-view aquí permite que se carguen las rutas principales y las hijas -->
           <router-view />
         </main>
 

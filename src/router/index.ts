@@ -1,55 +1,99 @@
-import { createRouter, createWebHistory } from 'vue-router';
-
-// Importar las vistas
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import Home from '../views/Home.vue';
 import TasksList from '../modules/tasks/TasksList.vue';
 import TasksCreate from '../modules/tasks/TasksCreate.vue';
 import RequestsList from '../modules/requests/RequestsList.vue';
 import SessionsList from '../modules/sessions/SessionsList.vue';
+import SessionsForm from '../modules/sessions/SessionsForm.vue';
 
-// Definir rutas con sus metas para breadcrumbs
-const routes = [
+const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'Home',
     component: Home,
     meta: {
-      breadcrumb: 'Home',
+      breadcrumb: 'Inicio',
+      showInSidebar: true,
+      isChild: false,
     },
   },
   {
     path: '/tasks',
-    name: 'TasksList',
+    name: 'Tasks',
     component: TasksList,
     meta: {
-      breadcrumb: 'Tasks',
+      breadcrumb: 'Tareas',
+      showInSidebar: true,
+      isChild: false,
     },
-  },
-  {
-    path: '/tasks/create',
-    name: 'TasksCreate',
-    component: TasksCreate,
-    meta: {
-      breadcrumb: 'Create Task',
-    },
+    children: [
+      {
+        path: 'create',
+        name: 'TasksCreate',
+        component: TasksCreate,
+        meta: {
+          breadcrumb: 'Crear Tarea',
+          showInSidebar: true,
+          isChild: true,
+        },
+      },
+    ],
   },
   {
     path: '/requests',
-    name: 'RequestsList',
+    name: 'Requests',
     component: RequestsList,
     meta: {
-      breadcrumb: 'Requests',
+      breadcrumb: 'Solicitudes',
+      showInSidebar: true,
+      isChild: false,
     },
   },
   {
     path: '/sessions',
-    name: 'SessionsList',
+    name: 'Sessions',
     component: SessionsList,
     meta: {
-      breadcrumb: 'Sessions',
+      breadcrumb: 'Sesiones',
+      showInSidebar: true,
+      isChild: false,
     },
+    children: [
+      {
+        path: 'create',
+        name: 'SessionsCreate',
+        component: SessionsForm, // Usar el mismo componente para crear
+        meta: {
+          breadcrumb: 'Crear Sesión',
+          showInSidebar: true,
+          isChild: true,
+        },
+        props: { mode: 'create' }, // Enviar prop para indicar el modo de creación
+      },
+      {
+        path: ':id',
+        name: 'SessionsView',
+        component: SessionsForm, // Usar el mismo componente para ver
+        meta: {
+          breadcrumb: 'Ver Sesión',
+          showInSidebar: false,
+          isChild: true,
+        },
+        props: { mode: 'view' }, // Enviar prop para indicar el modo de visualización
+      },
+      {
+        path: 'edit/:id',
+        name: 'SessionsEdit',
+        component: SessionsForm, // Usar el mismo componente para editar
+        meta: {
+          breadcrumb: 'Editar Sesión',
+          showInSidebar: false,
+          isChild: true,
+        },
+        props: { mode: 'edit' }, // Enviar prop para indicar el modo de edición
+      },
+    ],
   },
-  // Otras rutas...
 ];
 
 const router = createRouter({
