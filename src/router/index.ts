@@ -10,6 +10,10 @@ import MembersForm from '../modules/members/MembersCreate.vue';
 import MembersList from '../modules/members/MembersList.vue';
 import ApplicantsForm from '../modules/applicants/ApplicantsCreate.vue';
 import ApplicantsList from '../modules/applicants/ApplicantsList.vue';
+import GuestsList from '../modules/guests/GuestsList.vue';
+import GuestsCreate from '../modules/guests/GuestsCreate.vue';
+import PropositionsList from '../modules/propositions/PropositionsList.vue';
+import PropositionsCreate from '../modules/propositions/PropositionsCreate.vue';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -246,9 +250,98 @@ const routes: RouteRecordRaw[] = [
         props: { mode: 'edit' }, // Modo edición
       },
     ],
-  },   
+  },
+  {
+    path: '/guests', 
+    name: 'Guests',
+    component: GuestsList,  // Componente para mostrar
+    meta: {
+      breadcrumb: 'Invitados',
+      showInSidebar: true,
+      isChild: false,
+    },
+    children: [
+      {
+        path: 'create',
+        name: 'guestsCreate',
+        component: GuestsCreate,  // Componente para crear
+        meta: {
+          breadcrumb: 'Crear Invitado',
+          showInSidebar: true,
+          isChild: true,
+        },
+        props: { mode: 'create' },
+      },
+      {
+        path: ':id',
+        name: 'guestView',
+        component: GuestsCreate,  // Usar el mismo componente para ver
+        meta: {
+          breadcrumb: 'Ver Invitado',
+          showInSidebar: false,
+          isChild: true,
+        },
+        props: { mode: 'view' },
+      },
+      {
+        path: 'edit/:id',
+        name: 'guestEdit',
+        component: GuestsCreate,  // Usar el mismo componente para editar
+        meta: {
+          breadcrumb: 'Editar Invitado',
+          showInSidebar: false,
+          isChild: true,
+        },
+        props: { mode: 'edit' },
+      },
+    ],
+  },
+  {
+    path: '/propositions',  
+    name: 'Propositions',
+    component: PropositionsList,  // Componente para mostrar
+    meta: {
+      breadcrumb: 'Proposiciones',
+      showInSidebar: true,
+      isChild: false,
+    },
+    children: [
+      {
+        path: 'create',
+        name: 'propositionsCreate',
+        component: PropositionsCreate,  // Componente para crear
+        meta: {
+          breadcrumb: 'Crear Proposición',
+          showInSidebar: true,
+          isChild: true,
+        },
+        props: { mode: 'create' },  // Modo creación
+      },
+      {
+        path: ':id',
+        name: 'propositionView',
+        component: PropositionsCreate,  // Usar el mismo componente para ver
+        meta: {
+          breadcrumb: 'Ver Proposición',
+          showInSidebar: false,
+          isChild: true,
+        },
+        props: { mode: 'view' },  // Modo visualización
+      },
+      {
+        path: 'edit/:id',
+        name: 'propositionEdit',
+        component: PropositionsCreate,  // Usar el mismo componente para editar
+        meta: {
+          breadcrumb: 'Editar Proposición',
+          showInSidebar: false,
+          isChild: true,
+        },
+        props: { mode: 'edit' },  // Modo edición
+      },
+    ],
+  },
 ];
-
 const router = createRouter({
   history: createWebHistory(),
   routes,
