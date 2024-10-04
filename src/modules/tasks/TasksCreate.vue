@@ -17,7 +17,7 @@
           <p v-if="errors.description" class="text-red-500 text-sm mt-1">{{ errors.description }}</p>
         </div>
   
-        <!-- Campo para el ID de la Sesión -->
+        <!-- Campo para el ID de la Sesión 
         <div>
           <label for="sessionId" class="block text-sm font-medium text-gray-700">Session ID</label>
           <input
@@ -29,7 +29,7 @@
             required
           />
           <p v-if="errors.sessionId" class="text-red-500 text-sm mt-1">{{ errors.sessionId }}</p>
-        </div>
+        </div>-->
   
         <!-- Campo para la Fecha de Entrega -->
         <div>

@@ -42,7 +42,7 @@ const routes: RouteRecordRaw[] = [
         component: TasksForm,
         meta: {
           breadcrumb: 'Crear Tarea',
-          showInSidebar: true,
+          showInSidebar: false,
           isChild: true,
         },
         props: { mode: 'create' }, // Enviar prop para indicar el modo de creación
@@ -87,7 +87,7 @@ const routes: RouteRecordRaw[] = [
         component: RequestsForm,
         meta: {
           breadcrumb: 'Crear Solicitud',
-          showInSidebar: true,
+          showInSidebar: false,
           isChild: true,
         },
         props: { mode: 'create' }, // Enviar prop para indicar el modo de creación
@@ -132,7 +132,7 @@ const routes: RouteRecordRaw[] = [
         component: SessionsForm, // Usar el mismo componente para crear
         meta: {
           breadcrumb: 'Crear Sesión',
-          showInSidebar: true,
+          showInSidebar: false,
           isChild: true,
         },
         props: { mode: 'create' }, // Enviar prop para indicar el modo de creación
@@ -177,7 +177,7 @@ const routes: RouteRecordRaw[] = [
         component: MembersForm,
         meta: {
           breadcrumb: 'Crear Miembro',
-          showInSidebar: true,
+          showInSidebar: false,
           isChild: true,
         },
         props: { mode: 'create' }, // Modo creación
@@ -222,7 +222,7 @@ const routes: RouteRecordRaw[] = [
         component: ApplicantsForm,
         meta: {
           breadcrumb: 'Crear Solicitante',
-          showInSidebar: true,
+          showInSidebar: false,
           isChild: true,
         },
         props: { mode: 'create' }, // Modo creación
@@ -267,7 +267,7 @@ const routes: RouteRecordRaw[] = [
         component: GuestsCreate,  // Componente para crear
         meta: {
           breadcrumb: 'Crear Invitado',
-          showInSidebar: true,
+          showInSidebar: false,
           isChild: true,
         },
         props: { mode: 'create' },
@@ -312,7 +312,7 @@ const routes: RouteRecordRaw[] = [
         component: PropositionsCreate,  // Componente para crear
         meta: {
           breadcrumb: 'Crear Proposición',
-          showInSidebar: true,
+          showInSidebar: false,
           isChild: true,
         },
         props: { mode: 'create' },  // Modo creación

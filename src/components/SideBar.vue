@@ -1,16 +1,20 @@
 <template>
-  <aside class="menu p-4 w-64 bg-base-100 text-base-content">
+  <!-- Añadimos h-screen para asegurar que ocupe toda la altura de la pantalla y overflow-y-auto para que sea desplazable -->
+  <aside class="menu p-4 w-64 bg-base-100 text-base-content h-screen overflow-y-auto">
     <ul class="menu">
       <!-- Mostrar las rutas principales -->
       <template v-for="route in sidebarRoutes" :key="route.path">
         <li v-if="route.meta?.isChild === false && route.meta?.showInSidebar === true" class="mb-4">
-          <!-- Renderizar la ruta padre si no es un subnivel y tiene `showInSidebar: true` -->
-          <router-link
-            :to="route.path"
-            :class="getLinkClass(route.path)"
-          >
-            {{ route.meta?.breadcrumb }}
-          </router-link>
+          <div class="flex items-center">
+            <!-- Aquí añadimos el ícono antes del nombre de la ruta -->
+            <component :is="getIconForRoute(route.path)" class="w-5 h-5 mr-2" />
+            <router-link
+              :to="route.path"
+              :class="getLinkClass(route.path)"
+            >
+              {{ route.meta?.breadcrumb }}
+            </router-link>
+          </div>
 
           <!-- Mostrar subniveles (hijos) si existen y tienen `showInSidebar: true` y `isChild: true` -->
           <ul v-if="route.children && route.children.some((child: RouteRecordRaw) => child.meta?.showInSidebar && child.meta?.isChild)" class="pl-4">
@@ -19,7 +23,6 @@
               :key="childRoute.path"
               class="mb-2"
             >
-              <!-- Renderizar la ruta hijo (subnivel) -->
               <router-link
                 :to="concatPath(route.path, childRoute.path)"
                 :class="getLinkClass(concatPath(route.path, childRoute.path))"
@@ -37,6 +40,8 @@
 <script lang="ts" setup>
 import { useRoute, useRouter, RouteRecordRaw } from 'vue-router';
 import { computed } from 'vue';
+// Importar iconos de Heroicons v2
+import { HomeIcon, ClipboardDocumentListIcon, DocumentTextIcon, UsersIcon, CalendarDaysIcon, AcademicCapIcon } from '@heroicons/vue/24/solid';
 
 // Función recursiva para filtrar y asignar el nivel de la ruta, omitiendo aquellas con `showInSidebar: false`
 const filterRoutes = (routes: RouteRecordRaw[], level = 0): any[] => {
@@ -67,6 +72,17 @@ const getLinkClass = (path: string): string => {
 // Concatenar rutas padre e hijo
 const concatPath = (parentPath: string, childPath: string): string => {
   return `${parentPath.replace(/\/$/, '')}/${childPath.replace(/^\//, '')}`;
+};
+
+// Función para obtener el ícono basado en la ruta
+const getIconForRoute = (path: string) => {
+  if (path.includes('/tasks')) return ClipboardDocumentListIcon;
+  if (path.includes('/requests')) return DocumentTextIcon;
+  if (path.includes('/sessions')) return CalendarDaysIcon;
+  if (path.includes('/members')) return UsersIcon;
+  if (path.includes('/applicants')) return AcademicCapIcon;
+  if (path.includes('/')) return HomeIcon;
+  return null; // Ícono por defecto si no se encuentra
 };
 </script>
 
