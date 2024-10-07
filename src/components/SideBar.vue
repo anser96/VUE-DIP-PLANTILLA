@@ -41,7 +41,20 @@
 import { useRoute, useRouter, RouteRecordRaw } from 'vue-router';
 import { computed } from 'vue';
 // Importar iconos de Heroicons v2
-import { HomeIcon, ClipboardDocumentListIcon, DocumentTextIcon, UsersIcon, CalendarDaysIcon, AcademicCapIcon } from '@heroicons/vue/24/solid';
+import {
+  HomeIcon,
+  ClipboardDocumentListIcon,
+  DocumentTextIcon,
+  UsersIcon,
+  CalendarDaysIcon,
+  AcademicCapIcon,
+  DocumentDuplicateIcon,
+  UserGroupIcon,
+  BookmarkIcon,
+  FolderOpenIcon,
+  ClipboardIcon,
+  BuildingLibraryIcon,
+} from '@heroicons/vue/24/solid';
 
 // Función recursiva para filtrar y asignar el nivel de la ruta, omitiendo aquellas con `showInSidebar: false`
 const filterRoutes = (routes: RouteRecordRaw[], level = 0): any[] => {
@@ -76,12 +89,18 @@ const concatPath = (parentPath: string, childPath: string): string => {
 
 // Función para obtener el ícono basado en la ruta
 const getIconForRoute = (path: string) => {
-  if (path.includes('/tasks')) return ClipboardDocumentListIcon;
-  if (path.includes('/requests')) return DocumentTextIcon;
-  if (path.includes('/sessions')) return CalendarDaysIcon;
-  if (path.includes('/members')) return UsersIcon;
-  if (path.includes('/applicants')) return AcademicCapIcon;
-  if (path.includes('/')) return HomeIcon;
+  if (path.includes('/attendance')) return UserGroupIcon; // Asistencia
+  if (path.includes('/acts')) return DocumentDuplicateIcon; // Actas
+  if (path.includes('/tasks')) return ClipboardIcon; // Tareas
+  if (path.includes('/requests')) return DocumentTextIcon; // Solicitudes
+  if (path.includes('/sessions')) return CalendarDaysIcon; // Sesiones
+  if (path.includes('/members')) return UsersIcon; // Miembros
+  if (path.includes('/applicants')) return AcademicCapIcon; // Solicitantes
+  if (path.includes('/propositions')) return BookmarkIcon; // Proposiciones
+  if (path.includes('/descriptions')) return FolderOpenIcon; // Descripciones
+  if (path.includes('/task-assignments')) return ClipboardDocumentListIcon; // Encargados de Tareas
+  if (path.includes('/session-order')) return BuildingLibraryIcon; // Orden de Sesión
+  if (path.includes('/')) return HomeIcon; // Página de inicio
   return null; // Ícono por defecto si no se encuentra
 };
 </script>

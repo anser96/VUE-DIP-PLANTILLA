@@ -17,6 +17,18 @@ import PropositionsCreate from '../modules/propositions/PropositionsCreate.vue';
 import Login from '../modules/login/Login.vue';
 import Register from '../modules/login/Register.vue';
 import ForgotPassword from '../modules/login/ForgotPassword.vue';
+import ActsList from '../modules/acts/ActsList.vue';
+import ActsForm from '../modules/acts/ActsCreate.vue';
+import AttendanceList from '../modules/attendance_guests/AttendanceList.vue';
+import AttendanceForm from '../modules/attendance_guests/AttendanceCreate.vue';
+import AttendanceMembersList from '../modules/attendance_members/MembersList.vue'
+import AttendanceMembersForm from '../modules/attendance_members/MembersCreate.vue'
+import DescriptionList from '../modules/description/descriptionList.vue';
+import DescriptionForm from '../modules/description/descriptionForm.vue';
+import TaskAssignmentsList from '../modules/task-assignments/TaskAssignmentsList.vue';
+import TaskAssignmentsForm from '../modules/task-assignments/TaskAssignmentsForm.vue'; 
+import SessionOrderList from '../modules/sessionOrder/SessionOrderList.vue';
+import SessionOrderForm from '../modules/sessionOrder/SessionOrderForm.vue';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -360,6 +372,225 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
+  {
+    path: '/acts',
+    name: 'Acts',
+    component: ActsList, // Componente para mostrar la lista de actas
+    meta: {
+      breadcrumb: 'Actas',
+      showInSidebar: true,
+      isChild: false,
+    },
+    children: [
+      {
+        path: 'create',
+        name: 'actsCreate',
+        component: ActsForm,
+        meta: {
+          breadcrumb: 'Crear Acta',
+          showInSidebar: false,
+          isChild: true,
+        },
+        props: { mode: 'create' }, // Modo creación
+      },
+      {
+        path: ':id',
+        name: 'actView',
+        component: ActsForm, // Usar el mismo componente para ver
+        meta: {
+          breadcrumb: 'Ver Acta',
+          showInSidebar: false,
+          isChild: true,
+        },
+        props: { mode: 'view' }, // Modo visualización
+      },
+      {
+        path: 'edit/:id',
+        name: 'actEdit',
+        component: ActsForm, // Usar el mismo componente para editar
+        meta: {
+          breadcrumb: 'Editar Acta',
+          showInSidebar: false,
+          isChild: true,
+        },
+        props: { mode: 'edit' }, // Modo edición
+      },
+    ],
+  }, 
+  {
+    path: '/attendance',
+    name: 'Attendance',
+    component: AttendanceList, // Componente para mostrar la lista de asistencias
+    meta: {
+      breadcrumb: 'Asistencia Invitados',
+      showInSidebar: true,
+      isChild: false,
+    },
+    children: [
+      {
+        path: 'create',
+        name: 'attendanceCreate',
+        component: AttendanceForm,
+        meta: {
+          breadcrumb: 'Registrar Asistencia',
+          showInSidebar: false,
+          isChild: true,
+        },
+        props: { mode: 'create' }, // Modo creación
+      },
+      {
+        path: ':invId/:sesId',
+        name: 'attendanceView',
+        component: AttendanceForm, // Usar el mismo componente para ver
+        meta: {
+          breadcrumb: 'Ver Asistencia',
+          showInSidebar: false,
+          isChild: true,
+        },
+        props: { mode: 'view' }, // Modo visualización
+      },
+      {
+        path: 'edit/:invId/:sesId',
+        name: 'attendanceEdit',
+        component: AttendanceForm, // Usar el mismo componente para editar
+        meta: {
+          breadcrumb: 'Editar Asistencia',
+          showInSidebar: false,
+          isChild: true,
+        },
+        props: { mode: 'edit' }, // Modo edición
+      },
+    ],
+  },  
+  {
+    path: '/attendance-members',
+    name: 'AttendanceMembers',
+    component: AttendanceMembersList, // Componente de lista de asistencias de miembros
+    meta: {
+      breadcrumb: 'Asistencia Miembros',
+      showInSidebar: true,
+      isChild: false,
+    },
+    children: [
+      {
+        path: 'create',
+        name: 'AttendanceMembersCreate',
+        component: AttendanceMembersForm, // Componente para crear asistencia
+        meta: {
+          breadcrumb: 'Registrar Asistencia',
+          showInSidebar: false,
+          isChild: true,
+        },
+      },
+      {
+        path: 'edit/:sesId/:memberId',
+        name: 'AttendanceMembersEdit',
+        component: AttendanceMembersForm, // Componente para editar asistencia
+        meta: {
+          breadcrumb: 'Editar Asistencia',
+          showInSidebar: false,
+          isChild: true,
+        },
+      },
+    ],
+  }, 
+  {
+    path: '/descriptions',
+    name: 'Descriptions',
+    component: DescriptionList, // Componente de lista de descripciones
+    meta: {
+      breadcrumb: 'Descripciones',
+      showInSidebar: true,
+      isChild: false,
+    },
+    children: [
+      {
+        path: 'create',
+        name: 'DescriptionCreate',
+        component: DescriptionForm, // Componente para crear descripción
+        meta: {
+          breadcrumb: 'Crear Descripción',
+          showInSidebar: false,
+          isChild: true,
+        },
+      },
+      {
+        path: 'edit/:id',
+        name: 'DescriptionEdit',
+        component: DescriptionForm, // Componente para editar descripción
+        meta: {
+          breadcrumb: 'Editar Descripción',
+          showInSidebar: false,
+          isChild: true,
+        },
+      },
+    ],
+  },
+  {
+    path: '/task-assignments',
+    name: 'TaskAssignments',
+    component: TaskAssignmentsList, // Componente de lista de asignaciones de tareas
+    meta: {
+      breadcrumb: 'Encargados de Tareas',
+      showInSidebar: true,
+      isChild: false,
+    },
+    children: [
+      {
+        path: 'create',
+        name: 'TaskAssignmentsCreate',
+        component: TaskAssignmentsForm, // Componente para crear asignación de tarea
+        meta: {
+          breadcrumb: 'Asignar Tarea',
+          showInSidebar: false,
+          isChild: true,
+        },
+      },
+      {
+        path: 'edit/:memberId/:taskId',
+        name: 'TaskAssignmentsEdit',
+        component: TaskAssignmentsForm, // Componente para editar asignación de tarea
+        meta: {
+          breadcrumb: 'Editar Asignación de Tarea',
+          showInSidebar: false,
+          isChild: true,
+        },
+      },
+    ],
+  },
+  {
+    path: '/session-order',
+    name: 'SessionOrder',
+    component: SessionOrderList, // Componente de lista de orden de sesión
+    meta: {
+      breadcrumb: 'Orden de Sesión',
+      showInSidebar: true,
+      isChild: false,
+    },
+    children: [
+      {
+        path: 'create',
+        name: 'SessionOrderCreate',
+        component: SessionOrderForm, // Componente para crear tema de sesión
+        meta: {
+          breadcrumb: 'Crear Tema de Sesión',
+          showInSidebar: false,
+          isChild: true,
+        },
+      },
+      {
+        path: 'edit/:id',
+        name: 'SessionOrderEdit',
+        component: SessionOrderForm, // Componente para editar tema de sesión
+        meta: {
+          breadcrumb: 'Editar Tema de Sesión',
+          showInSidebar: false,
+          isChild: true,
+        },
+      },
+    ],
+  }
+        
 ];
 const router = createRouter({
   history: createWebHistory(),
