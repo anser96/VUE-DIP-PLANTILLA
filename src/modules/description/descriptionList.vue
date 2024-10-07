@@ -2,7 +2,7 @@
     <div class="p-4">
       <!-- Mostrar la lista solo si no estamos en una ruta hija -->
       <div v-if="!isChildRouteActive">
-        <h1 class="text-3xl font-bold mb-4">Lista de Descripciones</h1>
+        <h1 class="text-3xl font-bold mb-4">Descripciones</h1>
   
         <div class="flex justify-end mb-4">
           <router-link to="/descriptions/create" class="btn btn-primary">Crear Nueva Descripción</router-link>
@@ -11,7 +11,7 @@
         <table class="table w-full">
           <thead>
             <tr>
-              <th>ID Descripción</th>
+              <th>ID</th>
               <th>Estudiantes Implicados</th>
               <th>Número Estudiantes</th>
               <th>Docentes Implicados</th>
