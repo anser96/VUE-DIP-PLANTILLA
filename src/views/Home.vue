@@ -8,6 +8,10 @@
           <p class="py-6">
             Este es tu centro principal para gestionar sesiones, tareas y solicitudes. Navega por la aplicación usando los siguientes enlaces.
           </p>
+          <div class="flex-none space-x-4">
+      <!-- Botón de Iniciar Sesión -->
+      <router-link to="/login" class="btn btn-primary">Iniciar Sesión</router-link>
+    </div>
         </div>
       </div>
     </div>

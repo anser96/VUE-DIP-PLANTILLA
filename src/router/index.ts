@@ -14,6 +14,9 @@ import GuestsList from '../modules/guests/GuestsList.vue';
 import GuestsCreate from '../modules/guests/GuestsCreate.vue';
 import PropositionsList from '../modules/propositions/PropositionsList.vue';
 import PropositionsCreate from '../modules/propositions/PropositionsCreate.vue';
+import Login from '../modules/login/Login.vue';
+import Register from '../modules/login/Register.vue';
+import ForgotPassword from '../modules/login/ForgotPassword.vue';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -26,6 +29,22 @@ const routes: RouteRecordRaw[] = [
       isChild: false,
     },
   },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login,
+  },
+  
+  { path: '/register', 
+    name: 'Register', 
+    component: Register,
+  },
+
+  { path: '/forgot-password', 
+    name: 'ForgotPassword', 
+    component: ForgotPassword,
+  },
+
   {
     path: '/tasks',
     name: 'Tasks',
