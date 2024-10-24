@@ -30,8 +30,8 @@
           <tr v-for="session in sessions" :key="session.idSesion">
             <td>{{ session.lugar }}</td>
             <td>{{ session.fecha }}</td>
-            <td>{{ session.horaInicio }}</td>
-            <td>{{ session.horaFinal }}</td>
+            <td>{{ formatTime(session.horaInicio) }}</td>
+            <td>{{ formatTime(session.horaFinal) }}</td>
             <td>{{ session.presidente }}</td>
             <td>{{ session.secretario }}</td>
             <td class="flex gap-2">
@@ -110,6 +110,19 @@ const cancelDelete = () => {
   sessionIdToDelete.value = null;
 };
 
+const formatTime = (time: string): string => {
+  const [hour, minute] = time.split(':');
+  let hourNumber = parseInt(hour);
+  const period = hourNumber >= 12 ? 'PM' : 'AM';
+
+  if (hourNumber === 0) {
+    hourNumber = 12; // Medianoche
+  } else if (hourNumber > 12) {
+    hourNumber -= 12; // Convertir a formato de 12 horas
+  }
+
+  return `${hourNumber}:${minute} ${period}`;
+};
 // Cargar las sesiones cuando el componente se monte
 onMounted(loadSessions);
 watch(route, loadSessions);
