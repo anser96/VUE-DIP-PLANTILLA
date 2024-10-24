@@ -57,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import ConfirmModal from '../../components/ConfirmModal.vue';
 import { getSessions, deleteSession, Session } from '../../services/SessionServices';
@@ -112,6 +112,7 @@ const cancelDelete = () => {
 
 // Cargar las sesiones cuando el componente se monte
 onMounted(loadSessions);
+watch(route, loadSessions);
 </script>
 
 <style scoped>
