@@ -1,19 +1,14 @@
-import './assets/style.css'
+import { createApp } from 'vue';
+import { createPinia } from 'pinia';
+import piniaPersist from 'pinia-plugin-persistedstate';
+import App from './App.vue';
+import router from './router';
 
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
-import axios, { AxiosInstance } from 'axios'
+const app = createApp(App);
 
-// Configuración global de Axios
-const axiosInstance: AxiosInstance = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api/',
-})
+const pinia = createPinia();
+pinia.use(piniaPersist); // Usar el plugin de persistencia
 
-const app = createApp(App)
-
-// Registrar Axios en Vue como un plugin (opcional)
-app.config.globalProperties.$axios = axiosInstance
-
-app.use(router)
-app.mount('#app')
+app.use(pinia);
+app.use(router);
+app.mount('#app');

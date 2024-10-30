@@ -5,12 +5,11 @@
       <!-- Mostrar las rutas principales -->
       <template v-for="route in sidebarRoutes" :key="route.path">
         <li v-if="route.meta?.isChild === false && route.meta?.showInSidebar === true" class="mb-4">
-          <div class="flex items-center">
+          <div class="flex items-center" :class="getLinkClass(route.path)">
             <!-- Aquí añadimos el ícono antes del nombre de la ruta -->
             <component :is="getIconForRoute(route.path)" class="w-5 h-5 mr-2" />
             <router-link
               :to="route.path"
-              :class="getLinkClass(route.path)"
             >
               {{ route.meta?.breadcrumb }}
             </router-link>
