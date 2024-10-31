@@ -11,6 +11,10 @@
             <label for="cargo" class="block">Cargo</label>
             <input v-model="miembro.cargo" id="cargo" type="text" class="input input-bordered w-full" required />
           </div>
+          <div class="mb-4">
+            <label for="email" class="block">Email</label>
+            <input v-model="miembro.email" id="email" type="email" class="input input-bordered w-full" required />
+          </div>
           <div class="flex justify-end space-x-2">
             <button type="button" @click="closeModal" class="btn btn-secondary">Cancelar</button>
             <button type="submit" class="btn btn-primary">Agregar Miembro</button>
@@ -32,7 +36,7 @@
   const emit = defineEmits(['close', 'add-miembro']);
   
   // Datos del miembro
-  const miembro = ref({ nombre: '', cargo: '' });
+  const miembro = ref({ nombre: '', cargo: '', email: '' });
   
   // Función para cerrar el modal
   const closeModal = () => {

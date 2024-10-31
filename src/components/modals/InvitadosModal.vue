@@ -11,6 +11,10 @@
             <label for="dependencia" class="block">Dependencia</label>
             <input v-model="invitado.dependencia" id="dependencia" type="text" class="input input-bordered w-full" required />
           </div>
+          <div class="mb-4">
+            <label for="email" class="block">Email</label>
+            <input v-model="invitado.email" id="email" type="email" class="input input-bordered w-full" required />
+          </div>
           <div class="flex justify-end space-x-2">
             <button type="button" @click="closeModal" class="btn btn-secondary">Cancelar</button>
             <button type="submit" class="btn btn-primary">Agregar Invitado</button>
@@ -33,7 +37,7 @@ const props = defineProps({
 const emit = defineEmits(['close', 'add-invitado']);
 
 // Datos del invitado
-const invitado = ref({ nombre: '', dependencia: '', cargo: '' });
+const invitado = ref({ nombre: '', dependencia: '', cargo: '', email: '' });
 
 // Función para cerrar el modal
 const closeModal = () => {

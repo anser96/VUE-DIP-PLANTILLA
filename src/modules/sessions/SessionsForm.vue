@@ -119,13 +119,14 @@
       </div>
 
       <!-- Listar Invitados -->
-      <div class="relative overflow-x-auto mt-6">
+      <div v-if="isEditing || isViewing" class="relative overflow-x-auto mt-6">
         <h3 class="text-xl font-semibold mb-2">Lista de Invitados</h3>
         <table class="w-full text-sm text-left text-gray-500">
           <thead class="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
               <th scope="col" class="px-6 py-3">Nombre</th>
               <th scope="col" class="px-6 py-3">Dependencia</th>
+              <th scope="col" class="px-6 py-3">Email</th>
               <th scope="col" class="px-6 py-3">Estado Asistencia</th>
             </tr>
           </thead>
@@ -133,6 +134,7 @@
             <tr v-for="(invitado, index) in asistenciaInvitados" :key="index" class="bg-white border-b">
               <td class="px-6 py-4 font-medium text-gray-900">{{ invitado.nombre }}</td>
               <td class="px-6 py-4">{{ invitado.dependencia }}</td>
+              <td class="px-6 py-4">{{ invitado.email }}</td>
               <td class="px-6 py-4">{{ invitado.estadoAsistencia ?? 'PENDIENTE' }}</td>
             </tr>
           </tbody>
@@ -140,26 +142,28 @@
       </div>
 
       <!-- Listar Miembros -->
-      <div class="relative overflow-x-auto mt-6">
+      <div v-if="isEditing || isViewing" class="relative overflow-x-auto mt-6">
         <h3 class="text-xl font-semibold mb-2">Lista de Miembros</h3>
         <table class="w-full text-sm text-left text-gray-500">
           <thead class="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
               <th scope="col" class="px-6 py-3">Nombre</th>
               <th scope="col" class="px-6 py-3">Cargo</th>
+              <th scope="col" class="px-6 py-3">Email</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(miembro, index) in asistenciaMiembros" :key="index" class="bg-white border-b">
               <td class="px-6 py-4 font-medium text-gray-900">{{ miembro.nombre }}</td>
               <td class="px-6 py-4">{{ miembro.cargo }}</td>
+              <td class="px-6 py-4">{{ miembro.email }}</td>
             </tr>
           </tbody>
         </table>
       </div>
 
       <!-- Botones para agregar miembros e invitados (solo en edición o creación) -->
-      <div class="flex space-x-4" v-if="isEditing || !isViewing">
+      <div class="flex space-x-4" v-if="isEditing">
         <button type="button" class="btn btn-primary" @click="showInvitadosModal = true">Agregar Invitados</button>
         <button type="button" class="btn btn-primary" @click="showMiembrosModal = true">Agregar Miembros</button>
       </div>
@@ -168,12 +172,15 @@
       <div v-if="!isViewing" class="flex justify-end mt-6">
         <button type="submit" class="btn btn-primary">{{ isEditing ? 'Actualizar Sesión' : 'Crear Sesión' }}</button>
       </div>
+      <!-- Mensaje de error -->
+      <p v-if="showError" class="text-red-500 font-medium mt-2">{{ errorMessage }}</p>
     </form>
 
     <!-- Modales (solo si no estamos en modo de visualización) -->
     <InvitadosModal v-if="!isViewing" :show="showInvitadosModal" @add-invitado="addInvitado" @close="showInvitadosModal = false" />
     <MiembrosModal v-if="!isViewing" :show="showMiembrosModal" @add-miembro="addMiembro" @close="showMiembrosModal = false" />
-  </div>
+ 
+  </div> 
 </template>
 
 <script setup lang="ts">
@@ -197,6 +204,7 @@ interface Miembro {
   idMiembro: number;
   nombre: string;
   cargo: string;
+  email: string;
 }
 
 // Define el tipo para Invitado
@@ -204,6 +212,7 @@ interface Invitado {
   idInvitado: number;
   nombre: string;
   dependencia: string;
+  email: string
   estadoAsistencia: string;
 }
 
@@ -221,6 +230,8 @@ const newSession = ref<Session>({
 
 const showInvitadosModal = ref(false);
 const showMiembrosModal = ref(false);
+const showError = ref(false);
+const errorMessage = ref('');
 
 const asistenciaMiembros = ref<Miembro[]>([]);
 const asistenciaInvitados = ref<Invitado[]>([]);
@@ -331,8 +342,11 @@ const submitForm = async () => {
       await definirContenidoSesion(sessionId.value, contenido.value); // Enviar contenido
     }
     router.push('/sessions');
-  } catch (error) {
-    console.error('Error al enviar el formulario:', error);
+  } catch (error: any) {
+    // Verificamos si el error es de Axios y contiene una respuesta del servidor
+    //console.log("Error completo:", error); // Verifica todo el objeto error
+    errorMessage.value = error || 'Ocurrió un error al crear la sesión';
+    showError.value = true; // Mostrar mensaje de error
   }
 };
 </script>

@@ -31,11 +31,18 @@ export interface Session {
 // Función para crear una nueva sesión
 export const createSession = async (session: Session): Promise<Session> => {
     try {
-      const response = await axios.post(API_URL, session);
-      return response.data;
-    } catch (error) {
-      throw new Error('Error al crear la sesión');
-    }
+        const response = await axios.post(API_URL, session);
+        return response.data;
+      } catch (error: any) {
+        if (error.response && error.response.status === 400) {
+          // Captura el mensaje específico del backend
+          console.log(error.response)
+          const backendMessage = error.response.data?.message || 'Error al crear la sesión';
+          throw new Error(backendMessage);
+        } else {
+          throw new Error('Error inesperado al crear la sesión');
+        }
+      }
   };
   
   export const updateSession = async (id: number, session: Session): Promise<Session> => {
