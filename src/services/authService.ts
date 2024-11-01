@@ -85,3 +85,15 @@ export const isTokenValid = (token: string): boolean => {
     return false;
   }
 };
+
+
+const fetchWithAuth = async (url: string, options: RequestInit): Promise<Response> => {
+  const token = localStorage.getItem('token');
+  if (token && isTokenValid(token)) {
+    options.headers = {
+      ...options.headers,
+      'Authorization': `Bearer ${token}`,
+    };
+  }
+  return fetch(url, options);
+};

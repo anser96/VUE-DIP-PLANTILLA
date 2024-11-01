@@ -118,54 +118,76 @@
         <p v-if="isViewing" class="mt-2 text-gray-900 whitespace-pre">{{ contenido }}</p>
       </div>
 
-      <!-- Listar Invitados -->
-      <div v-if="isEditing || isViewing" class="relative overflow-x-auto mt-6">
-        <h3 class="text-xl font-semibold mb-2">Lista de Invitados</h3>
-        <table class="w-full text-sm text-left text-gray-500">
-          <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-            <tr>
-              <th scope="col" class="px-6 py-3">Nombre</th>
-              <th scope="col" class="px-6 py-3">Dependencia</th>
-              <th scope="col" class="px-6 py-3">Email</th>
-              <th scope="col" class="px-6 py-3">Estado Asistencia</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(invitado, index) in asistenciaInvitados" :key="index" class="bg-white border-b">
-              <td class="px-6 py-4 font-medium text-gray-900">{{ invitado.nombre }}</td>
-              <td class="px-6 py-4">{{ invitado.dependencia }}</td>
-              <td class="px-6 py-4">{{ invitado.email }}</td>
-              <td class="px-6 py-4">{{ invitado.estadoAsistencia ?? 'PENDIENTE' }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Listar Miembros -->
-      <div v-if="isEditing || isViewing" class="relative overflow-x-auto mt-6">
-        <h3 class="text-xl font-semibold mb-2">Lista de Miembros</h3>
-        <table class="w-full text-sm text-left text-gray-500">
-          <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-            <tr>
-              <th scope="col" class="px-6 py-3">Nombre</th>
-              <th scope="col" class="px-6 py-3">Cargo</th>
-              <th scope="col" class="px-6 py-3">Email</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(miembro, index) in asistenciaMiembros" :key="index" class="bg-white border-b">
-              <td class="px-6 py-4 font-medium text-gray-900">{{ miembro.nombre }}</td>
-              <td class="px-6 py-4">{{ miembro.cargo }}</td>
-              <td class="px-6 py-4">{{ miembro.email }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
       <!-- Botones para agregar miembros e invitados (solo en edición o creación) -->
-      <div class="flex space-x-4" v-if="isEditing">
+      <div class="flex space-x-4" v-if="isEditing && !isViewing">
         <button type="button" class="btn btn-primary" @click="showInvitadosModal = true">Agregar Invitados</button>
         <button type="button" class="btn btn-primary" @click="showMiembrosModal = true">Agregar Miembros</button>
+        <button type="button" class="btn btn-secondary" @click="addActa">Agregar Acta</button>
+      </div>
+
+      <!-- Tabla de Invitados -->
+      <div v-if="newSession.asistenciaInvitados.length > 0" class="mt-4">
+        <h2 class="text-xl font-semibold mb-2">Lista de Invitados</h2>
+        <table class="w-full text-sm text-left text-gray-500">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+            <tr>
+              <th class="px-6 py-3">Nombre</th>
+              <th class="px-6 py-3">Dependencia</th>
+              <th class="px-6 py-3">Email</th>
+              <th class="px-6 py-3">Estado Asistencia</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(invitado, index) in newSession.asistenciaInvitados" :key="index" class="bg-white border-b">
+              <td class="px-6 py-4">
+                <input v-if="isEditing" v-model="invitado.nombre" class="input input-bordered w-full" />
+                <span v-else>{{ invitado.nombre }}</span>
+              </td>
+              <td class="px-6 py-4">
+                <input v-if="isEditing" v-model="invitado.dependencia" class="input input-bordered w-full" />
+                <span v-else>{{ invitado.dependencia }}</span>
+              </td>
+              <td class="px-6 py-4">
+                <input v-if="isEditing" v-model="invitado.email" class="input input-bordered w-full" />
+                <span v-else>{{ invitado.email }}</span>
+              </td>
+              <td class="px-6 py-4">
+                <input v-if="isEditing" v-model="invitado.estadoAsistencia" class="input input-bordered w-full" />
+                <span v-else>{{ invitado.estadoAsistencia ?? 'PENDIENTE' }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Tabla de Miembros -->
+      <div v-if="newSession.asistenciaMiembros.length > 0" class="mt-4">
+        <h2 class="text-xl font-semibold mb-2">Lista de Miembros</h2>
+        <table class="w-full text-sm text-left text-gray-500">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+            <tr>
+              <th class="px-6 py-3">Nombre</th>
+              <th class="px-6 py-3">Cargo</th>
+              <th class="px-6 py-3">Email</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(miembro, index) in newSession.asistenciaMiembros" :key="index" class="bg-white border-b">
+              <td class="px-6 py-4">
+                <input v-if="isEditing" v-model="miembro.nombre" class="input input-bordered w-full" />
+                <span v-else>{{ miembro.nombre }}</span>
+              </td>
+              <td class="px-6 py-4">
+                <input v-if="isEditing" v-model="miembro.cargo" class="input input-bordered w-full" />
+                <span v-else>{{ miembro.cargo }}</span>
+              </td>
+              <td class="px-6 py-4">
+                <input v-if="isEditing" v-model="miembro.email" class="input input-bordered w-full" />
+                <span v-else>{{ miembro.email }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <!-- Botón de Crear o Actualizar -->
@@ -176,11 +198,10 @@
       <p v-if="showError" class="text-red-500 font-medium mt-2">{{ errorMessage }}</p>
     </form>
 
-    <!-- Modales (solo si no estamos en modo de visualización) -->
+    <!-- Modales para invitados y miembros -->
     <InvitadosModal v-if="!isViewing" :show="showInvitadosModal" @add-invitado="addInvitado" @close="showInvitadosModal = false" />
     <MiembrosModal v-if="!isViewing" :show="showMiembrosModal" @add-miembro="addMiembro" @close="showMiembrosModal = false" />
- 
-  </div> 
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -191,30 +212,14 @@ import {
   updateSession,
   getSessionById,
   addAsistenciaMiembros,
-  addAsistenciaInvitados,
+  addActas,
   definirContenidoSesion,
-  Session
+  Session,
+  addAsistenciaInvitados
 } from '../../services/SessionServices';
-
 import InvitadosModal from '../../components/modals/InvitadosModal.vue';
 import MiembrosModal from '../../components/modals/MiembrosModal.vue';
-
-// Define el tipo para Miembro
-interface Miembro {
-  idMiembro: number;
-  nombre: string;
-  cargo: string;
-  email: string;
-}
-
-// Define el tipo para Invitado
-interface Invitado {
-  idInvitado: number;
-  nombre: string;
-  dependencia: string;
-  email: string
-  estadoAsistencia: string;
-}
+import { ApiResponse } from '../../Utils/Interfaces/AuthInterface';
 
 const newSession = ref<Session>({
   lugar: '',
@@ -228,23 +233,16 @@ const newSession = ref<Session>({
   asistenciaInvitados: [],
 });
 
-const showInvitadosModal = ref(false);
-const showMiembrosModal = ref(false);
 const showError = ref(false);
 const errorMessage = ref('');
-
-const asistenciaMiembros = ref<Miembro[]>([]);
-const asistenciaInvitados = ref<Invitado[]>([]);
-
+const showInvitadosModal = ref(false);
+const showMiembrosModal = ref(false);
 const router = useRouter();
 const route = useRoute();
 const isEditing = ref(false);
-const isViewing = ref(false); // Nueva propiedad para el modo vista
+const isViewing = ref(false);
 const sessionId = ref<number | null>(null);
-
-// Define el contenido de la reunión como string
 const contenido = ref<string>('');
-
 const errors = ref({
   lugar: '',
   fecha: '',
@@ -254,42 +252,27 @@ const errors = ref({
   secretario: '',
 });
 
-// Función para cargar los datos en modo edición o vista
 onMounted(async () => {
   sessionId.value = route.params.id ? parseInt(route.params.id as string, 10) : null;
-  isEditing.value = sessionId.value !== null && route.name === 'SessionsEdit';
-  isViewing.value = sessionId.value !== null && route.name === 'SessionsView'; // Detectar si estamos en modo vista
+  isEditing.value = sessionId.value !== null && route.name === 'sessionsEdit';
+  isViewing.value = sessionId.value !== null && route.name === 'sessionsView';
 
   if ((isEditing.value || isViewing.value) && sessionId.value !== null) {
     try {
-      const session = await getSessionById(sessionId.value);
-      newSession.value = session;
-      asistenciaMiembros.value = session.asistenciaMiembros || [];
-      asistenciaInvitados.value = session.asistenciaInvitados || [];
-      contenido.value = session.contenido || '';
+      const response: ApiResponse<Session> = await getSessionById(sessionId.value);
+      if (response.status === 'success' && response.data) {
+        newSession.value = response.data;
+        contenido.value = response.data.contenido || '';
+      } else {
+        throw new Error(response.message || 'Error desconocido al cargar la sesión');
+      }
     } catch (error) {
-      console.error('Error al cargar la sesión y datos relacionados:', error);
+      console.error('Error al cargar la sesión:', error);
+      errorMessage.value = 'Error al cargar la sesión';
+      showError.value = true;
     }
   }
 });
-
-// Función para agregar invitados desde el modal y hacer la petición
-const addInvitado = async (invitado: Invitado) => {
-  if (isViewing.value) return;
-  asistenciaInvitados.value.push(invitado);
-  if (sessionId.value !== null) {
-    await addAsistenciaInvitados(sessionId.value, asistenciaInvitados.value);
-  }
-};
-
-// Función para agregar miembros desde el modal y hacer la petición
-const addMiembro = async (miembro: Miembro) => {
-  if (isViewing.value) return;
-  asistenciaMiembros.value.push(miembro);
-  if (sessionId.value !== null) {
-    await addAsistenciaMiembros(sessionId.value, asistenciaMiembros.value);
-  }
-};
 
 const validateFields = () => {
   let isValid = true;
@@ -325,29 +308,62 @@ const validateFields = () => {
 };
 
 const submitForm = async () => {
-  if (isViewing.value) return; // No hacer nada si estamos en modo de vista
+  if (isViewing.value) return;
   if (!validateFields()) return;
 
   try {
-    let sessionResponse;
+    let sessionResponse: ApiResponse<Session>;
     if (isEditing.value && sessionId.value !== null) {
       sessionResponse = await updateSession(sessionId.value, newSession.value);
     } else {
       sessionResponse = await createSession(newSession.value);
-      sessionId.value = sessionResponse?.idSesion ?? null;
+      sessionId.value = sessionResponse?.data?.idSesion ?? null;
     }
 
-    // Enviar el contenido de la reunión a la API
-    if (sessionId.value !== null) {
-      await definirContenidoSesion(sessionId.value, contenido.value); // Enviar contenido
+    if (sessionResponse.status === 'success' && sessionId.value !== null) {
+      await definirContenidoSesion(sessionId.value, contenido.value);
+      router.push('/sessions');
+    } else {
+      throw new Error(sessionResponse.message || 'Ocurrió un error');
     }
-    router.push('/sessions');
   } catch (error: any) {
-    // Verificamos si el error es de Axios y contiene una respuesta del servidor
-    //console.log("Error completo:", error); // Verifica todo el objeto error
-    errorMessage.value = error || 'Ocurrió un error al crear la sesión';
-    showError.value = true; // Mostrar mensaje de error
+    console.error("Error:", error);
+    errorMessage.value = error.message || 'Ocurrió un error al crear la sesión';
+    showError.value = true;
+  }
+};
+
+// Función para agregar un invitado a la sesión
+const addInvitado = async (invitado: any) => {
+  if (isViewing.value) return;
+  try {
+    await addAsistenciaInvitados(sessionId.value!, [invitado]);
+    newSession.value.asistenciaInvitados.push(invitado);
+  } catch (error) {
+    console.error('Error al agregar invitado:', error);
+  }
+};
+
+// Función para agregar un miembro a la sesión
+const addMiembro = async (miembro: any) => {
+  if (isViewing.value) return;
+  try {
+    await addAsistenciaMiembros(sessionId.value!, [miembro]);
+    newSession.value.asistenciaMiembros.push(miembro);
+  } catch (error) {
+    console.error('Error al agregar miembro:', error);
+  }
+};
+
+// Función para agregar un acta a la sesión
+const addActa = async () => {
+  if (isViewing.value || !sessionId.value) return;
+  try {
+    const acta = { estado: 'Pendiente' }; // o establece el estado según corresponda
+    await addActas(sessionId.value, acta);
+    console.log('Acta agregada exitosamente');
+  } catch (error) {
+    console.error('Error al agregar acta:', error);
   }
 };
 </script>
-

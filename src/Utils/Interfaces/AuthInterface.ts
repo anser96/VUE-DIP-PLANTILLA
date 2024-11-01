@@ -15,3 +15,8 @@ export interface LoginData {
   correo: string;
   contrasena: string;
 }
+export interface ApiResponse<T> {
+  status: string;
+  message: string;
+  data: T;
+}

@@ -73,6 +73,7 @@ import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { LoginData } from '../../Utils/Interfaces/AuthInterface';
 import { useAuthStore } from '../../store/auth';
+import { isTokenValid } from '../../services/authService';
 
 // Datos del formulario de login
 const credentials = ref<LoginData>({
@@ -96,7 +97,7 @@ const router = useRouter();
 // Instancia del store de autenticación
 const authStore = useAuthStore();
 onMounted(() => {
-  if (authStore.token) {
+  if (isTokenValid(authStore.token ?? '')) {
     router.push('/'); // Redirigir al home si ya hay un token
   }
 });
