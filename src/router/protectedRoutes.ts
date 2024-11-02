@@ -31,34 +31,35 @@ interface CrudRouteConfig {
   basePath: string;
   listComponent: any;
   formComponent: any;
+  RouteName: string;
 }
 
 function createCrudRoutes(configs: CrudRouteConfig[]): RouteRecordRaw[] {
-  return configs.map(({ basePath, listComponent, formComponent }) => ({
+  return configs.map(({ basePath, listComponent, formComponent, RouteName: spanishName }) => ({
     path: `/${basePath}`,
-    name: `${basePath.charAt(0).toUpperCase() + basePath.slice(1)}`,
+    name: `${spanishName}`,
     component: listComponent,
-    meta: { breadcrumb: `${basePath.charAt(0).toUpperCase() + basePath.slice(1)}`, showInSidebar: true, isChild: false },
+    meta: { breadcrumb: `${spanishName}`, showInSidebar: true, isChild: false },
     children: [
       {
-        path: 'create',
-        name: `${basePath}Create`,
+        path: 'crear',
+        name: `${spanishName}Crear`,
         component: formComponent,
-        meta: { breadcrumb: `Crear ${basePath}`, showInSidebar: false, isChild: true },
+        meta: { breadcrumb: `Crear ${spanishName}`, showInSidebar: false, isChild: true },
         props: { mode: 'create' },
       },
       {
         path: ':id',
-        name: `${basePath}View`,
+        name: `${spanishName}Ver`,
         component: formComponent,
-        meta: { breadcrumb: `Ver ${basePath}`, showInSidebar: false, isChild: true },
+        meta: { breadcrumb: `Ver ${spanishName}`, showInSidebar: false, isChild: true },
         props: { mode: 'view' },
       },
       {
-        path: 'edit/:id',
-        name: `${basePath}Edit`,
+        path: 'editar/:id',
+        name: `${spanishName}Editar`,
         component: formComponent,
-        meta: { breadcrumb: `Editar ${basePath}`, showInSidebar: false, isChild: true },
+        meta: { breadcrumb: `Editar ${spanishName}`, showInSidebar: false, isChild: true },
         props: { mode: 'edit' },
       },
     ],
@@ -66,25 +67,25 @@ function createCrudRoutes(configs: CrudRouteConfig[]): RouteRecordRaw[] {
 }
 
 const crudConfigs: CrudRouteConfig[] = [
-  { basePath: 'tasks', listComponent: TasksList, formComponent: TaskAssignmentsForm },
-  { basePath: 'requests', listComponent: RequestsList, formComponent: RequestsForm },
-  { basePath: 'sessions', listComponent: SessionsList, formComponent: SessionsForm },
-  { basePath: 'members', listComponent: MembersList, formComponent: MembersForm },
-  { basePath: 'applicants', listComponent: ApplicantsList, formComponent: ApplicantsForm },
-  { basePath: 'guests', listComponent: GuestsList, formComponent: GuestsCreate },
-  { basePath: 'propositions', listComponent: PropositionsList, formComponent: PropositionsCreate },
-  { basePath: 'acts', listComponent: ActsList, formComponent: ActsForm },
-  { basePath: 'attendance', listComponent: AttendanceList, formComponent: AttendanceForm },
-  { basePath: 'attendance-members', listComponent: AttendanceMembersList, formComponent: AttendanceMembersForm },
-  { basePath: 'descriptions', listComponent: DescriptionList, formComponent: DescriptionForm },
-  { basePath: 'task-assignments', listComponent: TaskAssignmentsList, formComponent: TaskAssignmentsForm },
-  { basePath: 'session-order', listComponent: SessionOrderList, formComponent: SessionOrderForm },
+  { basePath: 'tasks', listComponent: TasksList, formComponent: TaskAssignmentsForm, RouteName: 'Tareas' },
+  { basePath: 'requests', listComponent: RequestsList, formComponent: RequestsForm, RouteName: 'Solicitudes' },
+  { basePath: 'sessions', listComponent: SessionsList, formComponent: SessionsForm, RouteName: 'Sesiones' },
+  { basePath: 'members', listComponent: MembersList, formComponent: MembersForm, RouteName: 'Miembros' },
+  { basePath: 'applicants', listComponent: ApplicantsList, formComponent: ApplicantsForm, RouteName: 'Solicitantes' },
+  { basePath: 'guests', listComponent: GuestsList, formComponent: GuestsCreate, RouteName: 'Invitados' },
+  { basePath: 'propositions', listComponent: PropositionsList, formComponent: PropositionsCreate, RouteName: 'Proposiciones' },
+  { basePath: 'acts', listComponent: ActsList, formComponent: ActsForm, RouteName: 'Actas' },
+  { basePath: 'attendance', listComponent: AttendanceList, formComponent: AttendanceForm, RouteName: 'Asistencia' },
+  { basePath: 'attendance-members', listComponent: AttendanceMembersList, formComponent: AttendanceMembersForm, RouteName: 'Asistencia Miembros' },
+  { basePath: 'descriptions', listComponent: DescriptionList, formComponent: DescriptionForm, RouteName: 'Descripciones' },
+  { basePath: 'task-assignments', listComponent: TaskAssignmentsList, formComponent: TaskAssignmentsForm, RouteName: 'Asignaciones de Tareas' },
+  { basePath: 'session-order', listComponent: SessionOrderList, formComponent: SessionOrderForm, RouteName: 'Orden de Sesión' },
 ];
 
 export const protectedRoutes: RouteRecordRaw[] = [
   {
     path: '/',
-    name: 'Home',
+    name: 'Inicio',
     component: Home,
     meta: { breadcrumb: 'Inicio', showInSidebar: true, isChild: false },
   },

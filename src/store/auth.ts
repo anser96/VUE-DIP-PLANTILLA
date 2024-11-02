@@ -7,14 +7,14 @@ import router from '../router';
 // Define la interfaz del estado de autenticación
 export interface AuthState {
   token: string | null;
-  user: Usuario | null;
+  usuario: Usuario | null;
 }
 
 // Crear el store de autenticación
 export const useAuthStore = defineStore("auth", {
   state: (): AuthState => ({
     token: null,
-    user: null,
+    usuario: null,
   }),
 
   actions: {
@@ -25,16 +25,16 @@ export const useAuthStore = defineStore("auth", {
         
         // Obtener el token y el usuario de la respuesta
         const token = response.data.token;
-        const user = response.data.user || null;
-
+        const usuario = response.data.usuario || null;
+        console.log("Usuario:", response);
         // Actualizar el estado del store
         this.$patch({
           token,
-          user,
+          usuario,
         });
 
         // Guardar el token en localStorage en el formato { "token": "<valor>" }
-        localStorage.setItem('auth', JSON.stringify({ token }));
+        localStorage.setItem('auth', JSON.stringify({ token, usuario }));
 
       } catch (error) {
         console.error("Error durante el login:", error);
@@ -46,7 +46,7 @@ export const useAuthStore = defineStore("auth", {
       // Limpiar el estado del store
       this.$patch({
         token: null,
-        user: null,
+        usuario: null,
       });
 
       // Eliminar el token de localStorage
@@ -58,31 +58,35 @@ export const useAuthStore = defineStore("auth", {
       // Recuperar y parsear el token almacenado
       const storedData = JSON.parse(localStorage.getItem('auth') || '{}');
       const tokenStored = storedData.token || null;
+      const userStored = storedData.usuario || null;
 
       // Verificar si el token es válido
       if (tokenStored && isTokenValid(tokenStored)) {
         this.$patch({
           token: tokenStored,
+          usuario: userStored,
         });
       } else {
         this.logout();
       }
     },
 
-    setToken(token: string): void {
+    setAuth(token: string, usuario:Usuario): void {
       // Actualizar el estado del store
       this.$patch({
         token,
+        usuario
       });
 
       // Guardar el token en localStorage en el formato { "token": "<valor>" }
-      localStorage.setItem('auth', JSON.stringify({ token }));
+      localStorage.setItem('auth', JSON.stringify({ token,usuario }));
     },
 
     clearToken(): void {
       // Limpiar el estado del store
       this.$patch({
         token: null,
+        usuario: null,
       });
 
       // Eliminar el token de localStorage
@@ -93,6 +97,6 @@ export const useAuthStore = defineStore("auth", {
   persist: {
     key: 'auth',
     storage: localStorage,
-    pick: ['token'], // Persistir solo la propiedad 'token'
+    pick: ['token','usuario'],
   },
 });
