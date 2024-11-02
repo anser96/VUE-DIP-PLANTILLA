@@ -15,7 +15,6 @@ import GuestsCreate from '../modules/guests/GuestsCreate.vue';
 import PropositionsList from '../modules/propositions/PropositionsList.vue';
 import PropositionsCreate from '../modules/propositions/PropositionsCreate.vue';
 import ActsList from '../modules/acts/ActsList.vue';
-import ActsForm from '../modules/acts/ActsCreate.vue';
 import AttendanceList from '../modules/attendance_guests/AttendanceList.vue';
 import AttendanceForm from '../modules/attendance_guests/AttendanceCreate.vue';
 import AttendanceMembersList from '../modules/attendance_members/MembersList.vue';
@@ -25,6 +24,7 @@ import DescriptionForm from '../modules/description/descriptionForm.vue';
 import TaskAssignmentsList from '../modules/task-assignments/TaskAssignmentsList.vue';
 import SessionOrderList from '../modules/sessionOrder/SessionOrderList.vue';
 import SessionOrderForm from '../modules/sessionOrder/SessionOrderForm.vue';
+import ActsDetail from '../modules/acts/ActsDetail.vue';
 
 // Definir la interfaz para las rutas CRUD
 interface CrudRouteConfig {
@@ -32,17 +32,18 @@ interface CrudRouteConfig {
   listComponent: any;
   formComponent: any;
   RouteName: string;
+  detailComponent?: any; 
 }
 
 function createCrudRoutes(configs: CrudRouteConfig[]): RouteRecordRaw[] {
-  return configs.map(({ basePath, listComponent, formComponent, RouteName: spanishName }) => ({
+  return configs.map(({ basePath, listComponent, formComponent, RouteName: spanishName, detailComponent }) => ({
     path: `/${basePath}`,
     name: `${spanishName}`,
     component: listComponent,
     meta: { breadcrumb: `${spanishName}`, showInSidebar: true, isChild: false },
     children: [
       {
-        path: 'crear',
+        path: 'create',
         name: `${spanishName}Crear`,
         component: formComponent,
         meta: { breadcrumb: `Crear ${spanishName}`, showInSidebar: false, isChild: true },
@@ -51,12 +52,12 @@ function createCrudRoutes(configs: CrudRouteConfig[]): RouteRecordRaw[] {
       {
         path: ':id',
         name: `${spanishName}Ver`,
-        component: formComponent,
+        component: detailComponent || formComponent, // Usa detailComponent si está definido
         meta: { breadcrumb: `Ver ${spanishName}`, showInSidebar: false, isChild: true },
         props: { mode: 'view' },
       },
       {
-        path: 'editar/:id',
+        path: 'edit/:id',
         name: `${spanishName}Editar`,
         component: formComponent,
         meta: { breadcrumb: `Editar ${spanishName}`, showInSidebar: false, isChild: true },
@@ -66,6 +67,7 @@ function createCrudRoutes(configs: CrudRouteConfig[]): RouteRecordRaw[] {
   }));
 }
 
+
 const crudConfigs: CrudRouteConfig[] = [
   { basePath: 'tasks', listComponent: TasksList, formComponent: TaskAssignmentsForm, RouteName: 'Tareas' },
   { basePath: 'requests', listComponent: RequestsList, formComponent: RequestsForm, RouteName: 'Solicitudes' },
@@ -74,13 +76,14 @@ const crudConfigs: CrudRouteConfig[] = [
   { basePath: 'applicants', listComponent: ApplicantsList, formComponent: ApplicantsForm, RouteName: 'Solicitantes' },
   { basePath: 'guests', listComponent: GuestsList, formComponent: GuestsCreate, RouteName: 'Invitados' },
   { basePath: 'propositions', listComponent: PropositionsList, formComponent: PropositionsCreate, RouteName: 'Proposiciones' },
-  { basePath: 'acts', listComponent: ActsList, formComponent: ActsForm, RouteName: 'Actas' },
+  { basePath: 'acts', listComponent: ActsList, formComponent: null, detailComponent: ActsDetail, RouteName: 'Actas' }, // Agrega ActsDetail como componente de solo detalles
   { basePath: 'attendance', listComponent: AttendanceList, formComponent: AttendanceForm, RouteName: 'Asistencia' },
   { basePath: 'attendance-members', listComponent: AttendanceMembersList, formComponent: AttendanceMembersForm, RouteName: 'Asistencia Miembros' },
   { basePath: 'descriptions', listComponent: DescriptionList, formComponent: DescriptionForm, RouteName: 'Descripciones' },
   { basePath: 'task-assignments', listComponent: TaskAssignmentsList, formComponent: TaskAssignmentsForm, RouteName: 'Asignaciones de Tareas' },
   { basePath: 'session-order', listComponent: SessionOrderList, formComponent: SessionOrderForm, RouteName: 'Orden de Sesión' },
 ];
+
 
 export const protectedRoutes: RouteRecordRaw[] = [
   {

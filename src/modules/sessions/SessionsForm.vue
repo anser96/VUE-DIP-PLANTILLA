@@ -1,7 +1,7 @@
 <template>
   <div class="p-4">
     <h1 class="text-3xl font-bold mb-4">
-      {{ isEditing ? 'Editar Sesión' : isViewing ? 'Ver Sesión' : 'Crear Nueva Sesión' }}
+      {{ isEditing ? 'Editar sesion' : isViewing ? 'Ver sesión' : 'Crear Nueva Sesión' }}
     </h1>
 
     <form @submit.prevent="submitForm" class="space-y-4">
@@ -253,8 +253,9 @@ const errors = ref({
 
 onMounted(async () => {
   sessionId.value = route.params.id ? parseInt(route.params.id as string, 10) : null;
-  isEditing.value = sessionId.value !== null && route.name === 'sessionsEdit';
-  isViewing.value = sessionId.value !== null && route.name === 'sessionsView';
+  console.log('Session ID:',  route.name );
+  isEditing.value = sessionId.value !== null && route.name === 'SesionesEditar';
+  isViewing.value = sessionId.value !== null && route.name === 'SesionesVer';
 
   if ((isEditing.value || isViewing.value) && sessionId.value !== null) {
     try {
