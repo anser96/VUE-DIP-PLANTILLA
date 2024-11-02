@@ -6,7 +6,7 @@ export interface LoginResponse {
   message: string;
   data: {
     token: string;
-    user?: Usuario; // Ajusta esto si el usuario también se devuelve en la respuesta
+    usuario?: Usuario; // Ajusta esto si el usuario también se devuelve en la respuesta
   };
 }
 
