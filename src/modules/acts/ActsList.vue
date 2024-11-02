@@ -18,14 +18,14 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="acta in actas" :key="acta.NUM_ACTAS">
-            <td>{{ acta.NUM_ACTAS }}</td>
-            <td>{{ acta.ESTADO }}</td>
-            <td>{{ acta.SESION_IDSESION }}</td>
+          <tr v-for="acta in actas" :key="acta.numeroActa">
+            <td>{{ acta.numeroActa }}</td>
+            <td>{{ acta.estado }}</td>
+            <td></td>
             <td class="flex gap-2">
-              <router-link :to="`/acts/${acta.NUM_ACTAS}`" class="btn btn-info btn-sm">Ver</router-link>
-              <router-link :to="`/acts/edit/${acta.NUM_ACTAS}`" class="btn btn-warning btn-sm">Editar</router-link>
-              <button @click="showConfirmModal(acta.NUM_ACTAS)" class="btn btn-error btn-sm">Eliminar</button>
+              <router-link :to="`/acts/${acta.numeroActa}`" class="btn btn-info btn-sm">Ver</router-link>
+              <router-link :to="`/acts/edit/${acta.numeroActa}`" class="btn btn-warning btn-sm">Editar</router-link>
+              <button @click="showConfirmModal(acta.numeroActa)" class="btn btn-error btn-sm">Eliminar</button>
             </td>
           </tr>
         </tbody>
@@ -45,17 +45,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import ConfirmModal from '../../components/ConfirmModal.vue';
+import { Acta, getActas } from '../../services/actaService';
 
-// Lista de actas simuladas
-const actas = ref([
-  { NUM_ACTAS: 101, ESTADO: 'FIRMADA', SESION_IDSESION: 1 },
-  { NUM_ACTAS: 102, ESTADO: 'EN PROCESO', SESION_IDSESION: 2 },
-  { NUM_ACTAS: 103, ESTADO: 'FIRMADA', SESION_IDSESION: 3 }
-]);
 
+const actas = ref<Acta[]>([]);
 const isModalVisible = ref(false);
 const actaIdToDelete = ref<number | null>(null);
 
@@ -65,6 +61,20 @@ const isChildRouteActive = computed(() => {
   return route.matched.some(r => r.path.includes('/acts/create') || r.path.includes('/acts/edit') || r.path.includes('/acts/'));
 });
 
+// Cargar las actas desde el servicio
+const loadActas = async () => {
+  try {
+    const response = await getActas();
+    actas.value = response.data || [];
+  } catch (error) {
+    console.error('Error al cargar actas:', error);
+  }
+};
+
+onMounted(() => {
+  loadActas();
+});
+
 const showConfirmModal = (id: number) => {
   actaIdToDelete.value = id;
   isModalVisible.value = true;
@@ -72,7 +82,7 @@ const showConfirmModal = (id: number) => {
 
 const confirmDelete = () => {
   if (actaIdToDelete.value !== null) {
-    const index = actas.value.findIndex(acta => acta.NUM_ACTAS === actaIdToDelete.value);
+    const index = actas.value.findIndex((acta: Acta) => acta.numeroActa === actaIdToDelete.value);
     if (index !== -1) {
       actas.value.splice(index, 1); // Eliminar acta de la lista
     }
@@ -86,9 +96,3 @@ const cancelDelete = () => {
   actaIdToDelete.value = null;
 };
 </script>
-
-<style scoped>
-.table {
-  margin-top: 20px;
-}
-</style>

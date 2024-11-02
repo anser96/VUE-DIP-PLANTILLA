@@ -122,7 +122,6 @@
       <div class="flex space-x-4" v-if="isEditing && !isViewing">
         <button type="button" class="btn btn-primary" @click="showInvitadosModal = true">Agregar Invitados</button>
         <button type="button" class="btn btn-primary" @click="showMiembrosModal = true">Agregar Miembros</button>
-        <button type="button" class="btn btn-secondary" @click="addActa">Agregar Acta</button>
       </div>
 
       <!-- Tabla de Invitados -->
@@ -212,7 +211,6 @@ import {
   updateSession,
   getSessionById,
   addAsistenciaMiembros,
-  addActas,
   definirContenidoSesion,
   Session,
   addAsistenciaInvitados
@@ -220,6 +218,7 @@ import {
 import InvitadosModal from '../../components/modals/InvitadosModal.vue';
 import MiembrosModal from '../../components/modals/MiembrosModal.vue';
 import { ApiResponse } from '../../Utils/Interfaces/AuthInterface';
+import { addActas } from '../../services/actaService';
 
 const newSession = ref<Session>({
   lugar: '',
@@ -355,15 +354,5 @@ const addMiembro = async (miembro: any) => {
   }
 };
 
-// Función para agregar un acta a la sesión
-const addActa = async () => {
-  if (isViewing.value || !sessionId.value) return;
-  try {
-    const acta = { estado: 'Pendiente' }; // o establece el estado según corresponda
-    await addActas(sessionId.value, acta);
-    console.log('Acta agregada exitosamente');
-  } catch (error) {
-    console.error('Error al agregar acta:', error);
-  }
-};
+
 </script>
