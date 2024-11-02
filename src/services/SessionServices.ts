@@ -1,9 +1,9 @@
+import { fetchWithAuth, getToken } from "../Utils/FetchWithToken";
 import { ApiResponse } from "../Utils/Interfaces/AuthInterface";
+import { API_ACTAS_URL } from "./actaService";
 
 // src/services/sessionService.ts
-const API_URL = `${import.meta.env.VITE_API_URL}/sesiones`;
-const API_ACTAS_URL = `${import.meta.env.VITE_API_URL}/actas`;
-
+export const API_URL = `${import.meta.env.VITE_API_URL}/sesiones`;
 export interface Session {
   idSesion?: number;
   lugar: string;
@@ -17,23 +17,6 @@ export interface Session {
   asistenciaInvitados: any | null;
 }
 
-// Obtener token almacenado en localStorage desde la clave 'auth'
-const getToken = (): string | null => {
-  const authData = JSON.parse(localStorage.getItem('auth') || '{}');
-  return authData.token || null;
-};
-
-// Función para enviar solicitudes autenticadas con token
-const fetchWithAuth = async (url: string, options: RequestInit): Promise<Response> => {
-  const token = getToken();
-  if (token) {
-    options.headers = {
-      ...options.headers,
-      'Authorization': `Bearer ${token}`,
-    };
-  }
-  return fetch(url, options);
-};
 // Obtener todas las sesiones
 export const getSessions = async (): Promise<ApiResponse<Session[]>> => {
   try {
@@ -45,10 +28,10 @@ export const getSessions = async (): Promise<ApiResponse<Session[]>> => {
     throw error;
   }
 };
-
-// Crear una nueva sesión
+// Crear una nueva sesión y acta asociada
 export const createSession = async (session: Session): Promise<ApiResponse<Session>> => {
   try {
+    // Primero, crea la sesión
     const response = await fetchWithAuth(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -61,9 +44,27 @@ export const createSession = async (session: Session): Promise<ApiResponse<Sessi
       throw new Error(backendMessage);
     }
 
-    return await response.json() as ApiResponse<Session>;
+    const sessionData = await response.json() as ApiResponse<Session>;
+
+    // Ahora crea el acta asociada con la sesión creada
+    const actaResponse = await fetchWithAuth(API_ACTAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        estado: 'EN PROCESO', // Estado inicial de la nueva acta
+        sesion: { idSesion: sessionData.data.idSesion },
+      }),
+    });
+
+    if (!actaResponse.ok) {
+      const actaErrorData = await actaResponse.json();
+      const actaMessage = actaErrorData.message || 'Error al crear el acta asociada';
+      throw new Error(actaMessage);
+    }
+
+    return sessionData;
   } catch (error) {
-    console.error('Error al crear la sesión:', error);
+    console.error('Error al crear la sesión y el acta:', error);
     throw error;
   }
 };
@@ -128,30 +129,6 @@ export const definirContenidoSesion = async (idSesion: number, contenido: string
   }
 };
 
-// Función para agregar actas a una sesión
-export const addActas = async (idSesion: number, acta: any): Promise<ApiResponse<any>> => {
-  try {
-    const response = await fetchWithAuth(`${API_ACTAS_URL}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        estado: acta.estado,
-        sesion: { idSesion },
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      const backendMessage = errorData.message || 'Error al agregar el acta';
-      throw new Error(backendMessage);
-    }
-
-    return await response.json() as ApiResponse<any>;
-  } catch (error) {
-    console.error('Error al agregar el acta:', error);
-    throw error;
-  }
-};
 // Función para agregar asistencia de miembros a una sesión
 export const addAsistenciaMiembros = async (idSesion: number, miembros: Array<any>): Promise<ApiResponse<any>> => {
   try {

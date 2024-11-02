@@ -212,7 +212,6 @@ import {
   updateSession,
   getSessionById,
   addAsistenciaMiembros,
-  addActas,
   definirContenidoSesion,
   Session,
   addAsistenciaInvitados
@@ -220,6 +219,7 @@ import {
 import InvitadosModal from '../../components/modals/InvitadosModal.vue';
 import MiembrosModal from '../../components/modals/MiembrosModal.vue';
 import { ApiResponse } from '../../Utils/Interfaces/AuthInterface';
+import { addActas } from '../../services/actaService';
 
 const newSession = ref<Session>({
   lugar: '',
