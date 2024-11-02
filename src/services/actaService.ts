@@ -1,4 +1,5 @@
 import { fetchWithAuth } from "../Utils/FetchWithToken";
+import { ActaDetail } from "../Utils/Interfaces/ActaDetail";
 import { ApiResponse } from "../Utils/Interfaces/AuthInterface";
 
 export const API_ACTAS_URL = `${import.meta.env.VITE_API_URL}/actas`;
@@ -6,7 +7,7 @@ export const API_ACTAS_URL = `${import.meta.env.VITE_API_URL}/actas`;
 export interface Acta {
     idActa: number;
     estado: string;
-    idSesion: number;
+    sesionId: number;
   }
 
 
@@ -44,6 +45,17 @@ export const addActas = async (idSesion: number, acta: any): Promise<ApiResponse
       return await response.json() as ApiResponse<any>;
     } catch (error) {
       console.error('Error al agregar el acta:', error);
+      throw error;
+    }
+  };
+// Consultar un acta por su ID
+export const getActaById = async (id: number): Promise<ApiResponse<ActaDetail>> => {
+    try {
+      const response = await fetchWithAuth(`${API_ACTAS_URL}/${id}`, { method: 'GET' });
+      if (!response.ok) throw new Error(`Error al obtener el acta con ID: ${id}`);
+      return await response.json() as ApiResponse<ActaDetail>;
+    } catch (error) {
+      console.error(`Error al obtener el acta con ID ${id}:`, error);
       throw error;
     }
   };
