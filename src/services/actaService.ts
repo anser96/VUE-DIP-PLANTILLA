@@ -5,8 +5,8 @@ export const API_ACTAS_URL = `${import.meta.env.VITE_API_URL}/actas`;
 
 export interface Acta {
     idActa: number;
-    numeroActa: number;
     estado: string;
+    idSesion: number;
   }
 
 

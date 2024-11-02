@@ -5,7 +5,7 @@
       <h1 class="text-3xl font-bold mb-4">Lista de Actas</h1>
 
       <div class="flex justify-end mb-4">
-        <router-link to="/acts/create" class="btn btn-primary">Crear Nueva Acta</router-link>
+        <router-link to="/sessions/create" class="btn btn-primary">Crear acta y su sesión</router-link>
       </div>
 
       <table class="table w-full">
@@ -18,14 +18,14 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="acta in actas" :key="acta.numeroActa">
-            <td>{{ acta.numeroActa }}</td>
+          <tr v-for="acta in actas" :key="acta.idActa">
+            <td>{{ acta.idActa }}</td>
             <td>{{ acta.estado }}</td>
-            <td></td>
+            <td>{{ acta.idSesion }}</td>
             <td class="flex gap-2">
-              <router-link :to="`/acts/${acta.numeroActa}`" class="btn btn-info btn-sm">Ver</router-link>
-              <router-link :to="`/acts/edit/${acta.numeroActa}`" class="btn btn-warning btn-sm">Editar</router-link>
-              <button @click="showConfirmModal(acta.numeroActa)" class="btn btn-error btn-sm">Eliminar</button>
+              <router-link :to="`/acts/${acta.idActa}`" class="btn btn-info btn-sm">Ver</router-link>
+              <!--<router-link :to="`/acts/edit/${acta.idActa}`" class="btn btn-warning btn-sm">Editar</router-link>
+              <button @click="showConfirmModal(acta.idActa)" class="btn btn-error btn-sm">Eliminar</button>-->
             </td>
           </tr>
         </tbody>
@@ -82,7 +82,7 @@ const showConfirmModal = (id: number) => {
 
 const confirmDelete = () => {
   if (actaIdToDelete.value !== null) {
-    const index = actas.value.findIndex((acta: Acta) => acta.numeroActa === actaIdToDelete.value);
+    const index = actas.value.findIndex((acta: Acta) => acta.idActa === actaIdToDelete.value);
     if (index !== -1) {
       actas.value.splice(index, 1); // Eliminar acta de la lista
     }

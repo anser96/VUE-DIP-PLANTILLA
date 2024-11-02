@@ -1,106 +1,146 @@
 <template>
-  <div class="p-4">
-    <h1 class="text-3xl font-bold mb-4">{{ isEditing ? 'Editar Invitado' : 'Crear Nuevo Invitado' }}</h1>
-    <form @submit.prevent="submitForm" class="space-y-4">
-      <!-- Campo para el Nombre -->
-      <div>
-        <label for="name" class="block text-sm font-medium text-gray-700">Nombre</label>
-        <input
-          type="text"
-          id="name"
-          v-model="newGuest.name"
-          class="input input-bordered w-full"
-          placeholder="Ingrese el nombre"
-          required
-        />
-      </div>
+    <div class="p-4">
+      <h1 class="text-3xl font-bold mb-4">{{ isEditing ? 'Editar Invitado' : 'Crear Nuevo Invitado' }}</h1>
 
-      <!-- Campo para el Cargo -->
-      <div>
-        <label for="role" class="block text-sm font-medium text-gray-700">Cargo</label>
-        <input
-          type="text"
-          id="role"
-          v-model="newGuest.role"
-          class="input input-bordered w-full"
-          placeholder="Ingrese el cargo"
-          required
-        />
-      </div>
+      <form @submit.prevent="submitForm" class="space-y-4">
+        <!-- Campo para el Nombre -->
+        <div>
+          <label for="name" class="block text-sm font-medium text-gray-700">Nombre</label>
+          <input
+            type="text"
+            id="name"
+            v-model="newGuest.name"
+            class="input input-bordered w-full"
+            placeholder="Ingrese el nombre"
+            required
+          />
+          <p v-if="errors.name" class="text-red-500 text-sm mt-1">{{ errors.name }}</p>
+        </div>
 
-      <!-- Campo para la Asignación de Tarea -->
-      <div>
-        <label for="task" class="block text-sm font-medium text-gray-700">Asignar Tarea</label>
-        <select id="task" v-model="selectedTask" class="input input-bordered w-full" required>
-          <option value="" disabled selected>Seleccione una tarea</option>
-          <option v-for="task in tasks" :key="task.id" :value="task.id">{{ task.description }}</option>
-        </select>
-      </div>
+        <!-- Campo para la Dependencia -->
+        <div>
+          <label for="dependency" class="block text-sm font-medium text-gray-700">Dependencia</label>
+          <input
+            type="text"
+            id="dependency"
+            v-model="newGuest.dependency"
+            class="input input-bordered w-full"
+            placeholder="Ingrese la dependencia"
+            required
+          />
+          <p v-if="errors.dependency" class="text-red-500 text-sm mt-1">{{ errors.dependency }}</p>
+        </div>
 
-      <!-- Mensaje de error -->
-      <p v-if="errorMessage" class="text-red-500 text-sm mt-1">{{ errorMessage }}</p>
+        <!-- Campo para el Cargo -->
+        <div>
+          <label for="role" class="block text-sm font-medium text-gray-700">Cargo</label>
+          <input
+            type="text"
+            id="role"
+            v-model="newGuest.role"
+            class="input input-bordered w-full"
+            placeholder="Ingrese el cargo"
+            required
+          />
+          <p v-if="errors.role" class="text-red-500 text-sm mt-1">{{ errors.role }}</p>
+        </div>
 
-      <!-- Botón de Crear o Actualizar -->
-      <div class="flex justify-end">
-        <button type="submit" class="btn btn-primary">{{ isEditing ? 'Actualizar Invitado' : 'Crear Invitado' }}</button>
-      </div>
-    </form>
-  </div>
-</template>
+        <!-- Botón de Crear o Actualizar -->
+        <div class="flex justify-end">
+          <button type="submit" class="btn btn-primary">{{ isEditing ? 'Actualizar Invitado' : 'Crear Invitado' }}</button>
+        </div>
+      </form>
+    </div>
+  </template>
 
-<script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+  <script setup lang="ts">
+  import { ref, onMounted } from 'vue';
+  import { useRouter, useRoute } from 'vue-router';
 
-const newGuest = ref({
-  name: '',
-  role: '',
-  assignedTask: null, // Para almacenar la tarea asignada
-});
+  // Lista de invitados simulados
+  const guests = ref([
+    { idGuest: 1, name: 'Carlos Martínez', dependency: 'Departamento de Física', role: 'Investigador' },
+    { idGuest: 2, name: 'Ana Gómez', dependency: 'Departamento de Biología', role: 'Jefe de Proyecto' }
+  ]);
 
-const selectedTask = ref(null);
-const errorMessage = ref('');
+  // Datos del nuevo invitado
+  const newGuest = ref({
+    name: '',
+    dependency: '',
+    role: ''
+  });
 
-// Simulación de tareas disponibles
-const tasks = ref([
-  { id: 1, description: 'Tarea 1' },
-  { id: 2, description: 'Tarea 2' },
-]);
+  const errors = ref({
+    name: '',
+    dependency: '',
+    role: ''
+  });
 
-const router = useRouter();
-const route = useRoute();
-const isEditing = ref(false);
+  const router = useRouter();
+  const route = useRoute();
+  const isEditing = ref(false);
+  const guestId = ref<number | null>(null);
 
-// Si es modo edición, cargar los datos del invitado existente
-onMounted(() => {
-  const guestId = route.params.id; // Supón que pasas el ID del invitado en la ruta
-  if (guestId) {
-    isEditing.value = true;
-    // Cargar los datos del invitado desde tu fuente de datos (simulado aquí)
-    const existingGuest = { name: 'Jane Doe', role: 'Consultant', assignedTask: 2 }; // Datos simulados
-    newGuest.value = { ...existingGuest, assignedTask: existingGuest.assignedTask };
-    selectedTask.value = existingGuest.assignedTask; // Establecer la tarea seleccionada
+  // Si es modo edición, cargar los datos del invitado existente
+  onMounted(() => {
+    guestId.value = route.params.id ? parseInt(route.params.id as string, 10) : null;
+    isEditing.value = guestId.value !== null;
+
+    if (isEditing.value && guestId.value !== null) {
+      const guest = guests.value.find(g => g.idGuest === guestId.value);
+      if (guest) {
+        newGuest.value = { ...guest };
+      }
+    }
+  });
+
+  const validateFields = () => {
+    let isValid = true;
+    Object.keys(errors.value).forEach(key => {
+      errors.value[key as keyof typeof errors.value] = '';
+    });
+
+    if (!newGuest.value.name) {
+      errors.value.name = 'El nombre es obligatorio.';
+      isValid = false;
+    }
+
+    if (!newGuest.value.dependency) {
+      errors.value.dependency = 'La dependencia es obligatoria.';
+      isValid = false;
+    }
+
+    if (!newGuest.value.role) {
+      errors.value.role = 'El cargo es obligatorio.';
+      isValid = false;
+    }
+
+    return isValid;
+  };
+
+  const submitForm = () => {
+    if (!validateFields()) {
+      return;
+    }
+
+    if (isEditing.value && guestId.value !== null) {
+      // Actualizar invitado existente
+      const index = guests.value.findIndex(guest => guest.idGuest === guestId.value);
+      if (index !== -1) {
+        guests.value[index] = { idGuest: guestId.value, ...newGuest.value };
+      }
+    } else {
+      // Crear nuevo invitado
+      const newId = guests.value.length + 1;
+      guests.value.push({ idGuest: newId, ...newGuest.value });
+    }
+
+    router.push('/guests');
+  };
+  </script>
+
+  <style scoped>
+  .text-red-500 {
+    color: red;
   }
-});
-
-const submitForm = () => {
-  if (!newGuest.value.name || !newGuest.value.role || !selectedTask.value) {
-    errorMessage.value = 'Todos los campos son obligatorios.';
-    return;
-  }
-
-  newGuest.value.assignedTask = selectedTask.value; // Asignar la tarea seleccionada
-
-  // Lógica para guardar el nuevo invitado (puedes enviarlo a tu API o base de datos)
-  console.log('Invitado creado o actualizado:', newGuest.value);
-
-  // Redirigir después de guardar
-  router.push('/guests'); // Cambia la ruta según corresponda
-};
-</script>
-
-<style scoped>
-.text-red-500 {
-  color: red;
-}
-</style>
+  </style>
