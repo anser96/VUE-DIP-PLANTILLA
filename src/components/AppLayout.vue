@@ -26,7 +26,7 @@
 import { ref, onMounted } from 'vue';
 import Header from './Header.vue';
 import SideBar from './SideBar.vue';
-import Breadcrumb from './Breadcrumb.vue';
+import Breadcrumb from './BreadCrumb.vue';
 import Footer from './Footer.vue';
 
 const isDarkMode = ref<boolean>(false);
