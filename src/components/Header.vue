@@ -3,85 +3,38 @@
     <div class="flex-1">
       <h1 class="text-xl font-bold px-4">MeetUpPro</h1>
     </div>
-    <div class="flex-none flex items-center gap-4">
-      <!-- Mostrar el nombre del usuario que inició sesión -->
-      <span v-if="authStore.usuario" class="text-sm font-medium">
-        Bienvenido, {{ authStore.usuario.nombre }}
-      </span>
 
-      <!-- Control de tema con checkbox e íconos de sol y luna -->
-      <label class="flex cursor-pointer gap-2 items-center">
-        <!-- Sol -->
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <circle cx="12" cy="12" r="5" />
-          <path
-            d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"
-          />
+    <!-- Botón de menú para abrir el sidebar en pantallas pequeñas -->
+    <div class="flex-none md:hidden">
+      <button @click="toggleSidebar" class="btn btn-ghost btn-circle">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
         </svg>
-
-        <!-- Checkbox para alternar el tema -->
-        <input
-          type="checkbox"
-          :checked="isDarkMode"
-          @change="toggleDarkMode"
-          class="toggle theme-controller"
-        />
-
-        <!-- Luna -->
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-        </svg>
-      </label>
-
-      <!-- Botón de Logout -->
-      <button @click="logout" class="btn btn-ghost text-sm font-medium text-white">
-        Cerrar Sesión
       </button>
     </div>
   </header>
+
+  <!-- Sidebar en pantallas pequeñas, con clase de visibilidad -->
+  <div :class="{ 'translate-x-0': showSidebar, '-translate-x-full': !showSidebar }" 
+       class="fixed top-0 left-0 w-64 h-full bg-base-200 text-base-content shadow-lg transform transition-transform duration-300 z-40 md:hidden">
+    <SideBar />
+  </div>
+
+  <!-- Fondo oscuro para cerrar el sidebar al hacer clic fuera de él -->
+  <div v-if="showSidebar" @click="toggleSidebar" class="fixed inset-0 bg-black opacity-50 z-30 md:hidden"></div>
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue';
-import { storeToRefs } from 'pinia';
-import { useAuthStore } from '../store/auth';
+import { ref } from 'vue';
+import SideBar from './SideBar.vue';
 
-// Props para alternar el modo oscuro
-const props = defineProps<{ toggleDarkMode: () => void, isDarkMode: boolean }>();
+const showSidebar = ref(false);
 
-const toggleDarkMode = () => {
-  props.toggleDarkMode();
-};
-
-// Obtener el store de autenticación y las propiedades reactivas
-const authStore = useAuthStore();
-const { usuario } = storeToRefs(authStore); // Acceder al usuario autenticado
-
-// Llamar a la acción de logout en el store de autenticación
-const logout = () => {
-  authStore.logout();
+const toggleSidebar = () => {
+  showSidebar.value = !showSidebar.value;
 };
 </script>
 
 <style scoped>
+/* Ajustes de transición */
 </style>

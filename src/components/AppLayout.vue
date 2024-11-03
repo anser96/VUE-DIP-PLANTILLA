@@ -1,16 +1,16 @@
 <template>
-  <div :class="{ 'dark': isDarkMode }" class="flex flex-col h-screen bg-base-100 dark:bg-base-300">
+  <div :class="{ 'dark': isDarkMode }" class="flex flex-col h-screen bg-base-100 dark:bg-base-300 overflow-hidden">
     <!-- Header Component -->
     <Header :toggleDarkMode="toggleDarkMode" :isDarkMode="isDarkMode" />
-
+    
     <div class="flex flex-1 overflow-hidden relative">
-      <!-- Sidebar Component con toggle de minimización -->
-      <SideBar :isCollapsed="isSidebarCollapsed" @toggleCollapse="toggleSidebarCollapse" />
+      <!-- Sidebar solo en pantallas grandes -->
+      <SideBar v-show="!isSidebarCollapsed" class="hidden md:block" />
 
       <!-- Main Content -->
-      <div :class="{ 'ml-16': isSidebarCollapsed }" class="flex flex-col w-full transition-all duration-300">
+      <div :class="{ 'md:ml-16': isSidebarCollapsed }" class="flex flex-col w-full transition-all duration-300">
         <!-- Main Content Area -->
-        <main class="flex-1 p-6 md:p-12 overflow-y-auto bg-base-200 dark:bg-base-300 text-base-content dark:text-gray-100 shadow-md">
+        <main class="flex-1 p-6 md:p-12 overflow-y-auto bg-base-200 dark:bg-base-300 text-base-content dark:text-gray-100 shadow-md max-h-screen">
           <Breadcrumb />
           <router-view />
         </main>

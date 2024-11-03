@@ -1,5 +1,5 @@
 <template>
-  <aside class="menu p-4 w-64 bg-base-200 text-base-content h-screen overflow-y-auto shadow-lg">
+  <aside class="menu p-4 w-64 h-full bg-base-200 text-base-content overflow-y-auto shadow-lg">
     <ul class="menu">
       <template v-for="route in sidebarRoutes" :key="route.path">
         <li v-if="route.meta?.isChild === false && route.meta?.showInSidebar === true" class="mb-4">
@@ -22,7 +22,6 @@
     </ul>
   </aside>
 </template>
-
 
 <script lang="ts" setup>
 import { useRoute, useRouter, RouteRecordRaw } from 'vue-router';
