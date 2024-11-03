@@ -1,31 +1,18 @@
 <template>
-  <!-- Añadimos h-screen para asegurar que ocupe toda la altura de la pantalla y overflow-y-auto para que sea desplazable -->
-  <aside class="menu p-4 w-64 bg-base-100 text-base-content h-screen overflow-y-auto">
+  <aside class="menu p-4 w-64 bg-base-200 text-base-content h-screen overflow-y-auto shadow-lg">
     <ul class="menu">
-      <!-- Mostrar las rutas principales -->
       <template v-for="route in sidebarRoutes" :key="route.path">
         <li v-if="route.meta?.isChild === false && route.meta?.showInSidebar === true" class="mb-4">
-          <div class="flex items-center" :class="getLinkClass(route.path)">
-            <!-- Aquí añadimos el ícono antes del nombre de la ruta -->
+          <div :class="getLinkClass(route.path)">
             <component :is="getIconForRoute(route.path)" class="w-5 h-5 mr-2" />
-            <router-link
-              :to="route.path"
-            >
+            <router-link :to="route.path" class="transition-colors duration-200">
               {{ route.meta?.breadcrumb }}
             </router-link>
           </div>
 
-          <!-- Mostrar subniveles (hijos) si existen y tienen `showInSidebar: true` y `isChild: true` -->
           <ul v-if="route.children && route.children.some((child: RouteRecordRaw) => child.meta?.showInSidebar && child.meta?.isChild)" class="pl-4">
-            <li
-              v-for="childRoute in route.children.filter((child: RouteRecordRaw) => child.meta?.showInSidebar && child.meta?.isChild)"
-              :key="childRoute.path"
-              class="mb-2"
-            >
-              <router-link
-                :to="concatPath(route.path, childRoute.path)"
-                :class="getLinkClass(concatPath(route.path, childRoute.path))"
-              >
+            <li v-for="childRoute in route.children.filter((child: RouteRecordRaw) => child.meta?.showInSidebar && child.meta?.isChild)" :key="childRoute.path" class="mb-2">
+              <router-link :to="concatPath(route.path, childRoute.path)" :class="getLinkClass(concatPath(route.path, childRoute.path))">
                 {{ childRoute.meta?.breadcrumb }}
               </router-link>
             </li>
@@ -35,6 +22,7 @@
     </ul>
   </aside>
 </template>
+
 
 <script lang="ts" setup>
 import { useRoute, useRouter, RouteRecordRaw } from 'vue-router';

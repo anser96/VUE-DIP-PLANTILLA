@@ -73,7 +73,8 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import ConfirmModal from '../../components/ConfirmModal.vue';
-import { Acta, getActas } from '../../services/actaService';
+import {  getActas } from '../../services/actaService';
+import { Acta } from '../../Utils/Interfaces/ActaDetail';
 
 // Importar los iconos de Heroicons
 import { PlusIcon, EyeIcon, PencilIcon, TrashIcon }  from '@heroicons/vue/24/solid';

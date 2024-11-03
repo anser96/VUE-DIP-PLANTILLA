@@ -1,15 +1,8 @@
 import { fetchWithAuth } from "../Utils/FetchWithToken";
-import { ActaDetail } from "../Utils/Interfaces/ActaDetail";
+import { Acta, ActaDetail } from "../Utils/Interfaces/ActaDetail";
 import { ApiResponse } from "../Utils/Interfaces/AuthInterface";
 
 export const API_ACTAS_URL = `${import.meta.env.VITE_API_URL}/actas`;
-
-export interface Acta {
-    idActa: number;
-    estado: string;
-    sesionId: number;
-  }
-
 
 // Consultar todas las actas
 export const getActas = async (): Promise<ApiResponse<Acta[]>> => {
