@@ -145,7 +145,7 @@
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { getActaById } from '../../services/actaService';
-import { ActaDetail } from '../../Utils/Interfaces/ActaDetail';
+import { ActaDetail } from '../../Utils/Interfaces/MeetingRecords';
 import { 
   UserIcon, ClipboardDocumentIcon, UserGroupIcon, UserPlusIcon, 
   ListBulletIcon, ClipboardDocumentCheckIcon 
