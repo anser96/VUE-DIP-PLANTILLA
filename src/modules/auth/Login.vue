@@ -71,9 +71,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { LoginData } from '../../Utils/Interfaces/AuthInterface';
 import { useAuthStore } from '../../store/auth';
 import { isTokenValid } from '../../services/authService';
+import { LoginData } from '../../Utils/Interfaces/MeetingRecords';
 
 // Datos del formulario de login
 const credentials = ref<LoginData>({
