@@ -180,9 +180,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { createSesion, updateSesion, getSesionById, definirContenidoSesion } from '../../services/sesionServices';
-import { createMiembro } from '../../services/miembroService';
-import { createInvitado } from '../../services/invitadoServices';
+import { createSesion, updateSesion, getSesionById, definirContenidoSesion, addInvitadosToSesion, addMiembrosToSesion } from '../../services/sesionServices';
 import InvitadosModal from '../../components/modals/InvitadosModal.vue';
 import MiembrosModal from '../../components/modals/MiembrosModal.vue';
 import { Sesion, Invitado, Miembro, LocalTime, ApiResponse, AsistenciaMiembro } from '../../Utils/Interfaces/MeetingRecords';
@@ -251,25 +249,32 @@ const submitForm = async () => {
     }
 
     if (sessionResponse.status === 'success' && sessionId.value !== null) {
-      const updatedAsistenciaMiembros = await Promise.all(
-        newSession.value.asistenciaMiembros.map(async (miembro) => {
-          const response = await createMiembro(miembro);
-          return newSession.value.asistenciaMiembros;
-        })
-      );
+      
+      // Crear un Set para almacenar correos de miembros e invitados ya existentes
+      const existingMiembroEmails = new Set(newSession.value.asistenciaMiembros.map(miembro => miembro.email));
+      const existingInvitadoEmails = new Set(newSession.value.asistenciaInvitados.map(invitado => invitado.email));
 
-      const updatedAsistenciaInvitados = await Promise.all(
-        newSession.value.asistenciaInvitados.map(async (invitado) => {
-          const response = await createInvitado(invitado);
-          return newSession.value.asistenciaInvitados;
-        })
-      );
-      console.log('Asistencia de miembros actualizada:', updatedAsistenciaMiembros);
-      newSession.value.asistenciaMiembros.map(miembro => ({
-        ...miembro,
-        estadoAsistencia: 'pendiente' // or any default value
-      }));
+      // Filtrar los miembros que aún no están en la lista y asignar estado 'pendiente' si no tiene uno
+      const nuevosMiembros = newSession.value.asistenciaMiembros
+        .filter(miembro => !existingMiembroEmails.has(miembro.email))
+        .map(miembro => ({
+          ...miembro,
+          estadoAsistencia: miembro.estadoAsistencia || 'pendiente'
+        }));
 
+      // Filtrar los invitados que aún no están en la lista
+      const nuevosInvitados = newSession.value.asistenciaInvitados
+        .filter(invitado => !existingInvitadoEmails.has(invitado.email));
+
+      // Agregar nuevos miembros e invitados a la sesión si existen
+      if (nuevosMiembros.length > 0) {
+        await addMiembrosToSesion(sessionId.value, nuevosMiembros);
+      }
+      if (nuevosInvitados.length > 0) {
+        await addInvitadosToSesion(sessionId.value, nuevosInvitados);
+      }
+
+      // Actualizar la sesión y definir contenido
       await updateSesion(sessionId.value, newSession.value);
       await definirContenidoSesion(sessionId.value, contenido.value);
 
@@ -283,18 +288,35 @@ const submitForm = async () => {
     showError.value = true;
   }
 };
-
-// Agregar invitado a la lista local
-const addInvitadoToLocalList = (invitado: Invitado) => {
-  newSession.value.asistenciaInvitados.push(invitado);
+// Agregar invitado a la lista local y al servidor
+const addInvitadoToLocalList = async (invitado: Invitado) => {
+  // Verificar si el invitado ya existe en la lista local
+  const exists = newSession.value.asistenciaInvitados.some(i => i.email === invitado.email);
+  if (!exists) {
+    newSession.value.asistenciaInvitados.push(invitado);
+    
+    // Agregar al servidor solo si el invitado es nuevo
+    await addInvitadosToSesion(newSession.value.idSesion!, [invitado]);
+  } else {
+    console.warn('El invitado ya está en la lista.');
+  }
 };
 
-// Agregar miembro a la lista local
-const addMiembroToLocalList = (miembro: Miembro) => {
-  const miembroConEstado: AsistenciaMiembro = {
-    ...miembro,
-    estadoAsistencia: 'pendiente' // or any default value
-  };
-  newSession.value.asistenciaMiembros.push(miembroConEstado);
+// Agregar miembro a la lista local y al servidor
+const addMiembroToLocalList = async (miembro: Miembro) => {
+  // Verificar si el miembro ya existe en la lista local
+  if (newSession.value.asistenciaMiembros.some(m => m.email === miembro.email)) {
+    console.warn('El miembro ya está en la lista.');
+    return;
+  }
+
+  // Agregar miembro a la lista local con estado "pendiente"
+  newSession.value.asistenciaMiembros.push({ ...miembro, estadoAsistencia: 'pendiente' });
+
+  // Enviar solo los nuevos miembros sin ID al servidor
+  const newMiembros = newSession.value.asistenciaMiembros.filter(m => !m.idMiembro);
+  if (newMiembros.length > 0) {
+    await addMiembrosToSesion(newSession.value.idSesion!, newMiembros);
+  }
 };
 </script>

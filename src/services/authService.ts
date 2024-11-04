@@ -79,10 +79,20 @@ export const forgotPassword = async (correo: string): Promise<void> => {
   }
 };
 
-// Verificar la validez del token
+// Convierte una cadena base64 URL-safe en una cadena base64 estándar
+function base64UrlDecode(base64Url: string): string {
+  // Reemplaza caracteres no válidos en base64 estándar
+  let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  // Agrega el padding '=' si es necesario
+  while (base64.length % 4) {
+    base64 += '=';
+  }
+  return atob(base64);
+}
+
 export const isTokenValid = (token: string): boolean => {
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
+    const payload = JSON.parse(base64UrlDecode(token.split('.')[1]));
     const currentTime = Math.floor(Date.now() / 1000);
     return payload.exp > currentTime;
   } catch (error) {

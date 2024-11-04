@@ -68,13 +68,7 @@ export interface Tarea {
 }
 
 // SubEntities.ts
-export interface AsistenciaMiembro {
-  idMiembro: number;
-  nombre: string;
-  cargo: string;
-  email: string;
-  estadoAsistencia: string;
-}
+
 export interface Miembro {
   idMiembro: number;
   nombre: string;
