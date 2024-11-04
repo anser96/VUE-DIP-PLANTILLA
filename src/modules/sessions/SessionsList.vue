@@ -29,8 +29,8 @@
           <tr v-for="session in sessions" :key="session.idSesion">
             <td>{{ session.lugar }}</td>
             <td>{{ session.fecha }}</td>
-            <td>{{ formatTime(session.horaInicio) }}</td>
-            <td>{{ formatTime(session.horaFinal) }}</td>
+            <td>{{ formatTime(`${session.horaInicio}`) }}</td>
+            <td>{{ formatTime(`${session.horaFinal}`) }}</td>
             <td>{{ session.presidente }}</td>
             <td>{{ session.secretario }}</td>
             <td class="flex gap-2">
@@ -53,10 +53,12 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import ConfirmModal from '../../components/ConfirmModal.vue';
-import { getSessions, deleteSession, Session } from '../../services/SessionServices';
-import { ApiResponse } from '../../Utils/Interfaces/AuthInterface';
 
-const sessions = ref<Session[]>([]);
+import { deleteSesion, getSesiones } from '../../services/sesionServices';
+import { ApiResponse, Sesion } from '../../Utils/Interfaces/MeetingRecords';
+
+const sessions = ref<Sesion[]>([]);
+
 const isModalVisible = ref(false);
 const sessionIdToDelete = ref<number | null>(null);
 
@@ -68,8 +70,9 @@ const isChildRouteActive = computed(() =>
 // Cargar sesiones desde la API
 const loadSessions = async () => {
   try {
-    const response: ApiResponse<Session[]> = await getSessions();
+    const response: ApiResponse<Sesion[]> = await getSesiones();
     sessions.value = response.data ?? []; // Acceso directo al `data` de la respuesta
+    console.log('Sesiones cargadas:', sessions.value);
   } catch (error) {
     console.error('Error al cargar las sesiones:', error);
   }
@@ -86,7 +89,7 @@ const showConfirmModal = (id: number) => {
 const confirmDelete = async () => {
   if (sessionIdToDelete.value !== null) {
     try {
-      await deleteSession(sessionIdToDelete.value);
+      await deleteSesion(sessionIdToDelete.value);
       sessions.value = sessions.value.filter(session => session.idSesion !== sessionIdToDelete.value);
       isModalVisible.value = false;
       sessionIdToDelete.value = null;

@@ -74,12 +74,13 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import ConfirmModal from '../../components/ConfirmModal.vue';
 import {  getActas } from '../../services/actaService';
-import { Acta } from '../../Utils/Interfaces/ActaDetail';
+
 
 // Importar los iconos de Heroicons
 import { PlusIcon, EyeIcon, PencilIcon, TrashIcon }  from '@heroicons/vue/24/solid';
+import { ActaDetail } from '../../Utils/Interfaces/MeetingRecords';
 
-const actas = ref<Acta[]>([]);
+const actas = ref<ActaDetail[]>([]);
 const isModalVisible = ref(false);
 const actaIdToDelete = ref<number | null>(null);
 
@@ -109,7 +110,7 @@ const showConfirmModal = (id: number) => {
 
 const confirmDelete = () => {
   if (actaIdToDelete.value !== null) {
-    const index = actas.value.findIndex((acta: Acta) => acta.idActa === actaIdToDelete.value);
+    const index = actas.value.findIndex((acta: ActaDetail) => acta.idActa === actaIdToDelete.value);
     if (index !== -1) {
       actas.value.splice(index, 1);
     }
