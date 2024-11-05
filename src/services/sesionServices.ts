@@ -4,6 +4,7 @@ import { fetchWithAuth } from "../Utils/FetchWithToken";
 import { Sesion, ApiResponse, LocalTime, Miembro, Invitado, AsistenciaInvitado, AsistenciaMiembro } from "../Utils/Interfaces/MeetingRecords";
 
 const API_SESIONES_URL = `${import.meta.env.VITE_API_URL}/sesiones`;
+const API_URL = `${import.meta.env.VITE_API_URL}`;
 
 // Obtener todas las sesiones
 export const getSesiones = async (): Promise<ApiResponse<Sesion[]>> => {
@@ -40,8 +41,7 @@ export const createSesion = async (sesion: Partial<Sesion>): Promise<ApiResponse
 
     if (!response.ok) {
       const errorData = await response.json();
-      const backendMessage = errorData.message || 'Error al crear la sesión';
-      throw new Error(backendMessage);
+      throw new Error(errorData.message || 'Error al crear la sesión');
     }
 
     return await response.json() as ApiResponse<Sesion>;
@@ -62,8 +62,7 @@ export const updateSesion = async (id: number, sesion: Partial<Sesion>): Promise
 
     if (!response.ok) {
       const errorData = await response.json();
-      const backendMessage = errorData.message || 'Error al actualizar la sesión';
-      throw new Error(backendMessage);
+      throw new Error(errorData.message || 'Error al actualizar la sesión');
     }
 
     return await response.json() as ApiResponse<Sesion>;
@@ -103,22 +102,20 @@ export const definirContenidoSesion = async (idSesion: number, contenido: string
   }
 };
 
-// Ajusta los miembros para que coincidan con el formato esperado
+// Formatear miembros para la solicitud
 const formatMiembrosForRequest = (miembros: AsistenciaMiembro[]): any[] => {
   return miembros.map(miembro => ({
+    id: miembro.idMiembro,
     nombre: miembro.nombre,
-    cargo: miembro.cargo, // Ajusta 'cargo' a 'dependencia' si corresponde
+    cargo: miembro.cargo,
     email: miembro.email,
-    asistenciaMiembros: [] // O añade el array adecuado si es necesario
   }));
 };
 
 // Agregar miembros a la sesión
 export const addMiembrosToSesion = async (idSesion: number, miembros: AsistenciaMiembro[]): Promise<ApiResponse<Sesion>> => {
   try {
-    // Ajustar el array de miembros
     const formattedMiembros = formatMiembrosForRequest(miembros);
-
     const response = await fetchWithAuth(`${API_SESIONES_URL}/${idSesion}/miembros`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -127,32 +124,39 @@ export const addMiembrosToSesion = async (idSesion: number, miembros: Asistencia
 
     if (!response.ok) {
       const errorData = await response.json();
-      const backendMessage = errorData.message || 'Error al agregar miembros a la sesión';
-      throw new Error(backendMessage);
+      throw new Error(errorData.message || 'Error al agregar miembros a la sesión');
     }
 
-    return await response.json() as ApiResponse<Sesion>;
+    const responseData = await response.text();
+
+    // Verificar si la respuesta está vacía para evitar errores de JSON
+    if (!responseData) {
+      console.warn("Respuesta vacía al agregar miembros.");
+      return { status: 'error', message: 'Respuesta vacía del servidor' } as ApiResponse<Sesion>;
+    }
+
+    return JSON.parse(responseData) as ApiResponse<Sesion>;
   } catch (error) {
     console.error('Error al agregar miembros a la sesión:', error);
     throw error;
   }
 };
 
-// Ajusta los invitados para que coincidan con el formato esperado
+
+// Formatear invitados para la solicitud
 const formatInvitadosForRequest = (invitados: AsistenciaInvitado[]): any[] => {
   return invitados.map(invitado => ({
+    id: invitado.idInvitado,
     nombre: invitado.nombre,
     dependencia: invitado.dependencia,
     estadoAsistencia: invitado.estadoAsistencia,
     email: invitado.email,
-    asistenciaInvitados: [] // O añade el array adecuado si es necesario
   }));
 };
 
 // Agregar invitados a la sesión
 export const addInvitadosToSesion = async (idSesion: number, invitados: AsistenciaInvitado[]): Promise<ApiResponse<Sesion>> => {
   try {
-    // Ajustar el array de invitados
     const formattedInvitados = formatInvitadosForRequest(invitados);
 
     const response = await fetchWithAuth(`${API_SESIONES_URL}/${idSesion}/invitados`, {
@@ -163,13 +167,76 @@ export const addInvitadosToSesion = async (idSesion: number, invitados: Asistenc
 
     if (!response.ok) {
       const errorData = await response.json();
-      const backendMessage = errorData.message || 'Error al agregar invitados a la sesión';
-      throw new Error(backendMessage);
+      throw new Error(errorData.message || 'Error al agregar invitados a la sesión');
     }
 
-    return await response.json() as ApiResponse<Sesion>;
+    const responseData = await response.text();
+
+    if (!responseData) {
+      console.warn("Respuesta vacía al agregar invitados.");
+      return { status: 'error', message: 'Respuesta vacía del servidor' } as ApiResponse<Sesion>;
+    }
+
+    return JSON.parse(responseData) as ApiResponse<Sesion>;
   } catch (error) {
     console.error('Error al agregar invitados a la sesión:', error);
+    throw error;
+  }
+};
+
+// Obtener lista de invitados
+export const fetchExistingGuests = async (): Promise<ApiResponse<Invitado[]>> => {
+  try {
+    const response = await fetchWithAuth(`${API_URL}/invitados`, { method: 'GET' });
+    if (!response.ok) throw new Error('Error al obtener la lista de invitados');
+    return await response.json() as ApiResponse<Invitado[]>;
+  } catch (error) {
+    console.error('Error al obtener la lista de invitados:', error);
+    throw error;
+  }
+};
+
+// Obtener lista de miembros
+export const fetchExistingMembers = async (): Promise<ApiResponse<Miembro[]>> => {
+  try {
+    const response = await fetchWithAuth(`${API_URL}/miembros`, { method: 'GET' });
+    if (!response.ok) throw new Error('Error al obtener la lista de miembros');
+    return await response.json() as ApiResponse<Miembro[]>; // Devuelve directamente el array de miembros
+  } catch (error) {
+    console.error('Error al obtener la lista de miembros:', error);
+    throw error;
+  }
+};
+
+
+// Crear un nuevo invitado
+export const createGuest = async (guest: Partial<Invitado>): Promise<ApiResponse<Invitado>> => {
+  try {
+    const response = await fetchWithAuth(`${API_URL}/invitados`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(guest),
+    });
+    if (!response.ok) throw new Error('Error al crear invitado');
+    return await response.json() as ApiResponse<Invitado>;
+  } catch (error) {
+    console.error('Error al crear invitado:', error);
+    throw error;
+  }
+};
+
+// Crear un nuevo miembro
+export const createMember = async (member: Partial<Miembro>): Promise<ApiResponse<Miembro>> => {
+  try {
+    const response = await fetchWithAuth(`${API_URL}/miembros`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(member),
+    });
+    if (!response.ok) throw new Error('Error al crear miembro');
+    return await response.json() as ApiResponse<Miembro>;
+  } catch (error) {
+    console.error('Error al crear miembro:', error);
     throw error;
   }
 };

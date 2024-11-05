@@ -290,33 +290,30 @@ const submitForm = async () => {
 };
 // Agregar invitado a la lista local y al servidor
 const addInvitadoToLocalList = async (invitado: Invitado) => {
-  // Verificar si el invitado ya existe en la lista local
-  const exists = newSession.value.asistenciaInvitados.some(i => i.email === invitado.email);
+  const exists = newSession.value.asistenciaInvitados.some(i => i.idInvitado === invitado.idInvitado);
+
   if (!exists) {
     newSession.value.asistenciaInvitados.push(invitado);
-    
-    // Agregar al servidor solo si el invitado es nuevo
     await addInvitadosToSesion(newSession.value.idSesion!, [invitado]);
   } else {
+    alert('El invitado ya está en la lista.');
     console.warn('El invitado ya está en la lista.');
   }
 };
 
 // Agregar miembro a la lista local y al servidor
 const addMiembroToLocalList = async (miembro: Miembro) => {
-  // Verificar si el miembro ya existe en la lista local
-  if (newSession.value.asistenciaMiembros.some(m => m.email === miembro.email)) {
+  // Verificar si el miembro ya existe en la lista local usando su `id`
+  const exists = newSession.value.asistenciaMiembros.some(m => m.idMiembro === miembro.idMiembro);
+
+  if (!exists) {
+    // Agregar miembro a la lista local y luego enviar al servidor
+    newSession.value.asistenciaMiembros.push({ ...miembro, estadoAsistencia: 'pendiente' });
+    await addMiembrosToSesion(newSession.value.idSesion!, [miembro]);
+  } else {
+    alert('El miembro ya está en la lista.');
     console.warn('El miembro ya está en la lista.');
-    return;
-  }
-
-  // Agregar miembro a la lista local con estado "pendiente"
-  newSession.value.asistenciaMiembros.push({ ...miembro, estadoAsistencia: 'pendiente' });
-
-  // Enviar solo los nuevos miembros sin ID al servidor
-  const newMiembros = newSession.value.asistenciaMiembros.filter(m => !m.idMiembro);
-  if (newMiembros.length > 0) {
-    await addMiembrosToSesion(newSession.value.idSesion!, newMiembros);
   }
 };
+
 </script>
