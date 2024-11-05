@@ -14,11 +14,11 @@
               <th>ID</th>
               <th>Dependencia</th>
               <th>Asunto</th>
-              <th>Decisión</th>
+              <th>Descripcion</th>
               <th>Fecha de Solicitud</th>
-              <th>ID Solicitante</th>
-              <th>ID Sesión</th>
-              <th>ID Descripción</th>
+              <th>Respuesta</th>
+              <th>Estado</th>
+              <th>TipoSolicitante</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -27,13 +27,13 @@
               <td>{{ solicitud.idSolicitud }}</td>
               <td>{{ solicitud.dependencia }}</td>
               <td>{{ solicitud.asunto }}</td>
-              <td>{{ solicitud.desicion }}</td>
+              <td>{{ solicitud.descripcion }}</td>
               <td>{{ formatDate(solicitud.fechaDeSolicitud) }}</td>
-              <td>{{ solicitud.solicitanteId }}</td>
-              <td>{{ solicitud.sesionId }}</td>
-              <td>{{ solicitud.descripcionId }}</td>
+              <td>{{ solicitud.respuesta}}</td>
+              <td>{{ solicitud.estado }}</td>
+              <td>{{ solicitud.tipoSolicitante }}</td>
               <td class="flex gap-2">
-                <router-link :to="`/requests/${solicitud.idSolicitud}`" class="btn btn-info btn-sm">Ver</router-link>
+                <router-link :to="`/requests/edit/${solicitud.idSolicitud}`" class="btn btn-info btn-sm">Ver</router-link>
                 <router-link :to="`/requests/edit/${solicitud.idSolicitud}`" class="btn btn-warning btn-sm">Editar</router-link>
                 <button @click="showConfirmModal(solicitud.idSolicitud)" class="btn btn-error btn-sm">Eliminar</button>
               </td>
@@ -55,15 +55,14 @@
   </template>
   
   <script setup lang="ts">
-  import { ref, computed } from 'vue';
+  import { ref, computed, onMounted} from 'vue';
   import { useRoute } from 'vue-router';
   import ConfirmModal from '../../components/ConfirmModal.vue';
+  import { getSolicitudes, deleteSolicitud } from '../../services/solicitudServices';
+  import type { Solicitud } from '../../Utils/Interfaces/MeetingRecords';
   
   // Lista de solicitudes almacenadas localmente
-  const solicitudes = ref([
-    { idSolicitud: 1, dependencia: 'Departamento de Finanzas', asunto: 'Aprobación de Presupuesto', desicion: 'Aprobado', fechaDeSolicitud: '2024-09-25', solicitanteId: 1001, sesionId: 1, descripcionId: 2001 },
-    { idSolicitud: 2, dependencia: 'Recursos Humanos', asunto: 'Solicitud de Vacaciones', desicion: 'Pendiente', fechaDeSolicitud: '2024-10-01', solicitanteId: 1002, sesionId: 2, descripcionId: 2002 }
-  ]);
+  const solicitudes = ref<Solicitud[]>([]);
   
   const isModalVisible = ref(false);
   const solicitudIdToDelete = ref<number | null>(null);
@@ -74,22 +73,39 @@
   return route.matched.some(r => r.path.includes('/requests/create') || r.path.includes('/requests/edit') || r.path.includes('/requests/'));
 });
 
+onMounted(async () => {
+  try {
+    const response = await getSolicitudes();
+    console.log('la data ',response);
+    
+    solicitudes.value = response; // Asignar directamente la respuesta
+    console.log('Estas son las solicitudes:', solicitudes.value);
+  } catch (error) {
+    console.error('Error al cargar las solicitudes:', error);
+  }
+});
+   
   
   const showConfirmModal = (id: number) => {
     solicitudIdToDelete.value = id;
     isModalVisible.value = true;
   };
   
-  const confirmDelete = () => {
-    if (solicitudIdToDelete.value !== null) {
-      const index = solicitudes.value.findIndex(solicitud => solicitud.idSolicitud === solicitudIdToDelete.value);
-      if (index !== -1) {
-        solicitudes.value.splice(index, 1); // Eliminar solicitud de la lista
-      }
+  const confirmDelete = async () => {
+  if (solicitudIdToDelete.value !== null) {
+    try {
+      await deleteSolicitud(solicitudIdToDelete.value);
+      solicitudes.value = solicitudes.value.filter(
+        (solicitud) => solicitud.idSolicitud !== solicitudIdToDelete.value
+      ); // Eliminar localmente
+    } catch (error) {
+      console.error('Error al eliminar la solicitud:', error);
+    } finally {
+      isModalVisible.value = false;
+      solicitudIdToDelete.value = null;
     }
-    isModalVisible.value = false;
-    solicitudIdToDelete.value = null;
-  };
+  }
+};
   
   const cancelDelete = () => {
     isModalVisible.value = false;

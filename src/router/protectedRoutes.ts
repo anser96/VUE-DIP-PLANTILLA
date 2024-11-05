@@ -25,18 +25,20 @@ import TaskAssignmentsList from '../modules/task-assignments/TaskAssignmentsList
 import SessionOrderList from '../modules/sessionOrder/SessionOrderList.vue';
 import SessionOrderForm from '../modules/sessionOrder/SessionOrderForm.vue';
 import ActsDetail from '../modules/acts/ActsDetail.vue';
+import SoliEdit from '../modules/requests/RequestsEdit.vue'
 
 // Definir la interfaz para las rutas CRUD
 interface CrudRouteConfig {
   basePath: string;
   listComponent: any;
   formComponent: any;
+  EditComponent?: any;
   RouteName: string;
   detailComponent?: any; 
 }
 
 function createCrudRoutes(configs: CrudRouteConfig[]): RouteRecordRaw[] {
-  return configs.map(({ basePath, listComponent, formComponent, RouteName: spanishName, detailComponent }) => ({
+  return configs.map(({ basePath, listComponent, formComponent, EditComponent, RouteName: spanishName, detailComponent }) => ({
     path: `/${basePath}`,
     name: `${spanishName}`,
     component: listComponent,
@@ -63,6 +65,13 @@ function createCrudRoutes(configs: CrudRouteConfig[]): RouteRecordRaw[] {
         meta: { breadcrumb: `Editar ${spanishName}`, showInSidebar: false, isChild: true },
         props: { mode: 'edit' },
       },
+      {
+        path: 'edit/:id',
+        name: `${spanishName}Editar`,
+        component: EditComponent,
+        meta: { breadcrumb: `Editar ${spanishName}`, showInSidebar: false, isChild: true },
+        props: { mode: 'edit' },
+      },
     ],
   }));
 }
@@ -70,7 +79,7 @@ function createCrudRoutes(configs: CrudRouteConfig[]): RouteRecordRaw[] {
 
 const crudConfigs: CrudRouteConfig[] = [
   { basePath: 'tasks', listComponent: TasksList, formComponent: TaskAssignmentsForm, RouteName: 'Tareas' },
-  { basePath: 'requests', listComponent: RequestsList, formComponent: RequestsForm, RouteName: 'Solicitudes' },
+  { basePath: 'requests', listComponent: RequestsList, formComponent: RequestsForm, EditComponent: SoliEdit, RouteName: 'Solicitudes' },
   { basePath: 'sessions', listComponent: SessionsList, formComponent: SessionsForm, RouteName: 'Sesiones' },
   { basePath: 'members', listComponent: MembersList, formComponent: MembersForm, RouteName: 'Miembros' },
   { basePath: 'applicants', listComponent: ApplicantsList, formComponent: ApplicantsForm, RouteName: 'Solicitantes' },
