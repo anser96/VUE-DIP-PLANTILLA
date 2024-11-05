@@ -1,7 +1,7 @@
 // src/services/invitadoService.ts
 
 import { fetchWithAuth } from "../Utils/FetchWithToken";
-import { Invitado,ApiResponse } from "../Utils/Interfaces/MeetingRecords";
+import { Invitado, ApiResponse } from "../Utils/Interfaces/MeetingRecords";
 
 const API_INVITADOS_URL = `${import.meta.env.VITE_API_URL}/invitados`;
 
@@ -77,7 +77,11 @@ export const updateInvitado = async (id: number, invitado: Partial<Invitado>): P
 export const deleteInvitado = async (id: number): Promise<ApiResponse<null>> => {
   try {
     const response = await fetchWithAuth(`${API_INVITADOS_URL}/${id}`, { method: 'DELETE' });
-    if (!response.ok) throw new Error('Error al eliminar el invitado');
+    if (!response.ok) {
+      const errorData = await response.json();
+      const backendMessage = errorData.message || 'Error al eliminar el invitado';
+      throw new Error(backendMessage);
+    }
     return await response.json() as ApiResponse<null>;
   } catch (error) {
     console.error('Error al eliminar el invitado:', error);
