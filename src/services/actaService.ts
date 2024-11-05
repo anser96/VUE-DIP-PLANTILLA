@@ -60,7 +60,8 @@ export const aprobarActaService = async (actaId: number): Promise<ApiResponse<an
     });
 
     if (!response.ok) {
-      throw new Error('Error al aprobar el acta');
+      const errorData = await response.json();  // Procesar la respuesta del error
+      throw { response: { data: errorData } }; 
     }
 
     return await response.json() as ApiResponse<any>;

@@ -101,17 +101,23 @@ const loadActas = async () => {
 const aprobarActa = async (actaId) => {
   try {
     const response = await aprobarActaService(actaId);
+
     if (response.status === "success") {
-      // Actualizar el estado de la acta en la lista de actas
       const actaIndex = actas.value.findIndex((acta) => acta.idActa === actaId);
       if (actaIndex !== -1) {
         actas.value[actaIndex].estado = "APROBADA";
       }
-    } else {
-      console.error("Error al aprobar el acta:", response.message);
     }
   } catch (error) {
-    console.error("Error al aprobar el acta:", error);
+    // Verificar si es un error de respuesta del backend y capturar mensaje
+    if (error.response) {
+      const errorMessage = error.response.data?.message || "Ocurrió un error al intentar aprobar el acta.";
+      console.error("Error específico del backend:", errorMessage);
+      alert(errorMessage);
+    } else {
+      console.error("Error al aprobar el acta:", error.message);
+      alert("Ocurrió un error al intentar aprobar el acta.");
+    }
   }
 };
 
