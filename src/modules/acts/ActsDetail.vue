@@ -95,6 +95,61 @@
         <p v-else class="text-center">No hay puntos en el orden del día</p>
       </div>
 
+
+      <!-- Step: Solicitudes -->
+      <div v-else-if="currentStep === 5" key="step5" class="bg-base-100 p-6 rounded-lg shadow">
+        <h2 class="text-2xl font-semibold mb-4 text-secondary flex items-center space-x-2">
+          <UserGroupIcon class="w-6 h-6" /> 
+          <span>Solicitudes y Correspondencia</span>
+        </h2>
+        <table class="table w-full rounded-lg bg-base-200 shadow-lg">
+          <thead class="bg-primary text-primary-content">
+            <tr>
+              <th>Nombre</th>
+              <th>Asunto</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="acta?.sesion.solicitudes?.length" v-for="solicitudes in acta?.sesion.solicitudes" :key="solicitudes.idSolicitud" class="hover:bg-base-100">
+              <td>{{ solicitudes.nombreSolicitante }}</td>
+              <td>{{ solicitudes.asunto }}</td>
+              <td>{{ solicitudes.estado }}</td>
+            </tr>
+            <tr v-else>
+              <td colspan="5" class="text-center">No hay Solicitudes</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Step: Tareas -->
+      <div v-else-if="currentStep === 6" key="step6" class="bg-base-100 p-6 rounded-lg shadow">
+        <h2 class="text-2xl font-semibold mb-4 text-secondary flex items-center space-x-2">
+          <UserGroupIcon class="w-6 h-6" /> 
+          <span>Tareas</span>
+        </h2>
+        <table class="table w-full rounded-lg bg-base-200 shadow-lg">
+          <thead class="bg-primary text-primary-content">
+            <tr>
+              <th>Responsable</th>
+              <th>Descripción</th>
+              <th>fechaEntrega</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="acta?.sesion.tareas?.length" v-for="tareas in acta?.sesion.tareas" :key="tareas.idTarea" class="hover:bg-base-100">
+              <td>{{ tareas.responsable }}</td>
+              <td>{{ tareas.descripcion }}</td>
+              <td>{{ tareas.fechaEntrega }}</td>
+            </tr>
+            <tr v-else>
+              <td colspan="5" class="text-center">No hay Tareas</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
       <!-- Additional Steps and Resumen General here with similar structure -->
 
       <!-- Step: Resumen General -->
