@@ -11,7 +11,7 @@
       <button :class="{ 'step-primary': currentStep >= 2 }" class="step">Verificación de Quórum</button>
       <button :class="{ 'step-primary': currentStep >= 3 }" class="step">Asistentes Invitados</button>
       <button :class="{ 'step-primary': currentStep >= 4 }" class="step">Orden del Día</button>
-      <button :class="{ 'step-primary': currentStep >= 5 }" class="step">Lectura de Correspondencia</button>
+      <button :class="{ 'step-primary': currentStep >= 5 }" class="step">Solicitudes</button>
       <button :class="{ 'step-primary': currentStep >= 6 }" class="step">Tareas o Compromisos</button>
       <button :class="{ 'step-primary': currentStep >= 7 }" class="step">Próxima Sesión</button>
       <button :class="{ 'step-primary': currentStep >= 8 }" class="step">Resumen General</button>
@@ -25,7 +25,7 @@
           <ClipboardDocumentIcon class="w-6 h-6" /> 
           <span>Encabezado de Acta</span>
         </h2>
-        <p><strong>Número de Acta:</strong> {{ acta?.idActa || "No asignado" }}</p>
+        <p><strong>Número de Acta:</strong> {{ acta?.numeroActa || "No asignado" }}</p>
         <p><strong>Estado:</strong> <span :class="getEstadoBadge(acta?.estado)">{{ acta?.estado || "Sin estado" }}</span></p>
         <p><strong>Lugar:</strong> {{ acta?.sesion.lugar || "Lugar no especificado" }}</p>
         <p><strong>Fecha:</strong> {{ acta?.sesion.fecha || "Fecha no disponible" }}</p>
@@ -53,15 +53,46 @@
             <tr v-if="acta?.sesion.asistenciaMiembros?.length" v-for="miembro in acta?.sesion.asistenciaMiembros" :key="miembro.idMiembro" class="hover:bg-base-100">
               <td>{{ miembro.cargo }}</td>
               <td>{{ miembro.nombre }}</td>
-              <td>{{ miembro.estadoAsistencia === 'Asistió' ? '✔' : '' }}</td>
-              <td>{{ miembro.estadoAsistencia === 'No Asistió' ? '✖' : '' }}</td>
-              <td>{{ miembro.estadoAsistencia === 'Excusa' ? '⚠️' : '' }}</td>
+              <td>{{ miembro.estadoAsistencia === 'ASISTIÓ' ? '✔' : '' }}</td>
+              <td>{{ miembro.estadoAsistencia === 'NO ASISTIÓ' ? '✖' : '' }}</td>
+                <span v-if="miembro.estadoAsistencia === 'EXCUSA'">
+                  ⚠️ {{ miembro.excusa || 'Sin excusa proporcionada' }}
+                </span>
+                <span v-else>{{ miembro.estadoAsistencia }}</span>
             </tr>
             <tr v-else>
               <td colspan="5" class="text-center">No hay datos de quórum disponibles</td>
             </tr>
           </tbody>
         </table>
+        <table class="table w-full rounded-lg bg-base-200 shadow-lg mt-4">
+          <thead class="bg-primary text-primary-content">
+            <tr>
+              <th>Dependencia</th>
+              <th>Nombre</th>
+              <th>Asistió</th>
+              <th>No Asistió</th>
+              <th>Excusa</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="acta?.sesion.asistenciaInvitados?.length" v-for="invitado in acta?.sesion.asistenciaInvitados" :key="invitado.idInvitado" class="hover:bg-base-100">
+              <td>{{ invitado.dependencia }}</td>
+              <td>{{ invitado.nombre }}</td>
+              <td>{{ invitado.estadoAsistencia === 'ASISTIÓ' ? '✔' : '' }}</td>
+              <td>{{ invitado.estadoAsistencia === 'NO ASISTIÓ' ? '✖' : '' }}</td>
+              <td>
+                <span v-if="invitado.estadoAsistencia === 'EXCUSA'">
+                  ⚠️ {{ invitado.excusa || 'Sin excusa proporcionada' }}
+                </span>
+              </td>
+            </tr>
+            <tr v-else>
+              <td colspan="5" class="text-center">No hay datos de asistencia para los invitados</td>
+            </tr>
+          </tbody>
+        </table>
+
       </div>
 
       <!-- Step: Asistentes Invitados -->
@@ -93,6 +124,61 @@
           </li>
         </ul>
         <p v-else class="text-center">No hay puntos en el orden del día</p>
+      </div>
+
+
+      <!-- Step: Solicitudes -->
+      <div v-else-if="currentStep === 5" key="step5" class="bg-base-100 p-6 rounded-lg shadow">
+        <h2 class="text-2xl font-semibold mb-4 text-secondary flex items-center space-x-2">
+          <UserGroupIcon class="w-6 h-6" /> 
+          <span>Solicitudes y Correspondencia</span>
+        </h2>
+        <table class="table w-full rounded-lg bg-base-200 shadow-lg">
+          <thead class="bg-primary text-primary-content">
+            <tr>
+              <th>Nombre</th>
+              <th>Asunto</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="acta?.sesion.solicitudes?.length" v-for="solicitudes in acta?.sesion.solicitudes" :key="solicitudes.idSolicitud" class="hover:bg-base-100">
+              <td>{{ solicitudes.nombreSolicitante }}</td>
+              <td>{{ solicitudes.asunto }}</td>
+              <td>{{ solicitudes.estado }}</td>
+            </tr>
+            <tr v-else>
+              <td colspan="5" class="text-center">No hay Solicitudes</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Step: Tareas -->
+      <div v-else-if="currentStep === 6" key="step6" class="bg-base-100 p-6 rounded-lg shadow">
+        <h2 class="text-2xl font-semibold mb-4 text-secondary flex items-center space-x-2">
+          <UserGroupIcon class="w-6 h-6" /> 
+          <span>Tareas</span>
+        </h2>
+        <table class="table w-full rounded-lg bg-base-200 shadow-lg">
+          <thead class="bg-primary text-primary-content">
+            <tr>
+              <th>Responsable</th>
+              <th>Descripción</th>
+              <th>fechaEntrega</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="acta?.sesion.tareas?.length" v-for="tareas in acta?.sesion.tareas" :key="tareas.idTarea" class="hover:bg-base-100">
+              <td>{{ tareas.responsable }}</td>
+              <td>{{ tareas.descripcion }}</td>
+              <td>{{ tareas.fechaEntrega }}</td>
+            </tr>
+            <tr v-else>
+              <td colspan="5" class="text-center">No hay Tareas</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <!-- Additional Steps and Resumen General here with similar structure -->
@@ -169,7 +255,7 @@ const loadActaDetail = async () => {
 
 // Function for determining badge style based on the status
 const getEstadoBadge = (estado: string | undefined) => {
-  return estado === 'Aprobada' ? 'badge badge-success' : estado === 'Pendiente' ? 'badge badge-warning' : 'badge badge-error';
+  return estado === 'APROBADA' ? 'badge badge-success' : estado === 'PENDIENTE' ? 'badge badge-warning' : 'badge badge-error';
 };
 
 // Move to next step, or finish if on the last step

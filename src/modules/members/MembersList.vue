@@ -4,7 +4,9 @@
       <h1 class="text-3xl font-bold mb-4">Lista de Miembros</h1>
 
       <div class="flex justify-end mb-4">
-        <router-link to="/members/create" class="btn btn-primary">Crear Nuevo Miembro</router-link>
+        <router-link to="/members/create" class="btn btn-primary">
+          Crear Nuevo Miembro
+        </router-link>
       </div>
 
       <table class="table w-full">
@@ -13,34 +15,36 @@
             <th>ID</th>
             <th>Nombre</th>
             <th>Cargo</th>
+            <th>Email</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="member in members" :key="member.idMember">
-            <td>{{ member.idMember }}</td>
-            <td>{{ member.name }}</td>
-            <td>{{ member.role }}</td>
+          <tr v-for="member in members" :key="member.idMiembro">
+            <td>{{ member.idMiembro }}</td>
+            <td>{{ member.nombre || "Sin nombre" }}</td>
+            <td>{{ member.cargo || "Sin cargo" }}</td>
+            <td>{{ member.email || "Sin email" }}</td>
             <td class="flex gap-2">
               <button @click="viewMember(member)" class="btn btn-info btn-sm">Ver</button>
               <button @click="openEditModal(member)" class="btn btn-warning btn-sm">Editar</button>
-              <button @click="showConfirmModal(member.idMember)" class="btn btn-error btn-sm">Eliminar</button>
+              <button @click="showConfirmModal(member.idMiembro)" class="btn btn-error btn-sm">Eliminar</button>
               <button @click="assignTask(member)" class="btn btn-success btn-sm">Asignar Tarea</button>
             </td>
           </tr>
         </tbody>
       </table>
 
-      <ConfirmModal 
-        :show="isModalVisible"  
-        @confirm="confirmDelete" 
-        @cancel="cancelDelete" 
+      <ConfirmModal
+        :show="isModalVisible"
+        @confirm="confirmDelete"
+        @cancel="cancelDelete"
       />
     </div>
 
     <router-view v-else />
 
-    <!-- Modal de edición -->
+    <!-- Modal de edición miembro-->
     <div v-if="isEditModalVisible" class="modal-background">
       <div class="modal-content">
         <h2 class="text-2xl font-bold mb-4">Editar Miembro</h2>
@@ -49,14 +53,14 @@
         <input v-model="selectedMember.name" class="input" />
         <label>Cargo:</label>
         <input v-model="selectedMember.role" class="input" />
-
+        
         <h3 class="mt-4">Tareas Asignadas</h3>
         <ul>
           <li v-for="task in selectedMember.tasks" :key="task.id">
             {{ task.descripcion }} - Fecha de Entrega: {{ task.fechaEntrega }} - Fecha de Verificación: {{ task.fechaVerificacion }}
           </li>
         </ul>
-
+        
         <button @click="closeEditModal" class="btn btn-secondary mt-4">Cerrar</button>
         <button @click="saveMember" class="btn btn-success mt-4">Guardar Cambios</button>
       </div>
@@ -78,14 +82,6 @@
           <div class="mb-2">
             <label>Fecha de Verificación:</label>
             <input type="date" v-model="task.fechaVerificacion" required class="input" />
-          </div>
-          <div class="mb-2">
-            <label>Tipo de Responsable:</label>
-            <select v-model="task.tipoResponsable" required class="input">
-              <option value="">Seleccione...</option>
-              <option value="miembro">Miembro</option>
-              <option value="invitado">Invitado</option>
-            </select>
           </div>
           <button type="submit" class="btn btn-success mt-4">Guardar Tarea</button>
           <button @click="closeTaskModal" class="btn btn-secondary mt-4">Cerrar</button>
@@ -113,16 +109,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useRoute } from 'vue-router';
-import ConfirmModal from '../../components/ConfirmModal.vue';
+import { ref, onMounted, computed } from "vue";
+import { useRoute } from "vue-router";
+import ConfirmModal from "../../components/ConfirmModal.vue";
+import { Miembro, ApiResponse } from "../../Utils/Interfaces/MeetingRecords";
+import { getMiembros } from "../../services/miembroService";
 
-// Lista de miembros almacenados localmente (simulación)
-const members = ref([
-  { idMember: 1, name: 'Juan Pérez', role: 'Presidente', tasks: [] },
-  { idMember: 2, name: 'María López', role: 'Secretario', tasks: [] }
-]);
-
+const members = ref<Miembro[]>([]);
 const isModalVisible = ref(false);
 const isEditModalVisible = ref(false);
 const isTaskModalVisible = ref(false);
@@ -131,122 +124,132 @@ const memberIdToDelete = ref<number | null>(null);
 const selectedMember = ref<any>(null);
 
 const task = ref({
-  descripcion: '',
-  fechaEntrega: '',
-  fechaVerificacion: '',
-  tipoResponsable: '', // Nueva propiedad para almacenar el tipo de responsable
+  descripcion: "",
+  fechaEntrega: "",
+  fechaVerificacion: ""
 });
 
-const route = useRoute();
-const isChildRouteActive = computed(() => {
-  return route.matched.some(r => r.path.includes('/members/create') || r.path.includes('/members/edit'));
+const isChildRouteActive = computed(() =>
+  useRoute().matched.some(
+    (r) =>
+      r.path.includes("/members/create") || r.path.includes("/members/edit")
+  )
+);
+
+onMounted(async () => {
+  try {
+    const response: ApiResponse<Miembro[]> = await getMiembros();
+    if (Array.isArray(response)) {
+      members.value = response;
+    } else if ("data" in response && Array.isArray(response.data)) {
+      members.value = response.data;
+    } else if ("results" in response && Array.isArray(response.results)) {
+      members.value = response.results;
+    } else {
+      console.error("Estructura inesperada de los datos de miembros:", response);
+    }
+  } catch (error) {
+    console.error("Error al cargar los miembros:", error);
+  }
 });
 
-// Función para mostrar el modal de confirmación
 const showConfirmModal = (id: number) => {
   memberIdToDelete.value = id;
   isModalVisible.value = true;
 };
 
-// Confirmar eliminación
 const confirmDelete = () => {
   if (memberIdToDelete.value !== null) {
-    const index = members.value.findIndex(member => member.idMember === memberIdToDelete.value);
+    const index = members.value.findIndex(
+      (member) => member.idMiembro === memberIdToDelete.value
+    );
     if (index !== -1) {
-      members.value.splice(index, 1); // Eliminar miembro de la lista
+      members.value.splice(index, 1);
     }
   }
   isModalVisible.value = false;
   memberIdToDelete.value = null;
 };
 
-// Cancelar eliminación
 const cancelDelete = () => {
   isModalVisible.value = false;
   memberIdToDelete.value = null;
 };
 
-// Abrir el modal de edición
 const openEditModal = (member: any) => {
-  selectedMember.value = { ...member }; // Crear una copia del miembro
+  selectedMember.value = { ...member };
   isEditModalVisible.value = true;
 };
 
-// Cerrar el modal de edición
 const closeEditModal = () => {
   isEditModalVisible.value = false;
 };
 
-// Guardar cambios del miembro
 const saveMember = () => {
-  const index = members.value.findIndex(member => member.idMember === selectedMember.value.idMember);
+  const index = members.value.findIndex(
+    (member) => member.idMiembro === selectedMember.value.idMember
+  );
   if (index !== -1) {
-    members.value[index] = selectedMember.value; // Actualizar el miembro
+    members.value[index] = selectedMember.value;
   }
   closeEditModal();
 };
 
-// Asignar tarea
+// Funciones para el modal de tareas
 const assignTask = (member: any) => {
   selectedMember.value = member;
   isTaskModalVisible.value = true;
 };
 
-// Cerrar el modal de tarea
 const closeTaskModal = () => {
   isTaskModalVisible.value = false;
 };
 
-// Enviar tarea
 const submitTask = () => {
-  const taskWithId = { id: Date.now(), ...task.value }; // Generar un ID único para la tarea
-  selectedMember.value.tasks.push(taskWithId); // Agregar tarea al miembro
-  console.log("Tarea asignada a:", selectedMember.value.name, "con datos:", task.value);
-  task.value = { descripcion: '', fechaEntrega: '', fechaVerificacion: '', tipoResponsable: '' }; // Limpiar los campos
+  const taskWithId = { id: Date.now(), ...task.value };
+  selectedMember.value.tasks.push(taskWithId);
+  task.value = { descripcion: "", fechaEntrega: "", fechaVerificacion: "" };
   closeTaskModal();
 };
 
-// Mostrar información del miembro
-const viewMember = (member: any) => {
-  selectedMember.value = { ...member }; // Crear una copia del miembro
-  isViewModalVisible.value = true; // Abrir el modal de vista
+const viewMember = (member: Miembro) => {
+  selectedMember.value = member;
+  isViewModalVisible.value = true;
 };
 
-// Cerrar el modal de vista
 const closeViewModal = () => {
   isViewModalVisible.value = false;
 };
 </script>
 
 <style scoped>
-.table {
-  margin-top: 20px;
-}
 .modal-background {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
 }
+
 .modal-content {
   background: white;
   padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-.input {
-  margin-top: 5px;
-  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  max-width: 500px;
   width: 100%;
+}
+
+.input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
-.btn {
-  margin-top: 10px;
-}
 </style>
+

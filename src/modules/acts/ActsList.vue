@@ -16,7 +16,6 @@
             <tr>
               <th class="text-left p-3">Número de Acta</th>
               <th class="text-left p-3">Estado</th>
-              <th class="text-left p-3">ID de Sesión</th>
               <th class="text-left p-3">Acciones</th>
             </tr>
           </thead>
@@ -24,25 +23,27 @@
             <tr v-for="acta in actas" :key="acta.idActa" class="hover:bg-primary-focus transition-all">
               <td class="p-3">
                 <div class="tooltip tooltip-right" data-tip="Número único del acta">
-                  <span class="badge badge-secondary">{{ acta.idActa }}</span>
+                  <span class="badge badge-secondary">{{ acta.numeroActa }}</span>
                 </div>
               </td>
               <td class="p-3">
                 <span
                   :class="{
-                    'badge badge-success': acta.estado === 'Aprobada',
-                    'badge badge-warning': acta.estado === 'Pendiente',
-                    'badge badge-error': acta.estado === 'Rechazada',
+                    'badge badge-success': acta.estado === 'APROBADA',
+                    'badge badge-warning': acta.estado === 'PENDIENTE',
+                    'badge badge-error': acta.estado === 'RECHAZADA',
                   }"
                   >{{ acta.estado }}</span
                 >
               </td>
-              <td class="p-3">{{ acta.sesionId || "No asignado" }}</td>
               <td class="p-3">
                 <div class="flex gap-2">
                   <router-link :to="`/acts/${acta.idActa}`" class="btn btn-info btn-sm" data-tip="Ver Detalles">
                     <EyeIcon class="w-5 h-5" />
                   </router-link>
+                  <button v-if="acta.estado !== 'APROBADA'" @click="aprobarActa(acta.idActa)" class="btn btn-success btn-sm">
+                    <CheckIcon class="w-5 h-5" />
+                  </button>
                   <!-- Comentado hasta implementar -->
                   <!--
                   <router-link :to="`/acts/edit/${acta.idActa}`" class="btn btn-warning btn-sm" data-tip="Editar Acta">
@@ -73,11 +74,8 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import ConfirmModal from '../../components/ConfirmModal.vue';
-import {  getActas } from '../../services/actaService';
-
-
-// Importar los iconos de Heroicons
-import { PlusIcon, EyeIcon, PencilIcon, TrashIcon }  from '@heroicons/vue/24/solid';
+import { getActas, aprobarActaService } from '../../services/actaService.ts';
+import { PlusIcon, EyeIcon, PencilIcon, TrashIcon, CheckIcon } from '@heroicons/vue/24/solid';
 import { ActaDetail } from '../../Utils/Interfaces/MeetingRecords';
 
 const actas = ref<ActaDetail[]>([]);
@@ -98,6 +96,31 @@ const loadActas = async () => {
     console.error('Error al cargar actas:', error);
   }
 };
+
+// Lógica para aprobar acta
+const aprobarActa = async (actaId) => {
+  try {
+    const response = await aprobarActaService(actaId);
+
+    if (response.status === "success") {
+      const actaIndex = actas.value.findIndex((acta) => acta.idActa === actaId);
+      if (actaIndex !== -1) {
+        actas.value[actaIndex].estado = "APROBADA";
+      }
+    }
+  } catch (error) {
+    // Verificar si es un error de respuesta del backend y capturar mensaje
+    if (error.response) {
+      const errorMessage = error.response.data?.message || "Ocurrió un error al intentar aprobar el acta.";
+      console.error("Error específico del backend:", errorMessage);
+      alert(errorMessage);
+    } else {
+      console.error("Error al aprobar el acta:", error.message);
+      alert("Ocurrió un error al intentar aprobar el acta.");
+    }
+  }
+};
+
 
 onMounted(() => {
   loadActas();
@@ -125,15 +148,3 @@ const cancelDelete = () => {
 };
 </script>
 
-<style scoped>
-.p-4 {
-  padding: 16px;
-}
-.table th, .table td {
-  padding: 12px;
-}
-.tooltip {
-  display: inline-block;
-  position: relative;
-}
-</style>

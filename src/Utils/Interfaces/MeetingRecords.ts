@@ -68,13 +68,7 @@ export interface Tarea {
 }
 
 // SubEntities.ts
-export interface AsistenciaMiembro {
-  idMiembro: number;
-  nombre: string;
-  cargo: string;
-  email: string;
-  estadoAsistencia: string;
-}
+
 export interface Miembro {
   idMiembro: number;
   nombre: string;
@@ -88,6 +82,13 @@ export interface AsistenciaInvitado {
   dependencia: string;
   email: string;
   estadoAsistencia: string;
+}
+
+export interface QuorumEntry {
+  idPersona: number;
+  tipo: 'miembro' | 'invitado';
+  estadoAsistencia: 'ASISTIÓ' | 'EXCUSA' | 'NO ASISTIÓ';
+  excusa: string;
 }
 
 export interface Tarea {

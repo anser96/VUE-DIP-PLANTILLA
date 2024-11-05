@@ -35,7 +35,7 @@
             <td>{{ session.secretario }}</td>
             <td class="flex gap-2">
               <router-link :to="`/sessions/${session.idSesion}`" class="btn btn-info btn-sm">Ver</router-link>
-              <router-link :to="`/sessions/edit/${session.idSesion}`" class="btn btn-warning btn-sm">Editar</router-link>
+              <router-link v-if="isActaPendiente(session)" :to="`/sessions/edit/${session.idSesion}`" class="btn btn-warning btn-sm">Editar</router-link>
               <button @click="showConfirmModal(session.idSesion ?? 0)" class="btn btn-error btn-sm">Eliminar</button>
             </td>
           </tr>
@@ -72,7 +72,7 @@ const loadSessions = async () => {
   try {
     const response: ApiResponse<Sesion[]> = await getSesiones();
     sessions.value = response.data ?? []; // Acceso directo al `data` de la respuesta
-    console.log('Sesiones cargadas:', sessions.value);
+    console.log('Sesiones cargadas:', sessions.value[0]);
   } catch (error) {
     console.error('Error al cargar las sesiones:', error);
   }
@@ -83,6 +83,10 @@ const loadSessions = async () => {
 const showConfirmModal = (id: number) => {
   sessionIdToDelete.value = id;
   isModalVisible.value = true;
+};
+
+const isActaPendiente = (sesion) => {
+  return sesion?.actaDTO?.[0]?.estado === 'PENDIENTE';
 };
 
 // Confirmar y eliminar sesión

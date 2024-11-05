@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
-import { Usuario } from '../Utils/Interfaces/UsuarioInterface';
-import { LoginData, LoginResponse } from '../Utils/Interfaces/AuthInterface';
+
 import { login as loginService, isTokenValid } from '../services/authService';
 import router from '../router';
+import { LoginData, LoginResponse, Usuario } from '../Utils/Interfaces/MeetingRecords';
 
 // Define la interfaz del estado de autenticación
 export interface AuthState {
