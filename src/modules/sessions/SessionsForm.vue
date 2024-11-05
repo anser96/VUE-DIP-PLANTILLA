@@ -124,46 +124,67 @@
         <button type="button" class="btn btn-primary" @click="showMiembrosModal = true">Agregar Miembros</button>
       </div>
 
-   <!-- Tabla de Miembros -->
-   <div v-if="newSession.asistenciaMiembros.length > 0" class="mt-4">
-      <h2 class="text-xl font-semibold mb-2">Lista de Miembros</h2>
-      <table class="w-full text-sm text-left text-gray-500">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-          <tr>
-            <th class="px-6 py-3">Nombre</th>
-            <th class="px-6 py-3">Cargo</th>
-            <th class="px-6 py-3">Email</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(miembro, index) in newSession.asistenciaMiembros" :key="index" class="bg-white border-b">
-            <td class="px-6 py-4">{{ miembro.nombre }}</td>
-            <td class="px-6 py-4">{{ miembro.cargo }}</td>
-            <td class="px-6 py-4">{{ miembro.email }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <!-- Tabla de Miembros -->
+  <div v-if="newSession.asistenciaMiembros.length > 0" class="mt-4">
+    <h2 class="text-xl font-semibold mb-2">Lista de Miembros</h2>
+    <table class="w-full text-sm text-left text-gray-500">
+      <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+        <tr>
+          <th class="px-6 py-3">Nombre</th>
+          <th class="px-6 py-3">Cargo</th>
+          <th class="px-6 py-3">Email</th>
+          <th class="px-6 py-3">Estado de Asistencia</th> <!-- Nueva columna para estado de asistencia -->
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(miembro, index) in newSession.asistenciaMiembros" :key="index" class="bg-white border-b">
+          <td class="px-6 py-4">{{ miembro.nombre }}</td>
+          <td class="px-6 py-4">{{ miembro.cargo }}</td>
+          <td class="px-6 py-4">{{ miembro.email }}</td>
+          <td class="px-6 py-4">
+            <select v-model="miembro.estadoAsistencia" class="input input-bordered">
+              <option value="ASISTIÓ">Asistió</option>
+              <option value="EXCUSA">Excusa</option>
+              <option value="NO ASISTIÓ">No Asistió</option>
+            </select>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-    <!-- Tabla de Invitados -->
-    <div v-if="newSession.asistenciaInvitados.length > 0" class="mt-4">
-      <h2 class="text-xl font-semibold mb-2">Lista de Invitados</h2>
-      <table class="w-full text-sm text-left text-gray-500">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-          <tr>
-            <th class="px-6 py-3">Nombre</th>
-            <th class="px-6 py-3">Dependencia</th>
-            <th class="px-6 py-3">Email</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(invitado, index) in newSession.asistenciaInvitados" :key="index" class="bg-white border-b">
-            <td class="px-6 py-4">{{ invitado.nombre }}</td>
-            <td class="px-6 py-4">{{ invitado.dependencia }}</td>
-            <td class="px-6 py-4">{{ invitado.email }}</td>
-          </tr>
-        </tbody>
-      </table>
+  <!-- Tabla de Invitados -->
+  <div v-if="newSession.asistenciaInvitados.length > 0" class="mt-4">
+    <h2 class="text-xl font-semibold mb-2">Lista de Invitados</h2>
+    <table class="w-full text-sm text-left text-gray-500">
+      <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+        <tr>
+          <th class="px-6 py-3">Nombre</th>
+          <th class="px-6 py-3">Dependencia</th>
+          <th class="px-6 py-3">Email</th>
+          <th class="px-6 py-3">Estado de Asistencia</th> <!-- Nueva columna para estado de asistencia -->
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(invitado, index) in newSession.asistenciaInvitados" :key="index" class="bg-white border-b">
+          <td class="px-6 py-4">{{ invitado.nombre }}</td>
+          <td class="px-6 py-4">{{ invitado.dependencia }}</td>
+          <td class="px-6 py-4">{{ invitado.email }}</td>
+          <td class="px-6 py-4">
+            <select v-model="invitado.estadoAsistencia" class="input input-bordered">
+              <option value="ASISTIÓ">Asistió</option>
+              <option value="EXCUSA">Excusa</option>
+              <option value="NO ASISTIÓ">No Asistió</option>
+            </select>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+   <!-- Botón de Verificar Quórum -->
+   <div v-if="!isViewing" class="flex justify-end mt-6">
+      <button type="button" @click="verificarQuorum" class="btn btn-primary">Verificar Quórum</button>
     </div>
 
     <!-- Botón de Crear o Actualizar Sesión -->
@@ -180,7 +201,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { createSesion, updateSesion, getSesionById, definirContenidoSesion, addInvitadosToSesion, addMiembrosToSesion } from '../../services/sesionServices';
+import { createSesion, updateSesion, getSesionById, definirContenidoSesion, addInvitadosToSesion, addMiembrosToSesion, verificarQuorumEnServidor } from '../../services/sesionServices';
 import InvitadosModal from '../../components/modals/InvitadosModal.vue';
 import MiembrosModal from '../../components/modals/MiembrosModal.vue';
 import { Sesion, Invitado, Miembro, LocalTime, ApiResponse, AsistenciaMiembro } from '../../Utils/Interfaces/MeetingRecords';
@@ -315,5 +336,35 @@ const addMiembroToLocalList = async (miembro: Miembro) => {
     console.warn('El miembro ya está en la lista.');
   }
 };
+
+// Función para verificar quórum
+const verificarQuorum = async () => {
+  if (!sessionId.value) {
+    console.error('ID de sesión no definido');
+    return;
+  }
+  const quorumData: QuorumEntry[] = [
+    ...newSession.value.asistenciaMiembros.map(miembro => ({
+      idPersona: miembro.idMiembro,
+      tipo: "miembro",
+      estadoAsistencia: miembro.estadoAsistencia,
+    })),
+    ...newSession.value.asistenciaInvitados.map(invitado => ({
+      idPersona: invitado.idInvitado,
+      tipo: "invitado",
+      estadoAsistencia: invitado.estadoAsistencia,
+    })),
+  ];
+
+  try {
+    const response = await verificarQuorumEnServidor(sessionId.value, quorumData);
+    console.log("Respuesta del quórum:", response);
+    alert("Quórum verificado correctamente");
+  } catch (error) {
+    console.error("Error al verificar el quórum:", error);
+    alert("Error al verificar el quórum");
+  }
+};
+
 
 </script>

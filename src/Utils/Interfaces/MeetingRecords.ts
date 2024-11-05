@@ -84,6 +84,12 @@ export interface AsistenciaInvitado {
   estadoAsistencia: string;
 }
 
+export interface QuorumEntry {
+  idPersona: number;
+  tipo: 'miembro' | 'invitado';
+  estadoAsistencia: 'ASISTIÓ' | 'EXCUSA' | 'NO ASISTIÓ';
+}
+
 export interface Tarea {
   idTarea: number;
   descripcion: string;

@@ -1,7 +1,7 @@
 // src/services/sesionService.ts
 
 import { fetchWithAuth } from "../Utils/FetchWithToken";
-import { Sesion, ApiResponse, LocalTime, Miembro, Invitado, AsistenciaInvitado, AsistenciaMiembro } from "../Utils/Interfaces/MeetingRecords";
+import { Sesion, ApiResponse, LocalTime, Miembro, Invitado, AsistenciaInvitado, AsistenciaMiembro, QuorumEntry } from "../Utils/Interfaces/MeetingRecords";
 
 const API_SESIONES_URL = `${import.meta.env.VITE_API_URL}/sesiones`;
 const API_URL = `${import.meta.env.VITE_API_URL}`;
@@ -240,3 +240,35 @@ export const createMember = async (member: Partial<Miembro>): Promise<ApiRespons
     throw error;
   }
 };
+
+// Función para verificar el quórum en el servidor
+export const verificarQuorumEnServidor = async (idSesion: number, quorumData: any[]): Promise<void> => {
+  try {
+    const response = await fetchWithAuth(
+      `http://localhost:8080/api/sesiones/${idSesion}/verificar-quorum`, 
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(quorumData),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Error al verificar el quórum');
+    }
+
+    // Intentar parsear la respuesta como JSON, y si falla, leerla como texto
+    let responseData;
+    try {
+      responseData = await response.json();
+    } catch {
+      responseData = await response.text();  // Leer como texto si no es JSON
+    }
+
+    console.log('Respuesta de verificación de quórum:', responseData);
+  } catch (error) {
+    console.error('Error al verificar el quórum:', error);
+    throw error;
+  }
+};
+
