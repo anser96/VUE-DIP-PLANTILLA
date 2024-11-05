@@ -255,7 +255,7 @@ const loadActaDetail = async () => {
 
 // Function for determining badge style based on the status
 const getEstadoBadge = (estado: string | undefined) => {
-  return estado === 'Aprobada' ? 'badge badge-success' : estado === 'Pendiente' ? 'badge badge-warning' : 'badge badge-error';
+  return estado === 'APROBADA' ? 'badge badge-success' : estado === 'PENDIENTE' ? 'badge badge-warning' : 'badge badge-error';
 };
 
 // Move to next step, or finish if on the last step
