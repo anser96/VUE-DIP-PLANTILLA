@@ -55,7 +55,7 @@
   </template>
   
   <script setup lang="ts">
-  import { ref, computed, onMounted} from 'vue';
+  import { ref, computed, onMounted, watch} from 'vue';
   import { useRoute } from 'vue-router';
   import ConfirmModal from '../../components/ConfirmModal.vue';
   import { getSolicitudes, deleteSolicitud } from '../../services/solicitudServices';
@@ -76,10 +76,7 @@
 onMounted(async () => {
   try {
     const response = await getSolicitudes();
-    console.log('la data ',response);
-    
-    solicitudes.value = response; // Asignar directamente la respuesta
-    console.log('Estas son las solicitudes:', solicitudes.value);
+    solicitudes.value = response; 
   } catch (error) {
     console.error('Error al cargar las solicitudes:', error);
   }

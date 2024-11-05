@@ -128,7 +128,8 @@ const submitForm = async () => {
 
   try {
     await createSolicitud(newSolicitud.value);
-    router.push('/requests'); // Redirigir a la lista de solicitudes después de crear
+    await router.replace("/requests");
+    window.location.reload(); // Redirigir a la lista de solicitudes después de crear
   } catch (error) {
     console.error('Error al guardar la solicitud:', error);
   }
