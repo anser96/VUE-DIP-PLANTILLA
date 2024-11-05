@@ -52,3 +52,20 @@ export const getActaById = async (id: number): Promise<ApiResponse<ActaDetail>> 
     throw error;
   }
 };
+
+export const aprobarActaService = async (actaId: number): Promise<ApiResponse<any>> => {
+  try {
+    const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/actas/${actaId}/aprobar`, {
+      method: 'POST',
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al aprobar el acta');
+    }
+
+    return await response.json() as ApiResponse<any>;
+  } catch (error) {
+    console.error('Error en la aprobación del acta:', error);
+    throw error;
+  }
+};
