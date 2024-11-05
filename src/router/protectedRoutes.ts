@@ -66,8 +66,7 @@ function createCrudRoutes(configs: CrudRouteConfig[]): RouteRecordRaw[] {
         props: { mode: 'edit' },
       },
       {
-        path: 'edit/:id',
-        name: `${spanishName}Editar`,
+        path: 'editsoli/:id',
         component: EditComponent,
         meta: { breadcrumb: `Editar ${spanishName}`, showInSidebar: false, isChild: true },
         props: { mode: 'edit' },

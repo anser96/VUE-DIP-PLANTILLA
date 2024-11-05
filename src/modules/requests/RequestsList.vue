@@ -34,7 +34,7 @@
               <td>{{ solicitud.nombreSolicitante }}</td>
               <td class="flex gap-2">
                 <router-link :to="`/requests/edit/${solicitud.idSolicitud}`" class="btn btn-info btn-sm">Ver</router-link>
-                <router-link :to="`/requests/edit/${solicitud.idSolicitud}`" class="btn btn-warning btn-sm">Editar</router-link>
+                <router-link :to="`/requests/editsoli/${solicitud.idSolicitud}`" class="btn btn-warning btn-sm">Editar</router-link>
                 <button @click="showConfirmModal(solicitud.idSolicitud)" class="btn btn-error btn-sm">Eliminar</button>
               </td>
             </tr>
