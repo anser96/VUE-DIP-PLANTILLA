@@ -11,7 +11,7 @@
       <button :class="{ 'step-primary': currentStep >= 2 }" class="step">Verificación de Quórum</button>
       <button :class="{ 'step-primary': currentStep >= 3 }" class="step">Asistentes Invitados</button>
       <button :class="{ 'step-primary': currentStep >= 4 }" class="step">Orden del Día</button>
-      <button :class="{ 'step-primary': currentStep >= 5 }" class="step">Lectura de Correspondencia</button>
+      <button :class="{ 'step-primary': currentStep >= 5 }" class="step">Solicitudes</button>
       <button :class="{ 'step-primary': currentStep >= 6 }" class="step">Tareas o Compromisos</button>
       <button :class="{ 'step-primary': currentStep >= 7 }" class="step">Próxima Sesión</button>
       <button :class="{ 'step-primary': currentStep >= 8 }" class="step">Resumen General</button>

@@ -24,7 +24,7 @@
             <tr v-for="acta in actas" :key="acta.idActa" class="hover:bg-primary-focus transition-all">
               <td class="p-3">
                 <div class="tooltip tooltip-right" data-tip="Número único del acta">
-                  <span class="badge badge-secondary">{{ acta.idActa }}</span>
+                  <span class="badge badge-secondary">{{ acta.numeroActa }}</span>
                 </div>
               </td>
               <td class="p-3">
