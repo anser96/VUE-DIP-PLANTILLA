@@ -134,6 +134,7 @@
           <th class="px-6 py-3">Cargo</th>
           <th class="px-6 py-3">Email</th>
           <th class="px-6 py-3">Estado de Asistencia</th> <!-- Nueva columna para estado de asistencia -->
+          <th class="px-6 py-3">Excusa</th>
         </tr>
       </thead>
       <tbody>
@@ -148,6 +149,15 @@
               <option value="NO ASISTIÓ">No Asistió</option>
             </select>
           </td>
+          <td class="px-6 py-4">
+          <input
+            v-if="miembro.estadoAsistencia === 'EXCUSA'"
+            v-model="miembro.excusa"
+            placeholder="Ingrese la excusa"
+            class="input input-bordered"
+            type="text"
+          />
+        </td>
         </tr>
       </tbody>
     </table>
@@ -163,6 +173,7 @@
           <th class="px-6 py-3">Dependencia</th>
           <th class="px-6 py-3">Email</th>
           <th class="px-6 py-3">Estado de Asistencia</th> <!-- Nueva columna para estado de asistencia -->
+          <th class="px-6 py-3">Excusa</th>
         </tr>
       </thead>
       <tbody>
@@ -177,6 +188,15 @@
               <option value="NO ASISTIÓ">No Asistió</option>
             </select>
           </td>
+          <td class="px-6 py-4">
+          <input
+            v-if="invitado.estadoAsistencia === 'EXCUSA'"
+            v-model="invitado.excusa"
+            placeholder="Ingrese la excusa"
+            class="input input-bordered"
+            type="text"
+          />
+        </td>
         </tr>
       </tbody>
     </table>
@@ -348,11 +368,13 @@ const verificarQuorum = async () => {
       idPersona: miembro.idMiembro,
       tipo: "miembro",
       estadoAsistencia: miembro.estadoAsistencia,
+      excusa: miembro.estadoAsistencia === "EXCUSA" ? miembro.excusa : undefined,
     })),
     ...newSession.value.asistenciaInvitados.map(invitado => ({
       idPersona: invitado.idInvitado,
       tipo: "invitado",
       estadoAsistencia: invitado.estadoAsistencia,
+      excusa: invitado.estadoAsistencia === "EXCUSA" ? invitado.excusa : undefined,
     })),
   ];
 

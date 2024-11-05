@@ -88,6 +88,7 @@ export interface QuorumEntry {
   idPersona: number;
   tipo: 'miembro' | 'invitado';
   estadoAsistencia: 'ASISTIÓ' | 'EXCUSA' | 'NO ASISTIÓ';
+  excusa: string;
 }
 
 export interface Tarea {
