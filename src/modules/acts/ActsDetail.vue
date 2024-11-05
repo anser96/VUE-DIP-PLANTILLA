@@ -25,7 +25,7 @@
           <ClipboardDocumentIcon class="w-6 h-6" /> 
           <span>Encabezado de Acta</span>
         </h2>
-        <p><strong>Número de Acta:</strong> {{ acta?.idActa || "No asignado" }}</p>
+        <p><strong>Número de Acta:</strong> {{ acta?.numeroActa || "No asignado" }}</p>
         <p><strong>Estado:</strong> <span :class="getEstadoBadge(acta?.estado)">{{ acta?.estado || "Sin estado" }}</span></p>
         <p><strong>Lugar:</strong> {{ acta?.sesion.lugar || "Lugar no especificado" }}</p>
         <p><strong>Fecha:</strong> {{ acta?.sesion.fecha || "Fecha no disponible" }}</p>
