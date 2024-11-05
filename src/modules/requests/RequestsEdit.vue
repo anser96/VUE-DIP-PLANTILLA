@@ -39,6 +39,30 @@
         </p>
       </div>
 
+      <div>
+        <label for="miembro" class="block text-sm font-medium text-gray-700"
+          >Seleccionar Miembro</label
+        >
+        <select
+          id="miembro"
+          v-model="newSolicitud.idSolicitante"
+          class="input input-bordered w-full"
+          required
+        >
+          <option disabled value="">Seleccione un miembro</option>
+          <option
+            v-for="miembro in members"
+            :key="miembro.idMiembro"
+            :value="miembro.idMiembro"
+          >
+            {{ miembro.nombre }}
+          </option>
+        </select>
+        <p v-if="errors.idSolicitante" class="text-red-500 text-sm mt-1">
+          {{ errors.idSolicitante }}
+        </p>
+      </div>
+
       <!-- Campo para la Decisión -->
       <div>
         <label for="desicion" class="block text-sm font-medium text-gray-700"
@@ -92,6 +116,8 @@ import {
   updateSolicitud,
   getSolicitudById,
 } from "../../services/solicitudServices";
+import { getMiembros } from "../../services/miembroService";
+import { Miembro, ApiResponse } from "../../Utils/Interfaces/MeetingRecords";
 
 // Datos de la solicitud que se está editando
 const newSolicitud = ref({
@@ -103,11 +129,10 @@ const newSolicitud = ref({
   fechaDeSolicitud: "",
   respuesta: "Resp",
   tipoSolicitante: "miembro",
-  idSolicitante: 1,
-  sesion: {
-    idSesion: 1,
-  },
+  idSolicitante: "",
+  
 });
+const members = ref<Miembro[]>([]);
 
 // Gestión de errores de formulario
 const errors = ref({
@@ -115,6 +140,7 @@ const errors = ref({
   asunto: "",
   descripcion: "",
   fechaDeSolicitud: "",
+  idSolicitante: "",
 });
 
 // Detectar si estamos en modo de edición
@@ -127,6 +153,23 @@ onMounted(async () => {
     ? parseInt(route.params.id as string, 10)
     : null;
 
+  try {
+    const response: ApiResponse<Miembro[]> = await getMiembros();
+    if (Array.isArray(response)) {
+      members.value = response;
+    } else if ("data" in response && Array.isArray(response.data)) {
+      members.value = response.data;
+    } else if ("results" in response && Array.isArray(response.results)) {
+      members.value = response.results;
+    } else {
+      console.error(
+        "Estructura inesperada de los datos de miembros:",
+        response
+      );
+    }
+  } catch (error) {
+    console.error("Error al cargar los miembros:", error);
+  }
   if (solicitudId.value !== null) {
     try {
       const response = await getSolicitudById(solicitudId.value);
@@ -174,6 +217,10 @@ const validateFields = () => {
     errors.value.fechaDeSolicitud = "La fecha de solicitud es obligatoria.";
     isValid = false;
   }
+  if (!newSolicitud.value.idSolicitante) {
+    errors.value.idSolicitante = "El solicitante es obligatorio.";
+    isValid = false;
+  }
 
   return isValid;
 };
@@ -181,11 +228,11 @@ const validateFields = () => {
 const submitForm = async () => {
   if (!validateFields()) return;
 
-
   const solicitudData = { ...newSolicitud.value };
 
-  
-  solicitudData.fechaDeSolicitud = formatToCustomISO(solicitudData.fechaDeSolicitud);
+  solicitudData.fechaDeSolicitud = formatToCustomISO(
+    solicitudData.fechaDeSolicitud
+  );
 
   try {
     if (solicitudId.value !== null) {
@@ -201,9 +248,9 @@ const submitForm = async () => {
 const formatToCustomISO = (dateString) => {
   const date = new Date(dateString);
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
   return `${year}-${month}-${day}T00:00:00.000+00:00`;
 };
 </script>

@@ -18,7 +18,7 @@
               <th>Fecha de Solicitud</th>
               <th>Respuesta</th>
               <th>Estado</th>
-              <th>TipoSolicitante</th>
+              <th>Solicitante</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -31,7 +31,7 @@
               <td>{{ formatDate(solicitud.fechaDeSolicitud) }}</td>
               <td>{{ solicitud.respuesta}}</td>
               <td>{{ solicitud.estado }}</td>
-              <td>{{ solicitud.tipoSolicitante }}</td>
+              <td>{{ solicitud.nombreSolicitante }}</td>
               <td class="flex gap-2">
                 <router-link :to="`/requests/edit/${solicitud.idSolicitud}`" class="btn btn-info btn-sm">Ver</router-link>
                 <router-link :to="`/requests/edit/${solicitud.idSolicitud}`" class="btn btn-warning btn-sm">Editar</router-link>

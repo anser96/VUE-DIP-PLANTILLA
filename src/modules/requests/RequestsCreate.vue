@@ -30,6 +30,24 @@
         />
         <p v-if="errors.asunto" class="text-red-500 text-sm mt-1">{{ errors.asunto }}</p>
       </div>
+      
+
+      <div>
+        <label for="miembro" class="block text-sm font-medium text-gray-700">Seleccionar Miembro</label>
+        <select
+          id="miembro"
+          v-model="newSolicitud.idSolicitante"
+          class="input input-bordered w-full"
+          required
+        >
+          <option disabled value="">Seleccione un miembro</option>
+          <option v-for="miembro in members" :key="miembro.idMiembro" :value="miembro.idMiembro">
+            {{ miembro.nombre }}
+          </option>
+        </select>
+        <p v-if="errors.idSolicitante" class="text-red-500 text-sm mt-1">{{ errors.idSolicitante }}</p>
+      </div>
+
 
       <div>
         <label for="asunto" class="block text-sm font-medium text-gray-700">Descripcion</label>
@@ -66,9 +84,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted} from 'vue';
 import { useRouter } from 'vue-router';
 import { createSolicitud } from '../../services/solicitudServices';
+import { getMiembros } from "../../services/miembroService";
+import { Miembro, ApiResponse } from "../../Utils/Interfaces/MeetingRecords";
 
 // Datos de la nueva solicitud
 const newSolicitud = ref({
@@ -78,19 +98,38 @@ const newSolicitud = ref({
   descripcion: '', 
   fechaDeSolicitud: '',
   respuesta: 'Resp', 
-  tipoSolicitante: 'miembro', 
-  idSolicitante: 1, 
+  tipoSolicitante: 'Miembro', 
+  idSolicitante: '', 
   sesion: {
     idSesion: 1, 
   },
 });
-
+const members = ref<Miembro[]>([]);
 
 const errors = ref({
   dependencia: '',
   asunto: '',
   descripcion:'',
   fechaDeSolicitud: '',
+  idSolicitante:0
+});
+
+
+onMounted(async () => {
+  try {
+    const response: ApiResponse<Miembro[]> = await getMiembros();
+    if (Array.isArray(response)) {
+      members.value = response;
+    } else if ("data" in response && Array.isArray(response.data)) {
+      members.value = response.data;
+    } else if ("results" in response && Array.isArray(response.results)) {
+      members.value = response.results;
+    } else {
+      console.error("Estructura inesperada de los datos de miembros:", response);
+    }
+  } catch (error) {
+    console.error("Error al cargar los miembros:", error);
+  }
 });
 
 // Validación de campos
@@ -115,6 +154,10 @@ const validateFields = () => {
 
   if (!newSolicitud.value.fechaDeSolicitud) {
     errors.value.fechaDeSolicitud = 'La fecha de solicitud es obligatoria.';
+    isValid = false;
+  }
+  if (!newSolicitud.value.idSolicitante) {
+    errors.value.idSolicitante = 'El solicitante  es obligatorio.';
     isValid = false;
   }
 
