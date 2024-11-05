@@ -46,22 +46,15 @@
       <div v-if="isEditModalVisible" class="modal-background">
         <div class="modal-content">
           <h2 class="text-2xl font-bold mb-4">Editar Invitado</h2>
-          <p><strong>ID:</strong> {{ selectedGuest.idGuest }}</p> 
+          <label>ID:</label>
+          <input v-model="selectedGuest.idInvitado" class="input" /> 
           <label>Nombre:</label>
-          <input v-model="selectedGuest.name" class="input" />  
+          <input v-model="selectedGuest.nombre" class="input" />  
           <label>Dependencia:</label>
-          <input v-model="selectedGuest.dependency" class="input" /> 
-          <label>Estado de Asistencia:</label>
-          <input v-model="selectedGuest.estadoAsistencia" class="input" /> 
+          <input v-model="selectedGuest.dependencia" class="input" />  
           <label>Correo Electrónico:</label>
           <input v-model="selectedGuest.email" class="input" />
           
-          <h3 class="mt-4">Tareas Asignadas</h3>
-          <ul>
-            <li v-for="task in selectedGuest.tasks" :key="task.id">
-              {{ task.descripcion }} - Fecha de Entrega: {{ task.fechaEntrega }} - Fecha de Verificación: {{ task.fechaVerificacion }}
-            </li>
-          </ul>
 
           <button @click="closeEditModal" class="btn btn-secondary mt-4">Cerrar</button>
           <button @click="saveGuest" class="btn btn-success mt-4">Guardar Cambios</button>
@@ -95,16 +88,11 @@
       <div v-if="isViewModalVisible" class="modal-background">
         <div class="modal-content">
           <h2 class="text-2xl font-bold mb-4">Información de {{ selectedGuest.name }}</h2>
-          <p><strong>ID:</strong> {{ selectedGuest.idGuest }}</p>
-          <p><strong>Dependencia:</strong> {{ selectedGuest.dependency }}</p>
-          <p><strong>Estado de Asistencia:</strong> {{ selectedGuest.estadoAsistencia }}</p>
+          <p><strong>ID:</strong> {{ selectedGuest.idInvitado }}</p>
+          <p><strong>Nombre:</strong> {{ selectedGuest.nombre }}</p>
+          <p><strong>Dependencia:</strong> {{ selectedGuest.dependencia }}</p>
           <p><strong>Correo Electrónico:</strong> {{ selectedGuest.email }}</p>
-          <h3 class="mt-4">Tareas Asignadas</h3>
-          <ul>
-            <li v-for="task in selectedGuest.tasks" :key="task.id">
-              {{ task.descripcion }} - Fecha de Entrega: {{ task.fechaEntrega }} - Fecha de Verificación: {{ task.fechaVerificacion }}
-            </li>
-          </ul>
+
           <button @click="closeViewModal" class="btn btn-secondary mt-4">Cerrar</button>
         </div>
       </div>
