@@ -203,7 +203,8 @@
   </div>
 
    <!-- Botón de Verificar Quórum -->
-   <div v-if="!isViewing" class="flex justify-end mt-6">
+   <div v-if="(!isViewing && isEditing && (newSession.asistenciaMiembros.length > 0 || newSession.asistenciaInvitados.length > 0))" 
+        class="flex justify-end mt-6">
       <button type="button" @click="verificarQuorum" class="btn btn-primary">Verificar Quórum</button>
     </div>
 
