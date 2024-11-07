@@ -2,13 +2,34 @@
   <div class="p-4">
     <div v-if="!isChildRouteActive">
       <h1 class="text-3xl font-bold mb-4">Lista de Sesiones</h1>
-      
-      <div class="flex justify-end mb-4">
-        <router-link to="/sessions/create" class="btn btn-primary">Crear Nueva Sesión</router-link>
+
+      <!-- Componente de Filtro Genérico -->
+      <GenericFilter
+        :filters="filterDefinitions"
+        :isModalVisible="isFilterModalVisible"
+        @filter="applyFilter"
+        @close="isFilterModalVisible = false"
+      />
+
+      <div class="join flex justify-end">
+        <!-- Botón para abrir la modal de filtros -->
+        <button @click="isFilterModalVisible = true" class="btn join-item btn-primary mb-4">
+          <FunnelIcon class="w-5 h-5" /> Filtros
+        </button>
+        <!-- Botón para limpiar los filtros -->
+        <button @click="clearFilters" class="btn join-item btn-primary mb-4">
+          Limpiar Filtros
+        </button>
+
+        <div class="mb-4">
+          <router-link to="/sessions/create" class="btn join-item btn-primary">
+            <PlusIcon class="w-5 h-5" /> Nueva Sesión
+          </router-link>
+        </div>
       </div>
 
       <!-- Mensaje si no hay sesiones disponibles -->
-      <div v-if="sessions.length === 0">
+      <div v-if="filteredSessions.length === 0">
         <p>No hay sesiones disponibles.</p>
       </div>
 
@@ -26,7 +47,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="session in sessions" :key="session.idSesion">
+          <tr v-for="session in filteredSessions" :key="session.idSesion">
             <td>{{ session.lugar }}</td>
             <td>{{ session.fecha }}</td>
             <td>{{ formatTime(`${session.horaInicio}`) }}</td>
@@ -41,7 +62,7 @@
           </tr>
         </tbody>
       </table>
-      
+
       <!-- Modal de confirmación para eliminación -->
       <ConfirmModal :show="isModalVisible" @confirm="confirmDelete" @cancel="cancelDelete" />
     </div>
@@ -53,11 +74,63 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import ConfirmModal from '../../components/ConfirmModal.vue';
-
+import GenericFilter from '../../components/GenericFilter.vue'; // Importa el filtro genérico
+import { FunnelIcon, PlusIcon } from '@heroicons/vue/24/outline';
 import { deleteSesion, getSesiones } from '../../services/sesionServices';
 import { ApiResponse, Sesion } from '../../Utils/Interfaces/MeetingRecords';
 
+const isFilterModalVisible = ref(false);
 const sessions = ref<Sesion[]>([]);
+const filteredSessions = ref<Sesion[]>([]);
+  const filters = ref({
+  lugar: '',
+  fecha: '',
+  presidente: '',
+  secretario: '',
+  horaInicio: '',
+  horaFinal: '',
+  contenido: '',
+  asistenciaMiembros: '',
+  asistenciaInvitados: '',
+  tareas: '',
+  solicitudes: '',
+  actaDTO: ''
+});
+
+const clearFilters = () => {
+  filters.value = {
+    lugar: '',
+    fecha: '',
+    presidente: '',
+    secretario: '',
+    horaInicio: '',
+    horaFinal: '',
+    contenido: '',
+    asistenciaMiembros: '',
+    asistenciaInvitados: '',
+    tareas: '',
+    solicitudes: '',
+    actaDTO: ''
+  };
+  filteredSessions.value = [...sessions.value]; // Restablecer a todas las sesiones cargadas inicialmente
+};
+
+// Definiciones de filtros
+interface Filter {
+  key: string;
+  label: string;
+  type: "text" | "date" | "select";
+  placeholder?: string;
+}
+
+const filterDefinitions: Filter[] = [
+  { key: 'lugar', label: 'Ubicación', type: 'text', placeholder: 'Buscar por ubicación' },
+  { key: 'fecha', label: 'Fecha', type: 'date' },
+  { key: 'presidente', label: 'Presidente', type: 'text', placeholder: 'Buscar por presidente' },
+  { key: 'secretario', label: 'Secretario', type: 'text', placeholder: 'Buscar por secretario' },
+  { key: 'contenido', label: 'Contenido', type: 'text', placeholder: 'Buscar en contenido' }
+];
+
 
 const isModalVisible = ref(false);
 const sessionIdToDelete = ref<number | null>(null);
@@ -67,17 +140,47 @@ const isChildRouteActive = computed(() =>
   route.matched.some(r => r.path.includes('/sessions/create') || r.path.includes('/sessions/edit') || r.path.includes('/sessions/'))
 );
 
-// Cargar sesiones desde la API
 const loadSessions = async () => {
   try {
     const response: ApiResponse<Sesion[]> = await getSesiones();
-    sessions.value = response.data ?? []; // Acceso directo al `data` de la respuesta
-    console.log('Sesiones cargadas:', sessions.value[0]);
+    sessions.value = response.data ?? [];
+    filteredSessions.value = [...sessions.value]; // Inicialmente todas las sesiones
   } catch (error) {
     console.error('Error al cargar las sesiones:', error);
   }
 };
 
+// Función para aplicar filtros sobre todos los campos, incluyendo anidados
+const applyFilter = (filterValues: Record<string, string>) => {
+  filteredSessions.value = sessions.value.filter(session => {
+    return Object.entries(filterValues).every(([_, value]) => {
+      if (!value) return true; // Ignora filtros vacíos
+      return searchInObject(session, value); // Llama a la función recursiva para buscar en cualquier campo
+    });
+  });
+};
+
+// Función recursiva para buscar el valor dentro de cualquier campo del objeto (incluyendo anidados)
+const searchInObject = (obj: any, searchTerm: string): boolean => {
+  const lowerSearchTerm = searchTerm.toLowerCase();
+
+  for (const key in obj) {
+    if (!obj.hasOwnProperty(key)) continue;
+
+    const value = obj[key];
+
+    // Si el campo es un objeto o un array, aplica la búsqueda de forma recursiva
+    if (typeof value === 'object' && value !== null) {
+      if (searchInObject(value, lowerSearchTerm)) {
+        return true; // Encuentra el término de búsqueda en un campo anidado
+      }
+    } else if (String(value).toLowerCase().includes(lowerSearchTerm)) {
+      // Convierte el valor en string y busca el término en el campo actual
+      return true;
+    }
+  }
+  return false;
+};
 
 // Mostrar modal de confirmación para eliminar sesión
 const showConfirmModal = (id: number) => {
@@ -85,8 +188,8 @@ const showConfirmModal = (id: number) => {
   isModalVisible.value = true;
 };
 
-const isActaPendiente = (sesion) => {
-  return sesion?.actaDTO?.[0]?.estado === 'PENDIENTE';
+const isActaPendiente = (sesion: Sesion): boolean => {
+  return sesion?.actas?.[0]?.estado === 'PENDIENTE';
 };
 
 // Confirmar y eliminar sesión
@@ -95,6 +198,7 @@ const confirmDelete = async () => {
     try {
       await deleteSesion(sessionIdToDelete.value);
       sessions.value = sessions.value.filter(session => session.idSesion !== sessionIdToDelete.value);
+      filteredSessions.value = sessions.value; // Actualizar sesiones filtradas
       isModalVisible.value = false;
       sessionIdToDelete.value = null;
     } catch (error) {
@@ -119,13 +223,6 @@ const formatTime = (time: string): string => {
   return `${formattedHour}:${minute} ${period}`;
 };
 
-// Montar componente y observar cambios de ruta para cargar sesiones
 onMounted(loadSessions);
 watch(route, loadSessions);
 </script>
-
-<style scoped>
-.table {
-  margin-top: 20px;
-}
-</style>

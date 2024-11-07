@@ -74,6 +74,7 @@ export interface Miembro {
   nombre: string;
   cargo: string;
   email: string;
+  excusa?: string; // Add the excusa property
   asistenciaMiembros: AsistenciaMiembro[]; // Relación con asistencia
 }
 export interface AsistenciaInvitado {
