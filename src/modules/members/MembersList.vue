@@ -48,19 +48,15 @@
     <div v-if="isEditModalVisible" class="modal-background">
       <div class="modal-content">
         <h2 class="text-2xl font-bold mb-4">Editar Miembro</h2>
-        <p><strong>ID:</strong> {{ selectedMember.idMember }}</p>
+        <label>ID:</label>
+        <input v-model="selectedMember.idMiembro" class="input" />
         <label>Nombre:</label>
-        <input v-model="selectedMember.name" class="input" />
+        <input v-model="selectedMember.nombre" class="input" />
         <label>Cargo:</label>
-        <input v-model="selectedMember.role" class="input" />
-        
-        <h3 class="mt-4">Tareas Asignadas</h3>
-        <ul>
-          <li v-for="task in selectedMember.tasks" :key="task.id">
-            {{ task.descripcion }} - Fecha de Entrega: {{ task.fechaEntrega }} - Fecha de Verificación: {{ task.fechaVerificacion }}
-          </li>
-        </ul>
-        
+        <input v-model="selectedMember.cargo" class="input" />
+        <label>Email:</label>
+        <input v-model="selectedMember.email" class="input" />
+
         <button @click="closeEditModal" class="btn btn-secondary mt-4">Cerrar</button>
         <button @click="saveMember" class="btn btn-success mt-4">Guardar Cambios</button>
       </div>
@@ -93,15 +89,11 @@
     <div v-if="isViewModalVisible" class="modal-background">
       <div class="modal-content">
         <h2 class="text-2xl font-bold mb-4">Información de {{ selectedMember.name }}</h2>
-        <p><strong>ID:</strong> {{ selectedMember.idMember }}</p>
-        <p><strong>Nombre:</strong> {{ selectedMember.name }}</p>
-        <p><strong>Cargo:</strong> {{ selectedMember.role }}</p>
-        <h3 class="mt-4">Tareas Asignadas</h3>
-        <ul>
-          <li v-for="task in selectedMember.tasks" :key="task.id">
-            {{ task.descripcion }} - Fecha de Entrega: {{ task.fechaEntrega }} - Fecha de Verificación: {{ task.fechaVerificacion }}
-          </li>
-        </ul>
+        <p><strong>ID:</strong> {{ selectedMember.idMiembro }}</p>
+        <p><strong>Nombre:</strong> {{ selectedMember.nombre }}</p>
+        <p><strong>Cargo:</strong> {{ selectedMember.cargo }}</p>
+        <p><strong>Email:</strong> {{ selectedMember.email }}</p>
+
         <button @click="closeViewModal" class="btn btn-secondary mt-4">Cerrar</button>
       </div>
     </div>

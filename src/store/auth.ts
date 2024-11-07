@@ -1,8 +1,7 @@
 import { defineStore } from 'pinia';
-
-import { login as loginService, isTokenValid } from '../services/authService';
 import router from '../router';
 import { LoginData, LoginResponse, Usuario } from '../Utils/Interfaces/MeetingRecords';
+import { login } from '../services/authService';
 
 // Define la interfaz del estado de autenticación
 export interface AuthState {
@@ -21,7 +20,7 @@ export const useAuthStore = defineStore("auth", {
     async login(data: LoginData): Promise<void> {
       try {
         // Llamar al servicio de login y obtener la respuesta
-        const response: LoginResponse = await loginService(data);
+        const response: LoginResponse = await login(data);
         
         // Obtener el token y el usuario de la respuesta
         const token = response.data.token;
@@ -61,7 +60,7 @@ export const useAuthStore = defineStore("auth", {
       const userStored = storedData.usuario || null;
 
       // Verificar si el token es válido
-      if (tokenStored && isTokenValid(tokenStored)) {
+      if (tokenStored ) {
         this.$patch({
           token: tokenStored,
           usuario: userStored,
