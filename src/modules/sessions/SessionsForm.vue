@@ -278,9 +278,35 @@ onMounted(async () => {
     }
   }
 });
+const isFormValid = () => {
+  errors.value = {}; // Reset errors
 
+  if (!newSession.value.lugar) {
+    errors.value.lugar = 'El lugar es obligatorio.';
+  }
+  if (!newSession.value.fecha) {
+    errors.value.fecha = 'La fecha es obligatoria.';
+  }
+  if (!newSession.value.horaInicio) {
+    errors.value.startTime = 'La hora de inicio es obligatoria.';
+  }
+  if (!newSession.value.horaFinal) {
+    errors.value.endTime = 'La hora de fin es obligatoria.';
+  }
+  if (!newSession.value.presidente) {
+    errors.value.presidente = 'El presidente es obligatorio.';
+  }
+  if (!newSession.value.secretario) {
+    errors.value.secretario = 'El secretario es obligatorio.';
+  }
+
+  return Object.keys(errors.value).length === 0;
+};
 const submitForm = async () => {
   if (isViewing.value) return;
+  if(!isFormValid()){
+    return;
+  }
   try {
     let sessionResponse: ApiResponse<Sesion>;
     if (isEditing.value && sessionId.value !== null) {

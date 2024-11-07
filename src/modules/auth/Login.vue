@@ -72,7 +72,6 @@
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../store/auth';
-import { isTokenValid } from '../../services/authService';
 import { LoginData } from '../../Utils/Interfaces/MeetingRecords';
 
 // Datos del formulario de login
@@ -96,11 +95,11 @@ const router = useRouter();
 
 // Instancia del store de autenticación
 const authStore = useAuthStore();
-onMounted(() => {
-  if (isTokenValid(authStore.token ?? '')) {
-    router.push('/'); // Redirigir al home si ya hay un token
+onMounted(()=>{
+  if(authStore.token){
+    router.push('/');
   }
-});
+})
 const validateFields = () => {
   let isValid = true;
   errors.value.correo = '';
