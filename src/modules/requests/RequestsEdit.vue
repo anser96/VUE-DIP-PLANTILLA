@@ -39,6 +39,24 @@
         </p>
       </div>
 
+       <!-- Campo para la Decisión -->
+       <div>
+        <label for="desicion" class="block text-sm font-medium text-gray-700"
+          >Descripcion</label
+        >
+        <input
+          type="text"
+          id="desicion"
+          v-model="newSolicitud.descripcion"
+          class="input input-bordered w-full"
+          placeholder="Ingrese la decisión"
+          required
+        />
+        <p v-if="errors.descripcion" class="text-red-500 text-sm mt-1">
+          {{ errors.descripcion }}
+        </p>
+      </div>
+
       <div>
         <label for="miembro" class="block text-sm font-medium text-gray-700"
           >Seleccionar Miembro</label
@@ -63,23 +81,21 @@
         </p>
       </div>
 
-      <!-- Campo para la Decisión -->
-      <div>
-        <label for="desicion" class="block text-sm font-medium text-gray-700"
-          >Descripcion</label
-        >
+
+      <!-- <div>
+        <label for="tipoSolicitante" class="block text-sm font-medium text-gray-700">Tipo Solicitante</label>
         <input
           type="text"
-          id="desicion"
-          v-model="newSolicitud.descripcion"
+          id="asunto"
+          v-model="newSolicitud.tipoSolicitante"
           class="input input-bordered w-full"
-          placeholder="Ingrese la decisión"
+          placeholder="Ingrese el tipo de solicitante"
           required
         />
-        <p v-if="errors.descripcion" class="text-red-500 text-sm mt-1">
-          {{ errors.descripcion }}
-        </p>
-      </div>
+        <p v-if="errors.tipoSolicitante" class="text-red-500 text-sm mt-1">{{ errors.tipoSolicitante }}</p>
+      </div> -->
+
+     
 
       <!-- Campo para la Fecha de Solicitud -->
       <div>
@@ -128,7 +144,7 @@ const newSolicitud = ref({
   descripcion: "",
   fechaDeSolicitud: "",
   respuesta: "Resp",
-  tipoSolicitante: "miembro",
+  tipoSolicitante: "Miembro",
   idSolicitante: "",
   
 });
@@ -141,6 +157,7 @@ const errors = ref({
   descripcion: "",
   fechaDeSolicitud: "",
   idSolicitante: "",
+  tipoSolicitante: ""
 });
 
 // Detectar si estamos en modo de edición
