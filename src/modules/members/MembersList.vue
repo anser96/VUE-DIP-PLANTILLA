@@ -35,11 +35,7 @@
         </tbody>
       </table>
 
-      <ConfirmModal
-        :show="isModalVisible"
-        @confirm="confirmDelete"
-        @cancel="cancelDelete"
-      />
+      <ConfirmModal :show="isModalVisible" @confirm="confirmDelete" @cancel="cancelDelete" />
     </div>
 
     <router-view v-else />
@@ -49,7 +45,7 @@
       <div class="modal-content">
         <h2 class="text-2xl font-bold mb-4">Editar Miembro</h2>
         <label>ID:</label>
-        <input v-model="selectedMember.idMiembro" class="input" />
+        <input v-model="selectedMember.idMiembro" class="input" disabled /> <!-- Deshabilitado -->
         <label>Nombre:</label>
         <input v-model="selectedMember.nombre" class="input" />
         <label>Cargo:</label>
@@ -61,6 +57,7 @@
         <button @click="saveMember" class="btn btn-success mt-4">Guardar Cambios</button>
       </div>
     </div>
+
 
     <!-- Modal para asignar tarea -->
     <div v-if="isTaskModalVisible" class="modal-background">
@@ -169,7 +166,7 @@ const cancelDelete = () => {
 };
 
 const openEditModal = (member: any) => {
-  selectedMember.value = { ...member };
+  selectedMember.value = { ...member }; // Crea una copia para evitar la mutación directa
   isEditModalVisible.value = true;
 };
 
@@ -179,13 +176,18 @@ const closeEditModal = () => {
 
 const saveMember = () => {
   const index = members.value.findIndex(
-    (member) => member.idMiembro === selectedMember.value.idMember
+    (member) => member.idMiembro === selectedMember.value.idMiembro
   );
   if (index !== -1) {
-    members.value[index] = selectedMember.value;
+    // Copiar el miembro sin modificar el idMiembro
+    const updatedMember = { ...selectedMember.value };
+    delete updatedMember.idMiembro; // Elimina el ID antes de guardarlo
+    members.value[index] = { ...updatedMember, idMiembro: selectedMember.value.idMiembro }; // Mantener el ID original
   }
-  closeEditModal();
+  closeEditModal(); // Cerrar el modal después de guardar los cambios
 };
+
+
 
 // Funciones para el modal de tareas
 const assignTask = (member: any) => {
@@ -244,4 +246,3 @@ const closeViewModal = () => {
   border-radius: 4px;
 }
 </style>
-

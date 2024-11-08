@@ -1,7 +1,7 @@
 // src/services/miembroService.ts
 
 import { fetchWithAuth } from "../Utils/FetchWithToken";
-import { Miembro,ApiResponse } from "../Utils/Interfaces/MeetingRecords";
+import { Miembro, ApiResponse } from "../Utils/Interfaces/MeetingRecords";
 
 const API_MIEMBROS_URL = `${import.meta.env.VITE_API_URL}/miembros`;
 

@@ -33,11 +33,7 @@
           </tbody>
         </table>
 
-        <ConfirmModal 
-          :show="isModalVisible"  
-          @confirm="confirmDelete" 
-          @cancel="cancelDelete" 
-        />
+        <ConfirmModal :show="isModalVisible" @confirm="confirmDelete" @cancel="cancelDelete" />
       </div>
 
       <router-view v-else />
@@ -46,16 +42,16 @@
       <div v-if="isEditModalVisible" class="modal-background">
         <div class="modal-content">
           <h2 class="text-2xl font-bold mb-4">Editar Invitado</h2>
+
+          <!-- ID deshabilitado para que no se pueda editar -->
           <label>ID:</label>
-          <input v-model="selectedGuest.idInvitado" class="input" /> 
+          <input v-model="selectedGuest.idInvitado" class="input" disabled />
           <label>Nombre:</label>
-          <input v-model="selectedGuest.nombre" class="input" />  
+          <input v-model="selectedGuest.nombre" class="input" />
           <label>Dependencia:</label>
-          <input v-model="selectedGuest.dependencia" class="input" />  
+          <input v-model="selectedGuest.dependencia" class="input" />
           <label>Correo Electrónico:</label>
           <input v-model="selectedGuest.email" class="input" />
-          
-
           <button @click="closeEditModal" class="btn btn-secondary mt-4">Cerrar</button>
           <button @click="saveGuest" class="btn btn-success mt-4">Guardar Cambios</button>
         </div>
@@ -68,15 +64,15 @@
           <form @submit.prevent="submitTask">
             <div class="mb-2">
               <label>Descripción de Tarea:</label>
-              <input type="text" v-model="task.descripcion" required class="input"/>
+              <input type="text" v-model="task.descripcion" required class="input" />
             </div>
             <div class="mb-2">
               <label>Fecha de Entrega:</label>
-              <input type="date" v-model="task.fechaEntrega" required class="input"/>
+              <input type="date" v-model="task.fechaEntrega" required class="input" />
             </div>
             <div class="mb-2">
               <label>Fecha de Verificación:</label>
-              <input type="date" v-model="task.fechaVerificacion" required class="input"/>
+              <input type="date" v-model="task.fechaVerificacion" required class="input" />
             </div>
             <button type="submit" class="btn btn-success mt-4">Guardar Tarea</button>
             <button @click="closeTaskModal" class="btn btn-secondary mt-4">Cerrar</button>
@@ -99,151 +95,153 @@
     </div>
   </template>
 
-  <script setup lang="ts">
-  import { ref, onMounted, computed } from "vue";
-  import { useRoute } from 'vue-router';
-  import ConfirmModal from '../../components/ConfirmModal.vue';
-  import { Invitado, ApiResponse } from "../../Utils/Interfaces/MeetingRecords";
-  import { getInvitados } from "../../services/invitadoServices";
+<script setup lang="ts">
+import { ref, onMounted, computed } from "vue";
+import { useRoute } from 'vue-router';
+import ConfirmModal from '../../components/ConfirmModal.vue';
+import { Invitado, ApiResponse } from "../../Utils/Interfaces/MeetingRecords";
+import { getInvitados } from "../../services/invitadoServices";
 
 
-  const guests = ref<Invitado[]>([]);
-  const isModalVisible = ref(false);
-  const isEditModalVisible = ref(false);
-  const isTaskModalVisible = ref(false);
-  const isViewModalVisible = ref(false);
-  const guestIdToDelete = ref<number | null>(null);
-  const selectedGuest = ref<any>(null);
+const guests = ref<Invitado[]>([]);
+const isModalVisible = ref(false);
+const isEditModalVisible = ref(false);
+const isTaskModalVisible = ref(false);
+const isViewModalVisible = ref(false);
+const guestIdToDelete = ref<number | null>(null);
+const selectedGuest = ref<any>(null);
 
-  const task = ref({
-    descripcion: "",
-    fechaEntrega: "",
-    fechaVerificacion: ""
-  });
+const task = ref({
+  descripcion: "",
+  fechaEntrega: "",
+  fechaVerificacion: ""
+});
 
-  const isChildRouteActive = computed(() =>
-    useRoute().matched.some(
-      (r) =>
-        r.path.includes("/guests/create") || r.path.includes("/guests/edit")
-    )
-  );
+const isChildRouteActive = computed(() =>
+  useRoute().matched.some(
+    (r) =>
+      r.path.includes("/guests/create") || r.path.includes("/guests/edit")
+  )
+);
 
-  onMounted(async () => {
-    try {
-      const response: ApiResponse<Invitado[]> = await getInvitados();
-      if (Array.isArray(response)) {
-        guests.value = response;
-      } else if ("data" in response && Array.isArray(response.data)) {
-        guests.value = response.data;
-      } else if ("results" in response && Array.isArray(response.results)) {
-        guests.value = response.results;
-      } else {
-        console.error("Estructura inesperada de los datos de invitado:", response);
-      }
-    } catch (error) {
-      console.error("Error al cargar los invitados:", error);
+onMounted(async () => {
+  try {
+    const response: ApiResponse<Invitado[]> = await getInvitados();
+    if (Array.isArray(response)) {
+      guests.value = response;
+    } else if ("data" in response && Array.isArray(response.data)) {
+      guests.value = response.data;
+    } else if ("results" in response && Array.isArray(response.results)) {
+      guests.value = response.results;
+    } else {
+      console.error("Estructura inesperada de los datos de invitado:", response);
     }
-  });
+  } catch (error) {
+    console.error("Error al cargar los invitados:", error);
+  }
+});
 
-  // Funciones para el modal de confirmación
-  const showConfirmModal = (id: number) => {
-    guestIdToDelete.value = id;
-    isModalVisible.value = true;
-  };
+// Funciones para el modal de confirmación
+const showConfirmModal = (id: number) => {
+  guestIdToDelete.value = id;
+  isModalVisible.value = true;
+};
 
-  const confirmDelete = () => {
-    if (guestIdToDelete.value !== null) {
-      const index = guests.value.findIndex(
-        (guest) => guest.idInvitado === guestIdToDelete.value
-      );
-      if (index !== -1) {
-        guests.value.splice(index, 1);
-      }
-    }
-    isModalVisible.value = false;
-    guestIdToDelete.value = null;
-  };
-
-  const cancelDelete = () => {
-    isModalVisible.value = false;
-    guestIdToDelete.value = null;
-  };
-
-  // Funciones para el modal de edición
-  const openEditModal = (guest: any) => {
-    selectedGuest.value = { ...guest };
-    isEditModalVisible.value = true;
-  };
-
-  const closeEditModal = () => {
-    isEditModalVisible.value = false;
-  };
-
-  const saveGuest = () => {
+const confirmDelete = () => {
+  if (guestIdToDelete.value !== null) {
     const index = guests.value.findIndex(
-      (guest) => guest.idInvitado === selectedGuest.value.idMember
+      (guest) => guest.idInvitado === guestIdToDelete.value
     );
     if (index !== -1) {
-      guests.value[index] = selectedGuest.value;
+      guests.value.splice(index, 1);
     }
-    closeEditModal();
-  };
-
-  // Funciones para el modal de tareas
-  const assignTask = (guest: any) => {
-    selectedGuest.value = guest;
-    isTaskModalVisible.value = true;
-  };
-
-  const closeTaskModal = () => {
-    isTaskModalVisible.value = false;
-  };
-
-  const submitTask = () => {
-    const taskToAdd = { ...task.value, id: Date.now() };
-    selectedGuest.value.tasks.push(taskToAdd);
-    closeTaskModal();
-    task.value = { descripcion: '', fechaEntrega: '', fechaVerificacion: '' }; // Resetear el formulario
-  };
-
-  const viewGuests = (guest: Invitado) => {
-    selectedGuest.value = guest;
-    isViewModalVisible.value = true;
-  };
-
-  // Funciones para el modal de ver información
-  const closeViewModal = () => {
-    isViewModalVisible.value = false;
-  };
-  </script>
-
-  <style scoped>
-  .modal-background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
+  isModalVisible.value = false;
+  guestIdToDelete.value = null;
+};
 
-  .modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    max-width: 500px;
-    width: 100%;
-  }
+const cancelDelete = () => {
+  isModalVisible.value = false;
+  guestIdToDelete.value = null;
+};
 
-  .input {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+// Funciones para el modal de edición
+const openEditModal = (guest: any) => {
+  selectedGuest.value = { ...guest };
+  isEditModalVisible.value = true;
+};
+
+const closeEditModal = () => {
+  isEditModalVisible.value = false;
+};
+
+const saveGuest = () => {
+  const index = guests.value.findIndex(
+    (guest) => guest.idInvitado === selectedGuest.value.idInvitado
+  );
+  if (index !== -1) {
+    // Actualizamos el invitado en la lista
+    guests.value[index] = selectedGuest.value;
   }
-  </style>
+  closeEditModal(); // Cerramos el modal después de guardar los cambios
+};
+
+
+// Funciones para el modal de tareas
+const assignTask = (guest: any) => {
+  selectedGuest.value = guest;
+  isTaskModalVisible.value = true;
+};
+
+const closeTaskModal = () => {
+  isTaskModalVisible.value = false;
+};
+
+const submitTask = () => {
+  const taskToAdd = { ...task.value, id: Date.now() };
+  selectedGuest.value.tasks.push(taskToAdd);
+  closeTaskModal();
+  task.value = { descripcion: '', fechaEntrega: '', fechaVerificacion: '' }; // Resetear el formulario
+};
+
+const viewGuests = (guest: Invitado) => {
+  selectedGuest.value = guest;
+  isViewModalVisible.value = true;
+};
+
+// Funciones para el modal de ver información
+const closeViewModal = () => {
+  isViewModalVisible.value = false;
+};
+</script>
+
+<style scoped>
+.modal-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  max-width: 500px;
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+</style>

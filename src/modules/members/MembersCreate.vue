@@ -8,42 +8,24 @@
       <!-- Campo para el Nombre -->
       <div>
         <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
-        <input
-          type="text"
-          id="nombre"
-          v-model="newMember.nombre"
-          class="input input-bordered w-full"
-          placeholder="Ingrese el nombre"
-          required
-        />
+        <input type="text" id="nombre" v-model="newMember.nombre" class="input input-bordered w-full"
+          placeholder="Ingrese el nombre" required />
         <p v-if="errors.nombre" class="text-red-500 text-sm mt-1">{{ errors.nombre }}</p>
       </div>
 
       <!-- Campo para el Cargo -->
       <div>
         <label for="cargo" class="block text-sm font-medium text-gray-700">Cargo</label>
-        <input
-          type="text"
-          id="cargo"
-          v-model="newMember.cargo"
-          class="input input-bordered w-full"
-          placeholder="Ingrese el cargo"
-          required
-        />
+        <input type="text" id="cargo" v-model="newMember.cargo" class="input input-bordered w-full"
+          placeholder="Ingrese el cargo" required />
         <p v-if="errors.cargo" class="text-red-500 text-sm mt-1">{{ errors.cargo }}</p>
       </div>
 
       <!-- Campo para el Email -->
       <div>
         <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-        <input
-          type="email"
-          id="email"
-          v-model="newMember.email"
-          class="input input-bordered w-full"
-          placeholder="Ingrese el email"
-          required
-        />
+        <input type="email" id="email" v-model="newMember.email" class="input input-bordered w-full"
+          placeholder="Ingrese el email" required />
         <p v-if="errors.email" class="text-red-500 text-sm mt-1">{{ errors.email }}</p>
       </div>
 

@@ -1,93 +1,85 @@
 <template>
   <div class="p-4">
-    <h1 class="text-3xl font-bold mb-4">{{ isEditing ? 'Editar Invitado' : 'Crear Nuevo Invitado' }}</h1>
+    <h1 class="text-3xl font-bold mb-4">
+      {{ isEditing ? "Editar Invitado" : "Crear Nuevo Invitado" }}
+    </h1>
 
     <form @submit.prevent="submitForm" class="space-y-4">
       <!-- Campo para el Nombre -->
       <div>
         <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
-        <input
-          type="text"
-          id="nombre"
-          v-model="newGuest.nombre"
-          class="input input-bordered w-full"
-          placeholder="Ingrese el nombre"
-          required
-        />
-        <p v-if="errors.nombre" class="text-red-500 text-sm mt-1">{{ errors.nombre }}</p>
+        <input type="text" id="nombre" v-model="newGuest.nombre" class="input input-bordered w-full"
+          placeholder="Ingrese el nombre" required />
+        <p v-if="errors.nombre" class="text-red-500 text-sm mt-1">
+          {{ errors.nombre }}
+        </p>
       </div>
 
       <!-- Campo para la Dependencia -->
       <div>
         <label for="dependencia" class="block text-sm font-medium text-gray-700">Dependencia</label>
-        <input
-          type="text"
-          id="dependencia"
-          v-model="newGuest.dependencia"
-          class="input input-bordered w-full"
-          placeholder="Ingrese la dependencia"
-          required
-        />
-        <p v-if="errors.dependencia" class="text-red-500 text-sm mt-1">{{ errors.dependencia }}</p>
+        <input type="text" id="dependencia" v-model="newGuest.dependencia" class="input input-bordered w-full"
+          placeholder="Ingrese la dependencia" required />
+        <p v-if="errors.dependencia" class="text-red-500 text-sm mt-1">
+          {{ errors.dependencia }}
+        </p>
       </div>
 
       <!-- Campo para el Estado -->
       <div>
         <label for="estadoAsistencia" class="block text-sm font-medium text-gray-700">Estado Asistencia</label>
-        <input
-          type="text"
-          id="estadoAsistencia"
-          v-model="newGuest.estadoAsistencia"
-          class="input input-bordered w-full"
-          placeholder="Ingrese el estadoAsistencia"
-          required
-        />
-        <p v-if="errors.estadoAsistencia" class="text-red-500 text-sm mt-1">{{ errors.estadoAsistencia }}</p>
+        <input type="text" id="estadoAsistencia" v-model="newGuest.estadoAsistencia" class="input input-bordered w-full"
+          placeholder="Ingrese el estadoAsistencia" required />
+        <p v-if="errors.estadoAsistencia" class="text-red-500 text-sm mt-1">
+          {{ errors.estadoAsistencia }}
+        </p>
       </div>
 
       <!-- Campo para el Email -->
       <div>
         <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-        <input
-          type="email"
-          id="email"
-          v-model="newGuest.email"
-          class="input input-bordered w-full"
-          placeholder="Ingrese el email"
-          required
-        />
-        <p v-if="errors.email" class="text-red-500 text-sm mt-1">{{ errors.email }}</p>
+        <input type="email" id="email" v-model="newGuest.email" class="input input-bordered w-full"
+          placeholder="Ingrese el email" required />
+        <p v-if="errors.email" class="text-red-500 text-sm mt-1">
+          {{ errors.email }}
+        </p>
       </div>
 
       <!-- Botón de Crear o Actualizar -->
       <div class="flex justify-end">
-        <button type="submit" class="btn btn-primary">{{ isEditing ? 'Actualizar Invitado' : 'Crear Invitado' }}</button>
+        <button type="submit" class="btn btn-primary">
+          {{ isEditing ? "Actualizar Invitado" : "Crear Invitado" }}
+        </button>
       </div>
     </form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { ref, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { Invitado, ApiResponse } from "../../Utils/Interfaces/MeetingRecords";
-import { createInvitado, getInvitadoById, updateInvitado } from "../../services/invitadoServices";
+import {
+  createInvitado,
+  getInvitadoById,
+  updateInvitado,
+} from "../../services/invitadoServices";
 
 // Datos del nuevo invitado
 const newGuest = ref({
-  nombre: '',
-  dependencia: '',
-  estadoAsistencia: '',
-  email: '',
+  nombre: "",
+  dependencia: "",
+  estadoAsistencia: "",
+  email: "",
   idInvitado: 0,
-  asistenciaInvitados: []
+  asistenciaInvitados: [],
 });
 
 const errors = ref({
-  nombre: '',
-  dependencia: '',
-  estadoAsistencia: '',
-  email: ''
+  nombre: "",
+  dependencia: "",
+  estadoAsistencia: "",
+  email: "",
 });
 
 const router = useRouter();
@@ -97,16 +89,22 @@ const guestId = ref<number | null>(null);
 
 // Si es modo edición, cargar los datos del invitado existente
 onMounted(async () => {
-  guestId.value = route.params.id ? parseInt(route.params.id as string, 10) : null;
+  guestId.value = route.params.id
+    ? parseInt(route.params.id as string, 10)
+    : null;
   isEditing.value = guestId.value !== null;
 
   if (isEditing.value && guestId.value !== null) {
     try {
-      const response: ApiResponse<Invitado> = await getInvitadoById(guestId.value);
+      const response: ApiResponse<Invitado> = await getInvitadoById(
+        guestId.value
+      );
       if (response.status === "success" && response.data) {
         newGuest.value = response.data; // Cargar datos para la edición
       } else {
-        throw new Error(response.message || "Error desconocido al cargar el invitado");
+        throw new Error(
+          response.message || "Error desconocido al cargar el invitado"
+        );
       }
     } catch (error) {
       console.error("Error al cargar el invitado:", error);
@@ -117,27 +115,27 @@ onMounted(async () => {
 // Validar campos del formulario
 const validateFields = () => {
   let isValid = true;
-  Object.keys(errors.value).forEach(key => {
-    errors.value[key as keyof typeof errors.value] = '';
+  Object.keys(errors.value).forEach((key) => {
+    errors.value[key as keyof typeof errors.value] = "";
   });
 
   if (!newGuest.value.nombre) {
-    errors.value.nombre = 'El nombre es obligatorio.';
+    errors.value.nombre = "El nombre es obligatorio.";
     isValid = false;
   }
 
   if (!newGuest.value.dependencia) {
-    errors.value.dependencia = 'La dependencia es obligatorio.';
+    errors.value.dependencia = "La dependencia es obligatorio.";
     isValid = false;
   }
 
   if (!newGuest.value.estadoAsistencia) {
-    errors.value.estadoAsistencia = 'El estado es obligatorio.';
+    errors.value.estadoAsistencia = "El estado es obligatorio.";
     isValid = false;
   }
 
   if (!newGuest.value.email) {
-    errors.value.email = 'El email es obligatorio.';
+    errors.value.email = "El email es obligatorio.";
     isValid = false;
   }
 
@@ -163,7 +161,6 @@ const submitForm = async () => {
     }
 
     if (response.status === "success") {
-      
       // Redirigir a la tabla de invitados después de la operación exitosa
       router.push("/members");
     } else {

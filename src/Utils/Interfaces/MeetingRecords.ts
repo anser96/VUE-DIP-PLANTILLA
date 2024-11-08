@@ -56,6 +56,18 @@ export interface Invitado {
   estadoAsistencia: string;
   asistenciaInvitados: AsistenciaInvitado[]; // Relación con asistencia
 }
+
+export interface AsistenciaTareas {
+  idTarea: number;
+  descripcion: string;
+  fechaEntrega: string; // "2024-11-02"
+  fechaVerificacion: string; // "2024-11-02"
+  tipoResponsable: string;
+  responsableId: number;
+  estado: string;
+  responsable: any;
+  asistenciaTareas: AsistenciaTareas[];
+}
 export interface Tarea {
   idTarea: number;
   descripcion: string;
@@ -65,6 +77,7 @@ export interface Tarea {
   responsableId: number;
   estado: string;
   responsable: any;
+  asistenciaTareas: AsistenciaTareas[];
 }
 
 // SubEntities.ts

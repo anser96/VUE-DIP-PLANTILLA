@@ -1,8 +1,7 @@
 // src/services/tareaService.ts
 
 import { fetchWithAuth } from "../Utils/FetchWithToken";
-
-import { ApiResponse, ApiResponseTarea, Tarea } from "../Utils/Interfaces/MeetingRecords";
+import { ApiResponse, Tarea } from "../Utils/Interfaces/MeetingRecords";
 
 const API_TAREAS_URL = `${import.meta.env.VITE_API_URL}/tareas`;
 
@@ -19,11 +18,11 @@ export const getTareas = async (): Promise<ApiResponse<Tarea[]>> => {
 };
 
 // Obtener una tarea por ID
-export const getTareaById = async (id: number): Promise<ApiResponseTarea> => {
+export const getTareaById = async (id: number): Promise<ApiResponse<Tarea>> => {
   try {
     const response = await fetchWithAuth(`${API_TAREAS_URL}/${id}`, { method: 'GET' });
     if (!response.ok) throw new Error(`Error al obtener la tarea con ID: ${id}`);
-    return await response.json() as ApiResponseTarea;
+    return await response.json() as ApiResponse<Tarea>;
   } catch (error) {
     console.error(`Error al obtener la tarea con ID ${id}:`, error);
     throw error;
@@ -31,7 +30,7 @@ export const getTareaById = async (id: number): Promise<ApiResponseTarea> => {
 };
 
 // Crear una nueva tarea
-export const createTarea = async (tarea: Partial<Tarea>): Promise<ApiResponseTarea> => {
+export const createTarea = async (tarea: Partial<Tarea>): Promise<ApiResponse<Tarea>> => {
   try {
     const response = await fetchWithAuth(API_TAREAS_URL, {
       method: 'POST',
@@ -45,7 +44,7 @@ export const createTarea = async (tarea: Partial<Tarea>): Promise<ApiResponseTar
       throw new Error(backendMessage);
     }
 
-    return await response.json() as ApiResponseTarea;
+    return await response.json() as ApiResponse<Tarea>;
   } catch (error) {
     console.error('Error al crear la tarea:', error);
     throw error;
@@ -53,7 +52,7 @@ export const createTarea = async (tarea: Partial<Tarea>): Promise<ApiResponseTar
 };
 
 // Actualizar una tarea existente
-export const updateTarea = async (id: number, tarea: Partial<Tarea>): Promise<ApiResponseTarea> => {
+export const updateTarea = async (id: number, tarea: Partial<Tarea>): Promise<ApiResponse<Tarea>> => {
   try {
     const response = await fetchWithAuth(`${API_TAREAS_URL}/${id}`, {
       method: 'PUT',
@@ -67,7 +66,7 @@ export const updateTarea = async (id: number, tarea: Partial<Tarea>): Promise<Ap
       throw new Error(backendMessage);
     }
 
-    return await response.json() as ApiResponseTarea;
+    return await response.json() as ApiResponse<Tarea>;
   } catch (error) {
     console.error('Error al actualizar la tarea:', error);
     throw error;
@@ -75,7 +74,7 @@ export const updateTarea = async (id: number, tarea: Partial<Tarea>): Promise<Ap
 };
 
 // Actualizar el estado de una tarea
-export const updateEstadoTarea = async (id: number, estado: string): Promise<ApiResponseTarea> => {
+export const updateEstadoTarea = async (id: number, estado: string): Promise<ApiResponse<Tarea>> => {
   try {
     const response = await fetchWithAuth(`${API_TAREAS_URL}/${id}/estado`, {
       method: 'PATCH',
@@ -89,7 +88,7 @@ export const updateEstadoTarea = async (id: number, estado: string): Promise<Api
       throw new Error(backendMessage);
     }
 
-    return await response.json() as ApiResponseTarea;
+    return await response.json() as ApiResponse<Tarea>;
   } catch (error) {
     console.error('Error al actualizar el estado de la tarea:', error);
     throw error;
