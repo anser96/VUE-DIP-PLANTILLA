@@ -188,8 +188,8 @@ const showConfirmModal = (id: number) => {
   isModalVisible.value = true;
 };
 
-const isActaPendiente = (sesion: Sesion): boolean => {
-  return sesion?.actas?.[0]?.estado === 'PENDIENTE';
+const isActaPendiente = (sesion) => {
+  return sesion?.actaDTO?.[0]?.estado === 'PENDIENTE';
 };
 
 // Confirmar y eliminar sesión
