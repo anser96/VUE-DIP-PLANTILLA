@@ -16,8 +16,7 @@
           class="input input-bordered w-full"
           placeholder="Ingrese la ubicación"
           :disabled="isViewing"
-          required
-        />
+          required/>
         <p v-if="isViewing" class="mt-2 text-gray-900">{{ newSession.lugar }}</p>
         <p v-if="errors.lugar && !isViewing" class="text-red-500 text-sm mt-1">{{ errors.lugar }}</p>
       </div>
@@ -32,8 +31,7 @@
           v-model="newSession.fecha"
           class="input input-bordered w-full"
           :disabled="isViewing"
-          required
-        />
+          required/>
         <p v-if="isViewing" class="mt-2 text-gray-900">{{ newSession.fecha }}</p>
         <p v-if="errors.fecha && !isViewing" class="text-red-500 text-sm mt-1">{{ errors.fecha }}</p>
       </div>
@@ -48,8 +46,7 @@
           v-model="newSession.horaInicio"
           class="input input-bordered w-full"
           :disabled="isViewing"
-          required
-        />
+          required/>
         <p v-if="isViewing" class="mt-2 text-gray-900">{{ newSession.horaInicio }}</p>
         <p v-if="errors.horaInicio && !isViewing" class="text-red-500 text-sm mt-1">{{ errors.horaInicio }}</p>
       </div>
@@ -64,8 +61,7 @@
           v-model="newSession.horaFinal"
           class="input input-bordered w-full"
           :disabled="isViewing"
-          required
-        />
+          required/>
         <p v-if="isViewing" class="mt-2 text-gray-900">{{ newSession.horaFinal }}</p>
         <p v-if="errors.horaFinal && !isViewing" class="text-red-500 text-sm mt-1">{{ errors.horaFinal }}</p>
       </div>
@@ -81,8 +77,7 @@
           class="input input-bordered w-full"
           :disabled="isViewing"
           placeholder="Ingrese el nombre del presidente"
-          required
-        />
+          required/>
         <p v-if="isViewing" class="mt-2 text-gray-900">{{ newSession.presidente }}</p>
         <p v-if="errors.presidente && !isViewing" class="text-red-500 text-sm mt-1">{{ errors.presidente }}</p>
       </div>
@@ -97,9 +92,7 @@
           v-model="newSession.secretario"
           class="input input-bordered w-full"
           :disabled="isViewing"
-          placeholder="Ingrese el nombre del secretario"
-          required
-        />
+          placeholder="Ingrese el nombre del secretario"/>
         <p v-if="isViewing" class="mt-2 text-gray-900">{{ newSession.secretario }}</p>
         <p v-if="errors.secretario && !isViewing" class="text-red-500 text-sm mt-1">{{ errors.secretario }}</p>
       </div>
@@ -113,8 +106,8 @@
           v-model="contenido"
           class="input input-bordered w-full h-32"
           placeholder="Escriba el contenido de la reunión"
-          :disabled="isViewing"
-        ></textarea>
+          :disabled="isViewing">
+        </textarea>
         <p v-if="isViewing" class="mt-2 text-gray-900 whitespace-pre">{{ contenido }}</p>
       </div>
 
@@ -125,82 +118,95 @@
       </div>
 
     <!-- Tabla de Miembros -->
-  <div v-if="newSession.asistenciaMiembros.length > 0" class="mt-4">
-    <h2 class="text-xl font-semibold mb-2">Lista de Miembros</h2>
-    <table class="w-full text-sm text-left text-gray-500">
-      <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-        <tr>
-          <th class="px-6 py-3">Nombre</th>
-          <th class="px-6 py-3">Cargo</th>
-          <th class="px-6 py-3">Email</th>
-          <th class="px-6 py-3">Estado de Asistencia</th> <!-- Nueva columna para estado de asistencia -->
-          <th class="px-6 py-3">Excusa</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(miembro, index) in newSession.asistenciaMiembros" :key="index" class="bg-white border-b">
-          <td class="px-6 py-4">{{ miembro.nombre }}</td>
-          <td class="px-6 py-4">{{ miembro.cargo }}</td>
-          <td class="px-6 py-4">{{ miembro.email }}</td>
-          <td class="px-6 py-4">
-            <select v-model="miembro.estadoAsistencia" class="input input-bordered">
-              <option value="ASISTIÓ">Asistió</option>
-              <option value="EXCUSA">Excusa</option>
-              <option value="NO ASISTIÓ">No Asistió</option>
-            </select>
-          </td>
-          <td class="px-6 py-4">
-          <input
-            v-if="miembro.estadoAsistencia === 'EXCUSA'"
-            v-model="miembro.excusa"
-            placeholder="Ingrese la excusa"
-            class="input input-bordered"
-            type="text"
-          />
-        </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+    <div v-if="newSession.asistenciaMiembros.length > 0" class="mt-4">
+      <h2 class="text-xl font-semibold mb-2">Lista de Miembros</h2>
+      <table class="w-full text-sm text-left text-gray-500">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+          <tr>
+            <th class="px-6 py-3">Nombre</th>
+            <th class="px-6 py-3">Cargo</th>
+            <th class="px-6 py-3">Email</th>
+            <th class="px-6 py-3">Estado de Asistencia</th>
+            <th class="px-6 py-3">Excusa</th>
+            <th class="px-6 py-3">Acciones</th> <!-- Nueva columna para las acciones -->
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(miembro, index) in newSession.asistenciaMiembros" :key="index" class="bg-white border-b">
+            <td class="px-6 py-4">{{ miembro.nombre }}</td>
+            <td class="px-6 py-4">{{ miembro.cargo }}</td>
+            <td class="px-6 py-4">{{ miembro.email }}</td>
+            <td class="px-6 py-4">
+              <select v-model="miembro.estadoAsistencia" class="input input-bordered">
+                <option value="ASISTIÓ">Asistió</option>
+                <option value="EXCUSA">Excusa</option>
+                <option value="NO ASISTIÓ">No Asistió</option>
+              </select>
+            </td>
+            <td class="px-6 py-4">
+              <input
+                v-if="miembro.estadoAsistencia === 'EXCUSA'"
+                v-model="miembro.excusa"
+                placeholder="Ingrese la excusa"
+                class="input input-bordered"
+                type="text"
+              />
+            </td>
+            <td class="px-6 py-4">
+              <!-- Botón para asignar tarea -->
+              <button
+                @click="assignTaskToMember(miembro)"
+                class="btn btn-primary">Asignar Tarea</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
   <!-- Tabla de Invitados -->
-  <div v-if="newSession.asistenciaInvitados.length > 0" class="mt-4">
-    <h2 class="text-xl font-semibold mb-2">Lista de Invitados</h2>
-    <table class="w-full text-sm text-left text-gray-500">
-      <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-        <tr>
-          <th class="px-6 py-3">Nombre</th>
-          <th class="px-6 py-3">Dependencia</th>
-          <th class="px-6 py-3">Email</th>
-          <th class="px-6 py-3">Estado de Asistencia</th> <!-- Nueva columna para estado de asistencia -->
-          <th class="px-6 py-3">Excusa</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(invitado, index) in newSession.asistenciaInvitados" :key="index" class="bg-white border-b">
-          <td class="px-6 py-4">{{ invitado.nombre }}</td>
-          <td class="px-6 py-4">{{ invitado.dependencia }}</td>
-          <td class="px-6 py-4">{{ invitado.email }}</td>
-          <td class="px-6 py-4">
-            <select v-model="invitado.estadoAsistencia" class="input input-bordered">
-              <option value="ASISTIÓ">Asistió</option>
-              <option value="EXCUSA">Excusa</option>
-              <option value="NO ASISTIÓ">No Asistió</option>
-            </select>
-          </td>
-          <td class="px-6 py-4">
+<div v-if="newSession.asistenciaInvitados.length > 0" class="mt-4">
+  <h2 class="text-xl font-semibold mb-2">Lista de Invitados</h2>
+  <table class="w-full text-sm text-left text-gray-500">
+    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+      <tr>
+        <th class="px-6 py-3">Nombre</th>
+        <th class="px-6 py-3">Dependencia</th>
+        <th class="px-6 py-3">Email</th>
+        <th class="px-6 py-3">Estado de Asistencia</th> <!-- Nueva columna para estado de asistencia -->
+        <th class="px-6 py-3">Excusa</th>
+        <th class="px-6 py-3">Acciones</th> <!-- Nueva columna para las acciones -->
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(invitado, index) in newSession.asistenciaInvitados" :key="index" class="bg-white border-b">
+        <td class="px-6 py-4">{{ invitado.nombre }}</td>
+        <td class="px-6 py-4">{{ invitado.dependencia }}</td>
+        <td class="px-6 py-4">{{ invitado.email }}</td>
+        <td class="px-6 py-4">
+          <select v-model="invitado.estadoAsistencia" class="input input-bordered">
+            <option value="ASISTIÓ">Asistió</option>
+            <option value="EXCUSA">Excusa</option>
+            <option value="NO ASISTIÓ">No Asistió</option>
+          </select>
+        </td>
+        <td class="px-6 py-4">
           <input
             v-if="invitado.estadoAsistencia === 'EXCUSA'"
             v-model="invitado.excusa"
             placeholder="Ingrese la excusa"
             class="input input-bordered"
-            type="text"
-          />
+            type="text"/>
         </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+        <td class="px-6 py-4">
+          <!-- Botón para asignar tarea -->
+          <button
+            @click="assignTaskToInvitado(invitado)"
+            class="btn btn-primary">Asignar Tarea</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
    <!-- Botón de Verificar Quórum -->
    <div v-if="(!isViewing && isEditing && (newSession.asistenciaMiembros.length > 0 || newSession.asistenciaInvitados.length > 0))" 
@@ -279,35 +285,9 @@ onMounted(async () => {
     }
   }
 });
-const isFormValid = () => {
-  errors.value = {}; // Reset errors
 
-  if (!newSession.value.lugar) {
-    errors.value.lugar = 'El lugar es obligatorio.';
-  }
-  if (!newSession.value.fecha) {
-    errors.value.fecha = 'La fecha es obligatoria.';
-  }
-  if (!newSession.value.horaInicio) {
-    errors.value.startTime = 'La hora de inicio es obligatoria.';
-  }
-  if (!newSession.value.horaFinal) {
-    errors.value.endTime = 'La hora de fin es obligatoria.';
-  }
-  if (!newSession.value.presidente) {
-    errors.value.presidente = 'El presidente es obligatorio.';
-  }
-  if (!newSession.value.secretario) {
-    errors.value.secretario = 'El secretario es obligatorio.';
-  }
-
-  return Object.keys(errors.value).length === 0;
-};
 const submitForm = async () => {
   if (isViewing.value) return;
-  if(!isFormValid()){
-    return;
-  }
   try {
     let sessionResponse: ApiResponse<Sesion>;
     if (isEditing.value && sessionId.value !== null) {
@@ -415,6 +395,5 @@ const verificarQuorum = async () => {
     alert("Error al verificar el quórum");
   }
 };
-
 
 </script>

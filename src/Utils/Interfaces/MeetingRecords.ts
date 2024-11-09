@@ -77,7 +77,8 @@ export interface Tarea {
   responsableId: number;
   estado: string;
   responsable: any;
-  asistenciaTareas: AsistenciaTareas[];
+  asistenciaMiembros: AsistenciaMiembro[];
+  asistenciaInvitados: AsistenciaInvitado[];
 }
 
 // SubEntities.ts

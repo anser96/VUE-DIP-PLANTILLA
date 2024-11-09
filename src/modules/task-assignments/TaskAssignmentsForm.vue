@@ -27,22 +27,6 @@
         <p v-if="errors.fechaVerificacion" class="text-red-500 text-sm mt-1">{{ errors.fechaVerificacion }}</p>
       </div>
 
-      <!-- Campo para el Tipo de Responsable -->
-      <div>
-        <label for="tipoResponsable" class="block text-sm font-medium text-gray-700">Tipo Responsable</label>
-        <input type="text" id="tipoResponsable" v-model="newTarea.tipoResponsable" class="input input-bordered w-full"
-          placeholder="Ingrese el responsable" required />
-        <p v-if="errors.tipoResponsable" class="text-red-500 text-sm mt-1">{{ errors.tipoResponsable }}</p>
-      </div>
-
-      <!-- Campo para el Estado -->
-      <div>
-        <label for="estado" class="block text-sm font-medium text-gray-700">Estado</label>
-        <input type="text" id="estado" v-model="newTarea.estado" class="input input-bordered w-full"
-          placeholder="Ingrese el estado" required />
-        <p v-if="errors.estado" class="text-red-500 text-sm mt-1">{{ errors.estado }}</p>
-      </div>
-
       <!-- Botón de Crear o Actualizar -->
       <div class="flex justify-end">
         <button type="submit" class="btn btn-primary">{{ isEditing ? 'Actualizar Asignación' : 'Asignar Tarea'
@@ -74,9 +58,8 @@ const newTarea = ref<Tarea>({
 const errors = ref({
   descripcion: '',
   fechaEntrega: '',
-  fechaVerificacion: '',
-  tipoResponsable: '',
-  estado: ''
+  fechaVerificacion: ''
+
 });
 
 const router = useRouter();
@@ -122,16 +105,6 @@ const validateFields = () => {
 
   if (!newTarea.value.fechaVerificacion) {
     errors.value.fechaVerificacion = 'La fecha de verificación es obligatoria.';
-    isValid = false;
-  }
-
-  if (!newTarea.value.tipoResponsable) {
-    errors.value.tipoResponsable = 'El tipo responsable es obligatorio.';
-    isValid = false;
-  }
-
-  if (!newTarea.value.estado) {
-    errors.value.estado = 'El estado es obligatorio.';
     isValid = false;
   }
 
