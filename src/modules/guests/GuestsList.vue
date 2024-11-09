@@ -1,218 +1,238 @@
-  <template>
-    <div class="p-4">
-      <div v-if="!isChildRouteActive">
-        <h1 class="text-3xl font-bold mb-4">Lista de Invitados</h1>
+<template>
+  <div class="p-4">
+    <div v-if="!isChildRouteActive">
+      <h1 class="text-3xl font-bold mb-4">Lista de Invitados</h1>
 
-        <div class="flex justify-end mb-4">
-          <router-link to="/guests/create" class="btn btn-primary">Crear Nuevo Invitado</router-link>
-        </div>
-
-        <table class="table w-full">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Dependencia</th>
-              <th>Correo Electrónico</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="guest in guests" :key="guest.idInvitado">
-              <td>{{ guest.idInvitado }}</td>
-              <td>{{ guest.nombre }}</td>
-              <td>{{ guest.dependencia }}</td>
-              <td>{{ guest.email }}</td>
-              <td class="flex gap-2">
-                <button @click="viewGuests(guest)" class="btn btn-info btn-sm">Ver</button>
-                <button @click="openEditModal(guest)" class="btn btn-warning btn-sm">Editar</button>
-                <button @click="showConfirmModal(guest.idInvitado)" class="btn btn-error btn-sm">Eliminar</button>
-                <button @click="assignTask(guest)" class="btn btn-success btn-sm">Asignar Tarea</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <ConfirmModal :show="isModalVisible" @confirm="confirmDelete" @cancel="cancelDelete" />
+      <div class="flex justify-end mb-4">
+        <router-link to="/guests/create" class="btn btn-primary">Crear Nuevo Invitado</router-link>
       </div>
 
-      <router-view v-else />
+      <table class="table w-full">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Dependencia</th>
+            <th>Correo Electrónico</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="guest in guests" :key="guest.idInvitado">
+            <td>{{ guest.idInvitado }}</td>
+            <td>{{ guest.nombre }}</td>
+            <td>{{ guest.dependencia }}</td>
+            <td>{{ guest.email }}</td>
+            <td class="flex gap-2">
+              <button @click="viewGuests(guest)" class="btn btn-info btn-sm">Ver</button>
+              <button @click="openEditModal(guest)" class="btn btn-warning btn-sm">Editar</button>
+              <button @click="showConfirmModal(guest.idInvitado)" class="btn btn-error btn-sm">Eliminar</button>
+              <button @click="assignTask(guest)" class="btn btn-success btn-sm">Asignar Tarea</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-      <!-- Modal de Editar Invitado -->
-      <div v-if="isEditModalVisible" class="modal-background">
-        <div class="modal-content">
-          <h2 class="text-2xl font-bold mb-4">Editar Invitado</h2>
+      <ConfirmModal :show="isModalVisible" @confirm="confirmDelete" @cancel="cancelDelete" />
+    </div>
 
-          <!-- ID deshabilitado para que no se pueda editar -->
-          <label>ID:</label>
-          <input v-model="selectedGuest.idInvitado" class="input" disabled />
-          <label>Nombre:</label>
-          <input v-model="selectedGuest.nombre" class="input" />
-          <label>Dependencia:</label>
-          <input v-model="selectedGuest.dependencia" class="input" />
-          <label>Correo Electrónico:</label>
-          <input v-model="selectedGuest.email" class="input" />
-          <button @click="closeEditModal" class="btn btn-secondary mt-4">Cerrar</button>
-          <button @click="saveGuest" class="btn btn-success mt-4">Guardar Cambios</button>
-        </div>
-      </div>
+    <router-view v-else />
 
-      <!-- Modal de Asignar Tarea -->
-      <div v-if="isTaskModalVisible" class="modal-background">
-        <div class="modal-content">
-          <h2 class="text-2xl font-bold mb-4">Asignar Tarea a {{ selectedGuest.name }}</h2>
-          <form @submit.prevent="submitTask">
-            <div class="mb-2">
-              <label>Descripción de Tarea:</label>
-              <input type="text" v-model="task.descripcion" required class="input" />
-            </div>
-            <div class="mb-2">
-              <label>Fecha de Entrega:</label>
-              <input type="date" v-model="task.fechaEntrega" required class="input" />
-            </div>
-            <div class="mb-2">
-              <label>Fecha de Verificación:</label>
-              <input type="date" v-model="task.fechaVerificacion" required class="input" />
-            </div>
-            <button type="submit" class="btn btn-success mt-4">Guardar Tarea</button>
-            <button @click="closeTaskModal" class="btn btn-secondary mt-4">Cerrar</button>
-          </form>
-        </div>
-      </div>
+    <!-- Modal de Editar Invitado -->
+    <div v-if="isEditModalVisible" class="modal-background">
+      <div class="modal-content">
+        <h2 class="text-2xl font-bold mb-4">Editar Invitado</h2>
 
-      <!-- Modal de Ver Información del Invitado -->
-      <div v-if="isViewModalVisible" class="modal-background">
-        <div class="modal-content">
-          <h2 class="text-2xl font-bold mb-4">Información de {{ selectedGuest.name }}</h2>
-          <p><strong>ID:</strong> {{ selectedGuest.idInvitado }}</p>
-          <p><strong>Nombre:</strong> {{ selectedGuest.nombre }}</p>
-          <p><strong>Dependencia:</strong> {{ selectedGuest.dependencia }}</p>
-          <p><strong>Correo Electrónico:</strong> {{ selectedGuest.email }}</p>
-
-          <button @click="closeViewModal" class="btn btn-secondary mt-4">Cerrar</button>
-        </div>
+        <!-- ID deshabilitado para que no se pueda editar -->
+        <label>ID:</label>
+        <input v-model="selectedGuest.idInvitado" class="input" disabled />
+        <label>Nombre:</label>
+        <input v-model="selectedGuest.nombre" class="input" />
+        <label>Dependencia:</label>
+        <input v-model="selectedGuest.dependencia" class="input" />
+        <label>Correo Electrónico:</label>
+        <input v-model="selectedGuest.email" class="input" />
+        <button @click="closeEditModal" class="btn btn-secondary mt-4">Cerrar</button>
+        <button @click="saveGuest" class="btn btn-success mt-4">Guardar Cambios</button>
       </div>
     </div>
-  </template>
+
+    <!-- Modal para asignar tarea -->
+    <div v-if="isTaskModalVisible" class="modal-background">
+      <div class="modal-content">
+        <h2 class="text-2xl font-bold mb-4">Asignar Tarea a {{ selectedGuest.nombre }}</h2>
+
+        <label>Tareas:</label>
+        <select v-model="task.idTarea" class="select">
+          <option v-if="tasks.length === 0" disabled>No hay tareas por asignar</option>
+          <option v-for="tarea in tasks" :key="tarea.idTarea" :value="tarea.idTarea">
+            {{ tarea.descripcion }}
+          </option>
+        </select>
+
+        <label>Tareas asignadas</label>
+        <div class="tareas-asignadas">
+          <div class="tareas-child" v-for="tarea in tareasAsignadas">
+            <span>{{ tarea.idTarea }}</span>
+            <span>{{ tarea.descripcion }}</span>
+            <span>{{ tarea.fechaEntrega }}</span>
+            <button @click="EliminarAsignacion(tarea)" class="delete">x</button>
+          </div>
+        </div>
+
+        <button @click="GuardarAsignacion" class="btn btn-success mt-4">Guardar Tarea</button>
+        <button @click="closeTaskModal" class="btn btn-secondary mt-4">Cerrar</button>
+      </div>
+    </div>
+
+    <!-- Modal de Ver Información del Invitado -->
+    <div v-if="isViewModalVisible" class="modal-background">
+      <div class="modal-content">
+        <h2 class="text-2xl font-bold mb-4">Información de {{ selectedGuest.name }}</h2>
+        <p><strong>ID:</strong> {{ selectedGuest.idInvitado }}</p>
+        <p><strong>Nombre:</strong> {{ selectedGuest.nombre }}</p>
+        <p><strong>Dependencia:</strong> {{ selectedGuest.dependencia }}</p>
+        <p><strong>Correo Electrónico:</strong> {{ selectedGuest.email }}</p>
+
+        <button @click="closeViewModal" class="btn btn-secondary mt-4">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
-import { useRoute } from 'vue-router';
-import ConfirmModal from '../../components/ConfirmModal.vue';
-import { Invitado, ApiResponse } from "../../Utils/Interfaces/MeetingRecords";
-import { getInvitados } from "../../services/invitadoServices";
+import { ref, onMounted, computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import ConfirmModal from '../../components/ConfirmModal.vue'
+import { Invitado, ApiResponse, Tarea } from '../../Utils/Interfaces/MeetingRecords'
+import { getInvitados } from '../../services/invitadoServices'
+import { getTareas } from '../../services/tareaServices'
 
-
-const guests = ref<Invitado[]>([]);
-const isModalVisible = ref(false);
-const isEditModalVisible = ref(false);
-const isTaskModalVisible = ref(false);
-const isViewModalVisible = ref(false);
-const guestIdToDelete = ref<number | null>(null);
-const selectedGuest = ref<any>(null);
+const guests = ref<Invitado[]>([])
+const tasks = ref<Tarea[]>([])
+const tareasAsignadas = ref<Tarea[]>([])
+const isModalVisible = ref(false)
+const isEditModalVisible = ref(false)
+const isTaskModalVisible = ref(false)
+const isViewModalVisible = ref(false)
+const guestIdToDelete = ref<number | null>(null)
+const selectedGuest = ref<any>(null)
 
 const task = ref({
-  descripcion: "",
-  fechaEntrega: "",
-  fechaVerificacion: ""
-});
+  idTarea: 0,
+})
 
+const route = useRoute()
 const isChildRouteActive = computed(() =>
-  useRoute().matched.some(
-    (r) =>
-      r.path.includes("/guests/create") || r.path.includes("/guests/edit")
-  )
-);
+  route.matched.some((r) => r.path.includes('/guests/create') || r.path.includes('/guests/edit')),
+)
 
-onMounted(async () => {
+const LoadGuests = async () => {
   try {
-    const response: ApiResponse<Invitado[]> = await getInvitados();
+    const response: ApiResponse<Invitado[]> = await getInvitados()
     if (Array.isArray(response)) {
-      guests.value = response;
-    } else if ("data" in response && Array.isArray(response.data)) {
-      guests.value = response.data;
-    } else if ("results" in response && Array.isArray(response.results)) {
-      guests.value = response.results;
+      guests.value = response
+    } else if ('data' in response && Array.isArray(response.data)) {
+      guests.value = response.data
+    } else if ('results' in response && Array.isArray(response.results)) {
+      guests.value = response.results
     } else {
-      console.error("Estructura inesperada de los datos de invitado:", response);
+      console.error('Estructura inesperada de los datos de invitado:', response)
     }
   } catch (error) {
-    console.error("Error al cargar los invitados:", error);
+    console.error('Error al cargar los invitados:', error)
   }
-});
+}
+
+onMounted(LoadGuests)
+watch(route, LoadGuests)
 
 // Funciones para el modal de confirmación
 const showConfirmModal = (id: number) => {
-  guestIdToDelete.value = id;
-  isModalVisible.value = true;
-};
+  guestIdToDelete.value = id
+  isModalVisible.value = true
+}
 
 const confirmDelete = () => {
   if (guestIdToDelete.value !== null) {
-    const index = guests.value.findIndex(
-      (guest) => guest.idInvitado === guestIdToDelete.value
-    );
+    const index = guests.value.findIndex((guest) => guest.idInvitado === guestIdToDelete.value)
     if (index !== -1) {
-      guests.value.splice(index, 1);
+      guests.value.splice(index, 1)
     }
   }
-  isModalVisible.value = false;
-  guestIdToDelete.value = null;
-};
+  isModalVisible.value = false
+  guestIdToDelete.value = null
+}
 
 const cancelDelete = () => {
-  isModalVisible.value = false;
-  guestIdToDelete.value = null;
-};
+  isModalVisible.value = false
+  guestIdToDelete.value = null
+}
 
 // Funciones para el modal de edición
 const openEditModal = (guest: any) => {
-  selectedGuest.value = { ...guest };
-  isEditModalVisible.value = true;
-};
+  selectedGuest.value = { ...guest }
+  isEditModalVisible.value = true
+}
 
 const closeEditModal = () => {
-  isEditModalVisible.value = false;
-};
+  isEditModalVisible.value = false
+}
 
 const saveGuest = () => {
-  const index = guests.value.findIndex(
-    (guest) => guest.idInvitado === selectedGuest.value.idInvitado
-  );
+  const index = guests.value.findIndex((guest) => guest.idInvitado === selectedGuest.value.idInvitado)
   if (index !== -1) {
     // Actualizamos el invitado en la lista
-    guests.value[index] = selectedGuest.value;
+    guests.value[index] = selectedGuest.value
   }
-  closeEditModal(); // Cerramos el modal después de guardar los cambios
-};
-
+  closeEditModal() // Cerramos el modal después de guardar los cambios
+}
 
 // Funciones para el modal de tareas
-const assignTask = (guest: any) => {
-  selectedGuest.value = guest;
-  isTaskModalVisible.value = true;
-};
+const assignTask = async (member: any) => {
+  selectedGuest.value = member
+  isTaskModalVisible.value = true
+  const allTasks = (await getTareas()).data
+  const assignedTasks = tareasAsignadas.value.map((tarea) => tarea.idTarea)
+  tasks.value = allTasks.filter((tarea: Tarea) => !assignedTasks.includes(tarea.idTarea))
+}
+
+const GuardarAsignacion = () => {
+  const tareaSeleccionada = tasks.value.find((tarea) => tarea.idTarea === task.value.idTarea)
+  if (tareaSeleccionada) {
+    tareasAsignadas.value.push(tareaSeleccionada)
+    tasks.value = tasks.value.filter((tarea) => tarea.idTarea !== task.value.idTarea)
+    task.value = { idTarea: 0 }
+    // closeTaskModal()
+  }
+}
+
+const EliminarAsignacion = (tarea: Task) => {
+  tareasAsignadas.value = tareasAsignadas.value.filter((t) => t.idTarea !== tarea.idTarea)
+  tasks.value.push(tarea)
+}
 
 const closeTaskModal = () => {
-  isTaskModalVisible.value = false;
-};
+  isTaskModalVisible.value = false
+  tasks.value = []
+}
 
 const submitTask = () => {
-  const taskToAdd = { ...task.value, id: Date.now() };
-  selectedGuest.value.tasks.push(taskToAdd);
-  closeTaskModal();
-  task.value = { descripcion: '', fechaEntrega: '', fechaVerificacion: '' }; // Resetear el formulario
-};
+  const taskToAdd = { ...task.value, id: Date.now() }
+  selectedGuest.value.tasks.push(taskToAdd)
+  closeTaskModal()
+  task.value = { descripcion: '', fechaEntrega: '', fechaVerificacion: '' } // Resetear el formulario
+}
 
 const viewGuests = (guest: Invitado) => {
-  selectedGuest.value = guest;
-  isViewModalVisible.value = true;
-};
+  selectedGuest.value = guest
+  isViewModalVisible.value = true
+}
 
 // Funciones para el modal de ver información
 const closeViewModal = () => {
-  isViewModalVisible.value = false;
-};
+  isViewModalVisible.value = false
+}
 </script>
 
 <style scoped>
@@ -236,12 +256,34 @@ const closeViewModal = () => {
   max-width: 500px;
   width: 100%;
 }
-
+.select,
 .input {
   width: 100%;
   padding: 8px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+.tareas-asignadas {
+  min-height: 100px;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  gap: 5px;
+}
+
+.tareas-child {
+  max-width: 100%;
+  display: grid;
+  grid-template-columns: 50px 1fr 1fr 30px;
+}
+
+.delete {
+  color: red;
+  font-weight: bold;
+  cursor: pointer;
+  height: fit-content;
 }
 </style>
