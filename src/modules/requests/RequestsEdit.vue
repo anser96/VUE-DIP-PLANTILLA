@@ -58,6 +58,26 @@
       </div>
 
       <div>
+        <label  for="miembro" class="block text-sm font-medium text-gray-700">Tipo Solicitante</label>
+        <!-- Si no es solo lectura, muestra el select -->
+        <div >
+          <select
+            id="miembro"
+            v-model="newSolicitud.tipoSolicitante"
+            class="input input-bordered w-full"
+            required
+          >
+            <option  value="">Seleccione Tipo Solicitante</option>
+            <option  value="miembro">Miembro</option>
+            <option  value="invitado">Invitado</option>
+            <option  value="usuario">Usuario</option>
+          </select>
+          <p v-if="errors.tipoSolicitante" class="text-red-500 text-sm mt-1">{{ errors.tipoSolicitante }}</p>
+        </div>
+      </div>
+
+
+      <div  v-if="newSolicitud.tipoSolicitante === 'miembro'">
         <label for="miembro" class="block text-sm font-medium text-gray-700"
           >Seleccionar Miembro</label
         >
@@ -81,21 +101,24 @@
         </p>
       </div>
 
-
-      <!-- <div>
-        <label for="tipoSolicitante" class="block text-sm font-medium text-gray-700">Tipo Solicitante</label>
-        <input
-          type="text"
-          id="asunto"
-          v-model="newSolicitud.tipoSolicitante"
-          class="input input-bordered w-full"
-          placeholder="Ingrese el tipo de solicitante"
-          required
-        />
-        <p v-if="errors.tipoSolicitante" class="text-red-500 text-sm mt-1">{{ errors.tipoSolicitante }}</p>
-      </div> -->
-
-     
+      <div v-if="newSolicitud.tipoSolicitante === 'invitado'">
+        <label  for="miembro" class="block text-sm font-medium text-gray-700">Invitado</label>
+        <!-- Si no es solo lectura, muestra el select -->
+        <div >
+          <select
+            id="guests"
+            v-model="newSolicitud.idSolicitante"
+            class="input input-bordered w-full"
+            required
+          >
+            <option disabled value="0">Seleccione un invitado</option>
+            <option v-for="guest in guests" :key="guest.idInvitado" :value="guest.idInvitado">
+              {{ guest.nombre }}
+            </option>
+          </select>
+          <p v-if="errors.idSolicitante" class="text-red-500 text-sm mt-1">{{ errors.idSolicitante }}</p>
+        </div>
+      </div>
 
       <!-- Campo para la Fecha de Solicitud -->
       <div>
@@ -133,7 +156,9 @@ import {
   getSolicitudById,
 } from "../../services/solicitudServices";
 import { getMiembros } from "../../services/miembroService";
-import { Miembro, ApiResponse } from "../../Utils/Interfaces/MeetingRecords";
+import { Miembro, ApiResponse, Invitado } from "../../Utils/Interfaces/MeetingRecords";
+import { useAuthStore } from '../../store/auth'; 
+import { getInvitados } from "../../services/invitadoServices";
 
 // Datos de la solicitud que se está editando
 const newSolicitud = ref({
@@ -149,6 +174,7 @@ const newSolicitud = ref({
   
 });
 const members = ref<Miembro[]>([]);
+const guests = ref<Invitado[]>([]);
 
 // Gestión de errores de formulario
 const errors = ref({
@@ -171,6 +197,11 @@ onMounted(async () => {
     : null;
 
   try {
+
+    const response2: ApiResponse<Invitado[]> = await getInvitados();
+      guests.value = Array.isArray(response2) ? response2 : response2.data ?? [];
+      console.log(guests.value);
+
     const response: ApiResponse<Miembro[]> = await getMiembros();
     if (Array.isArray(response)) {
       members.value = response;
@@ -185,7 +216,7 @@ onMounted(async () => {
       );
     }
   } catch (error) {
-    console.error("Error al cargar los miembros:", error);
+    console.error("Error al cargar los miembros o invitados:", error);
   }
   if (solicitudId.value !== null) {
     try {
@@ -245,11 +276,15 @@ const validateFields = () => {
 const submitForm = async () => {
   if (!validateFields()) return;
 
-  const solicitudData = { ...newSolicitud.value };
-
-  solicitudData.fechaDeSolicitud = formatToCustomISO(
-    solicitudData.fechaDeSolicitud
+  newSolicitud.value.fechaDeSolicitud = formatToCustomISO(
+    newSolicitud.value.fechaDeSolicitud
   );
+
+  // Asignar idSolicitante si es de tipo usuario
+  if (newSolicitud.value?.tipoSolicitante === 'usuario') {
+    const authStore = useAuthStore();
+    newSolicitud.value.idSolicitante = authStore.usuario.idUsuario;
+  }
 
   try {
     if (solicitudId.value !== null) {
