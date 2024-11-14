@@ -52,24 +52,66 @@
       </div>
 
       <div>
-        <label for="miembro" class="block text-sm font-medium text-gray-700">Miembro</label>
-        
+        <label v-if="isReadOnly" for="miembro" class="block text-sm font-medium text-gray-700">Solicitante</label>
+              
         <!-- Si es de solo lectura, aplica un estilo similar al input para mantener la alineación -->
         <div v-if="isReadOnly" :disabled="isReadOnly"  class=" mt-2 text-gray-900 ">
-          {{ members.find(m => m.idMiembro === solicitud.idSolicitante)?.nombre || 'N/A' }}
+          {{ solicitud.nombreSolicitante}}
         </div>
-        
+      </div>
+      
+      <div>
+        <label v-if="!isReadOnly" for="miembro" class="block text-sm font-medium text-gray-700">Tipo Solicitante</label>
         <!-- Si no es solo lectura, muestra el select -->
-        <div v-else>
+        <div v-if="!isReadOnly">
+          <select
+            id="miembro"
+            v-model="solicitud.tipoSolicitante"
+            class="input input-bordered w-full"
+            required
+          >
+            <option  value="">Seleccione Tipo Solicitante</option>
+            <option  value="miembro">Miembro</option>
+            <option  value="invitado">Invitado</option>
+            <option  value="usuario">Usuario</option>
+          </select>
+          <p v-if="errors.tipoSolicitante" class="text-red-500 text-sm mt-1">{{ errors.tipoSolicitante }}</p>
+        </div>
+      </div>
+
+      <div>
+        <label v-if="!isReadOnly && solicitud.tipoSolicitante === 'miembro'" for="miembro" class="block text-sm font-medium text-gray-700">Miembro</label>
+        <!-- Si no es solo lectura, muestra el select -->
+        <div v-if="!isReadOnly && solicitud.tipoSolicitante === 'miembro'">
           <select
             id="miembro"
             v-model="solicitud.idSolicitante"
             class="input input-bordered w-full"
             required
           >
-            <option disabled value="">Seleccione un miembro</option>
+            <option disabled value="0">Seleccione un miembro</option>
             <option v-for="miembro in members" :key="miembro.idMiembro" :value="miembro.idMiembro">
               {{ miembro.nombre }}
+            </option>
+          </select>
+          <p v-if="errors.idSolicitante" class="text-red-500 text-sm mt-1">{{ errors.idSolicitante }}</p>
+        </div>
+      </div>
+
+
+      <div>
+        <label v-if="!isReadOnly && solicitud.tipoSolicitante === 'invitado'" for="miembro" class="block text-sm font-medium text-gray-700">Invitado</label>
+        <!-- Si no es solo lectura, muestra el select -->
+        <div v-if="!isReadOnly && solicitud.tipoSolicitante === 'invitado'">
+          <select
+            id="guests"
+            v-model="solicitud.idSolicitante"
+            class="input input-bordered w-full"
+            required
+          >
+            <option disabled value="0">Seleccione un invitado</option>
+            <option v-for="guest in guests" :key="guest.idInvitado" :value="guest.idInvitado">
+              {{ guest.nombre }}
             </option>
           </select>
           <p v-if="errors.idSolicitante" class="text-red-500 text-sm mt-1">{{ errors.idSolicitante }}</p>
@@ -97,19 +139,8 @@
 
 
       <div>
-        <label for="tipoSolicitante" class="block text-sm font-medium text-gray-700">Tipo Solicitante</label>
-        <input
-        v-if="!isReadOnly"
-          type="text"
-          id="asunto"
-          v-model="solicitud.tipoSolicitante"
-          :disabled="isReadOnly"
-          class="input input-bordered w-full"
-          placeholder="Ingrese el tipo de solicitante"
-          required
-        />
+        <label v-if="isReadOnly" for="tipoSolicitante" class="block text-sm font-medium text-gray-700">Tipo Solicitante</label>
         <p v-if="isReadOnly" class="mt-2 text-gray-900">{{ solicitud.tipoSolicitante}}</p>
-        <p v-if="errors.tipoSolicitante" class="text-red-500 text-sm mt-1">{{ errors.tipoSolicitante }}</p>
       </div>
 
       <div>
@@ -145,12 +176,14 @@
 
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { createSolicitud, getSolicitudById } from '../../services/solicitudServices';
 import {  getSesiones } from '../../services/sesionServices';
 import { getMiembros } from "../../services/miembroService";
-import type { Miembro, ApiResponse, Solicitud, Sesion } from "../../Utils/Interfaces/MeetingRecords";
+import { useAuthStore } from '../../store/auth'; 
+import { getInvitados } from "../../services/invitadoServices";
+import type { Miembro, ApiResponse, Solicitud, Sesion, Invitado } from "../../Utils/Interfaces/MeetingRecords";
 
 // Recibe el prop 'mode' para distinguir entre modos
 const props = defineProps<{ mode: 'create' | 'view' }>();
@@ -159,6 +192,8 @@ const props = defineProps<{ mode: 'create' | 'view' }>();
 const solicitud = ref<Solicitud | null>(null);
 const members = ref<Miembro[]>([]);
 const sessions = ref<Sesion[]>([]);
+const guests = ref<Invitado[]>([]);
+
 const errors = ref({
   dependencia: '',
   asunto: '',
@@ -177,11 +212,15 @@ const isReadOnly = props.mode === 'view';
 onMounted(async () => {
   try {
     // Cargar lista de miembros
+    const response2: ApiResponse<Invitado[]> = await getInvitados();
+      guests.value = Array.isArray(response2) ? response2 : response2.data ?? [];
+      console.log(guests.value);
+      
     const response: ApiResponse<Miembro[]> = await getMiembros();
     members.value = Array.isArray(response) ? response : response.data ?? [];
-
+    console.log(members.value);
     const response1: ApiResponse<Sesion[]> = await getSesiones();
-      sessions.value = response1.data ?? [];
+      sessions.value = response1.data?.filter(sesion => sesion.actaDTO[0].estado !== 'APROBADA') ?? [];
 
     // En modo "view", cargar los datos de la solicitud existente
     if (isReadOnly && route.params.id) {
@@ -198,7 +237,7 @@ onMounted(async () => {
         fechaDeSolicitud: '',
         respuesta: 'Resp',
         tipoSolicitante: '',
-        idSolicitante: '',
+        idSolicitante: 0,
         sesion: { idSesion: '' },
       };
     }
@@ -219,6 +258,10 @@ const formatDate = (dateString) => {
 const submitForm = async () => {
   if (isReadOnly) return;
 
+  if (solicitud.value?.tipoSolicitante === 'usuario') {
+    const authStore = useAuthStore();
+    solicitud.value.idSolicitante = authStore.usuario.idUsuario;
+  }
   try {
     await createSolicitud(solicitud.value!);
     await router.replace("/requests");

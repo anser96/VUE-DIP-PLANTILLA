@@ -73,10 +73,7 @@
         <button
           class="btn btn-info mt-2 mb-4 btn-sm"
           style="display: block"
-          @click="openNewTaskModal(selectedGuest.idInvitado)"
-        >
-          Nueva Tarea
-        </button>
+          @click="openNewTaskModal(selectedGuest.idInvitado)" >Nueva Tarea</button>
 
         <label>Tareas asignadas</label>
         <div class="tareas-asignadas">
