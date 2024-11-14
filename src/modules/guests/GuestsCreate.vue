@@ -1,15 +1,21 @@
 <template>
   <div class="p-4">
     <h1 class="text-3xl font-bold mb-4">
-      {{ isEditing ? "Editar Invitado" : "Crear Nuevo Invitado" }}
+      {{ isEditing ? 'Editar Invitado' : 'Crear Nuevo Invitado' }}
     </h1>
 
     <form @submit.prevent="submitForm" class="space-y-4">
       <!-- Campo para el Nombre -->
       <div>
         <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
-        <input type="text" id="nombre" v-model="newGuest.nombre" class="input input-bordered w-full"
-          placeholder="Ingrese el nombre" required />
+        <input
+          type="text"
+          id="nombre"
+          v-model="newGuest.nombre"
+          class="input input-bordered w-full"
+          placeholder="Ingrese el nombre"
+          required
+        />
         <p v-if="errors.nombre" class="text-red-500 text-sm mt-1">
           {{ errors.nombre }}
         </p>
@@ -18,28 +24,30 @@
       <!-- Campo para la Dependencia -->
       <div>
         <label for="dependencia" class="block text-sm font-medium text-gray-700">Dependencia</label>
-        <input type="text" id="dependencia" v-model="newGuest.dependencia" class="input input-bordered w-full"
-          placeholder="Ingrese la dependencia" required />
+        <input
+          type="text"
+          id="dependencia"
+          v-model="newGuest.dependencia"
+          class="input input-bordered w-full"
+          placeholder="Ingrese la dependencia"
+          required
+        />
         <p v-if="errors.dependencia" class="text-red-500 text-sm mt-1">
           {{ errors.dependencia }}
-        </p>
-      </div>
-
-      <!-- Campo para el Estado -->
-      <div>
-        <label for="estadoAsistencia" class="block text-sm font-medium text-gray-700">Estado Asistencia</label>
-        <input type="text" id="estadoAsistencia" v-model="newGuest.estadoAsistencia" class="input input-bordered w-full"
-          placeholder="Ingrese el estadoAsistencia" required />
-        <p v-if="errors.estadoAsistencia" class="text-red-500 text-sm mt-1">
-          {{ errors.estadoAsistencia }}
         </p>
       </div>
 
       <!-- Campo para el Email -->
       <div>
         <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-        <input type="email" id="email" v-model="newGuest.email" class="input input-bordered w-full"
-          placeholder="Ingrese el email" required />
+        <input
+          type="email"
+          id="email"
+          v-model="newGuest.email"
+          class="input input-bordered w-full"
+          placeholder="Ingrese el email"
+          required
+        />
         <p v-if="errors.email" class="text-red-500 text-sm mt-1">
           {{ errors.email }}
         </p>
@@ -48,7 +56,7 @@
       <!-- Botón de Crear o Actualizar -->
       <div class="flex justify-end">
         <button type="submit" class="btn btn-primary">
-          {{ isEditing ? "Actualizar Invitado" : "Crear Invitado" }}
+          {{ isEditing ? 'Actualizar Invitado' : 'Crear Invitado' }}
         </button>
       </div>
     </form>
@@ -56,120 +64,105 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import { Invitado, ApiResponse } from "../../Utils/Interfaces/MeetingRecords";
-import {
-  createInvitado,
-  getInvitadoById,
-  updateInvitado,
-} from "../../services/invitadoServices";
+import { onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { ApiResponse, Invitado } from '../../Utils/Interfaces/MeetingRecords'
+import { createInvitado, getInvitadoById, updateInvitado } from '../../services/invitadoServices'
 
 // Datos del nuevo invitado
-const newGuest = ref({
-  nombre: "",
-  dependencia: "",
-  estadoAsistencia: "",
-  email: "",
+const newGuest = ref<Invitado>({
+  nombre: '',
+  dependencia: '',
+  estadoAsistencia: '',
+  email: '',
   idInvitado: 0,
   asistenciaInvitados: [],
-});
+})
 
 const errors = ref({
-  nombre: "",
-  dependencia: "",
-  estadoAsistencia: "",
-  email: "",
-});
+  nombre: '',
+  dependencia: '',
+  email: '',
+})
 
-const router = useRouter();
-const route = useRoute();
-const isEditing = ref(false);
-const guestId = ref<number | null>(null);
+const router = useRouter()
+const route = useRoute()
+const isEditing = ref(false)
+const guestId = ref<number | null>(null)
 
 // Si es modo edición, cargar los datos del invitado existente
 onMounted(async () => {
-  guestId.value = route.params.id
-    ? parseInt(route.params.id as string, 10)
-    : null;
-  isEditing.value = guestId.value !== null;
+  guestId.value = route.params.id ? parseInt(route.params.id as string, 10) : null
+  isEditing.value = guestId.value !== null
 
   if (isEditing.value && guestId.value !== null) {
     try {
-      const response: ApiResponse<Invitado> = await getInvitadoById(
-        guestId.value
-      );
-      if (response.status === "success" && response.data) {
-        newGuest.value = response.data; // Cargar datos para la edición
+      const response: ApiResponse<Invitado> = await getInvitadoById(guestId.value)
+
+      if (response.status === 'success' && response.data) {
+        newGuest.value = response.data // Cargar datos para la edición
       } else {
-        throw new Error(
-          response.message || "Error desconocido al cargar el invitado"
-        );
+        throw new Error(response.message || 'Error desconocido al cargar el invitado')
       }
     } catch (error) {
-      console.error("Error al cargar el invitado:", error);
+      console.error('Error al cargar el invitado:', error)
     }
   }
-});
+})
 
 // Validar campos del formulario
 const validateFields = () => {
-  let isValid = true;
+  let isValid = true
   Object.keys(errors.value).forEach((key) => {
-    errors.value[key as keyof typeof errors.value] = "";
-  });
+    errors.value[key as keyof typeof errors.value] = ''
+  })
 
   if (!newGuest.value.nombre) {
-    errors.value.nombre = "El nombre es obligatorio.";
-    isValid = false;
+    errors.value.nombre = 'El nombre es obligatorio.'
+    isValid = false
   }
 
   if (!newGuest.value.dependencia) {
-    errors.value.dependencia = "La dependencia es obligatorio.";
-    isValid = false;
-  }
-
-  if (!newGuest.value.estadoAsistencia) {
-    errors.value.estadoAsistencia = "El estado es obligatorio.";
-    isValid = false;
+    errors.value.dependencia = 'La dependencia es obligatorio.'
+    isValid = false
   }
 
   if (!newGuest.value.email) {
-    errors.value.email = "El email es obligatorio.";
-    isValid = false;
+    errors.value.email = 'El email es obligatorio.'
+    isValid = false
   }
 
-  return isValid;
-};
+  return isValid
+}
 
 // Manejar la creación y actualización del invitado
 const submitForm = async () => {
   if (!validateFields()) {
-    return;
+    return
   }
 
   try {
-    let response: ApiResponse<Invitado>;
+    let response: ApiResponse<Invitado>
 
     if (isEditing.value && guestId.value !== null) {
       // Actualizar invitado existente
-      response = await updateInvitado(guestId.value, newGuest.value);
+      response = await updateInvitado(guestId.value, newGuest.value)
     } else {
       // Crear nuevo invitado
-      response = await createInvitado(newGuest.value);
-      alert("El miembro se ha registrado exitosamente."); // Muestra la alerta
+      response = await createInvitado(newGuest.value)
+      alert('El invitado se ha registrado exitosamente.') // Muestra la alerta
     }
 
-    if (response.status === "success") {
+    if (response !== null && response !== undefined) {
       // Redirigir a la tabla de invitados después de la operación exitosa
-      router.push("/members");
+      router.push('/guests')
     } else {
-      console.error("Error al guardar el miembro:", response.message);
+      console.error('Error al guardar el Invitado:', response)
     }
   } catch (error) {
-    console.error("Error al guardar el miembro:", error);
+    console.error('Error al guardar el Invitado:', error)
   }
-};
+}
 </script>
 
 <style scoped>
