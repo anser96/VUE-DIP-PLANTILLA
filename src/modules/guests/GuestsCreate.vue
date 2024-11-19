@@ -53,6 +53,22 @@
         </p>
       </div>
 
+      <!-- Campo para la Cédula -->
+      <div>
+        <label for="numCedula" class="block text-sm font-medium text-gray-700">Cédula</label>
+        <input
+          type="text"
+          id="numCedula"
+          v-model="newGuest.numCedula"
+          class="input input-bordered w-full"
+          placeholder="Ingrese la cédula"
+          required
+        />
+        <p v-if="errors.numCedula" class="text-red-500 text-sm mt-1">
+          {{ errors.numCedula }}
+        </p>
+      </div>
+
       <!-- Botón de Crear o Actualizar -->
       <div class="flex justify-end">
         <button type="submit" class="btn btn-primary">
@@ -76,6 +92,7 @@ const newGuest = ref<Invitado>({
   estadoAsistencia: '',
   email: '',
   idInvitado: 0,
+  numCedula: '',
   asistenciaInvitados: [],
 })
 
@@ -83,6 +100,7 @@ const errors = ref({
   nombre: '',
   dependencia: '',
   email: '',
+  numCedula: '' // Cambiado a numCedula
 })
 
 const router = useRouter()
@@ -123,12 +141,17 @@ const validateFields = () => {
   }
 
   if (!newGuest.value.dependencia) {
-    errors.value.dependencia = 'La dependencia es obligatorio.'
+    errors.value.dependencia = 'La dependencia es obligatoria.'
     isValid = false
   }
 
   if (!newGuest.value.email) {
     errors.value.email = 'El email es obligatorio.'
+    isValid = false
+  }
+
+  if (!newGuest.value.numCedula) { // Se cambia de "cedula" a "numCedula"
+    errors.value.numCedula = 'El número de cédula es obligatorio.'
     isValid = false
   }
 

@@ -14,6 +14,7 @@
             <th>Nombre</th>
             <th>Dependencia</th>
             <th>Correo Electrónico</th>
+            <th>Cedula</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -23,6 +24,7 @@
             <td>{{ guest.nombre }}</td>
             <td>{{ guest.dependencia }}</td>
             <td>{{ guest.email }}</td>
+            <td>{{ guest.numCedula }}</td>
             <td class="flex gap-2">
               <button @click="viewGuests(guest)" class="btn btn-info btn-sm">Ver</button>
               <button @click="openEditModal(guest)" class="btn btn-warning btn-sm">Editar</button>
@@ -52,6 +54,8 @@
         <input v-model="selectedGuest.dependencia" class="input" />
         <label>Correo Electrónico:</label>
         <input v-model="selectedGuest.email" class="input" />
+        <label>Cedula:</label>
+        <input v-model="selectedGuest.numCedula" class="input" />
         <button @click="closeEditModal" class="btn btn-secondary mt-4">Cerrar</button>
         <button @click="saveGuest" class="btn btn-success mt-4">Guardar Cambios</button>
       </div>
@@ -125,6 +129,7 @@
         <p><strong>Nombre:</strong> {{ selectedGuest.nombre }}</p>
         <p><strong>Dependencia:</strong> {{ selectedGuest.dependencia }}</p>
         <p><strong>Correo Electrónico:</strong> {{ selectedGuest.email }}</p>
+        <p><strong>Cedula:</strong> {{ selectedGuest.numCedula }}</p>
 
         <button @click="closeViewModal" class="btn btn-secondary mt-4">Cerrar</button>
       </div>

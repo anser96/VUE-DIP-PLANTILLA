@@ -47,6 +47,7 @@ export interface AsistenciaInvitado {
   nombre: string
   dependencia: string
   email: string
+  numCedula: number
   estadoAsistencia: string
   excusa: string
 }
@@ -55,6 +56,7 @@ export interface Invitado {
   nombre: string
   dependencia: string
   email: string
+  numCedula: number
   estadoAsistencia: string
   asistenciaInvitados: AsistenciaInvitado[] // Relación con asistencia
 }
@@ -99,6 +101,7 @@ export interface AsistenciaInvitado {
   nombre: string
   dependencia: string
   email: string
+  numCedula: number
   estadoAsistencia: string
 }
 
