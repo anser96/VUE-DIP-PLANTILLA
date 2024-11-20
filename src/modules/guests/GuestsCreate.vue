@@ -8,14 +8,8 @@
       <!-- Campo para el Nombre -->
       <div>
         <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
-        <input
-          type="text"
-          id="nombre"
-          v-model="newGuest.nombre"
-          class="input input-bordered w-full"
-          placeholder="Ingrese el nombre"
-          required
-        />
+        <input type="text" id="nombre" v-model="newGuest.nombre" class="input input-bordered w-full"
+          placeholder="Ingrese el nombre" required />
         <p v-if="errors.nombre" class="text-red-500 text-sm mt-1">
           {{ errors.nombre }}
         </p>
@@ -24,14 +18,8 @@
       <!-- Campo para la Dependencia -->
       <div>
         <label for="dependencia" class="block text-sm font-medium text-gray-700">Dependencia</label>
-        <input
-          type="text"
-          id="dependencia"
-          v-model="newGuest.dependencia"
-          class="input input-bordered w-full"
-          placeholder="Ingrese la dependencia"
-          required
-        />
+        <input type="text" id="dependencia" v-model="newGuest.dependencia" class="input input-bordered w-full"
+          placeholder="Ingrese la dependencia" required />
         <p v-if="errors.dependencia" class="text-red-500 text-sm mt-1">
           {{ errors.dependencia }}
         </p>
@@ -40,14 +28,8 @@
       <!-- Campo para el Email -->
       <div>
         <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-        <input
-          type="email"
-          id="email"
-          v-model="newGuest.email"
-          class="input input-bordered w-full"
-          placeholder="Ingrese el email"
-          required
-        />
+        <input type="email" id="email" v-model="newGuest.email" class="input input-bordered w-full"
+          placeholder="Ingrese el email" required />
         <p v-if="errors.email" class="text-red-500 text-sm mt-1">
           {{ errors.email }}
         </p>
@@ -56,14 +38,8 @@
       <!-- Campo para la Cédula -->
       <div>
         <label for="numCedula" class="block text-sm font-medium text-gray-700">Cédula</label>
-        <input
-          type="text"
-          id="numCedula"
-          v-model="newGuest.numCedula"
-          class="input input-bordered w-full"
-          placeholder="Ingrese la cédula"
-          required
-        />
+        <input type="text" id="numCedula" v-model="newGuest.numCedula" class="input input-bordered w-full"
+          placeholder="Ingrese la cédula" required />
         <p v-if="errors.numCedula" class="text-red-500 text-sm mt-1">
           {{ errors.numCedula }}
         </p>
