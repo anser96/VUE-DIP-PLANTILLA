@@ -19,6 +19,16 @@
         <p v-if="errors.nombre" class="text-red-500 text-sm mt-1">{{ errors.nombre }}</p>
       </div>
 
+      <!-- Campo para la Cédula -->
+      <div>
+        <label for="numCedula" class="block text-sm font-medium text-gray-700">Cédula</label>
+        <input type="text" id="numCedula" v-model="newMember.numCedula" class="input input-bordered w-full"
+          placeholder="Ingrese la cédula" required />
+        <p v-if="errors.numCedula" class="text-red-500 text-sm mt-1">
+          {{ errors.numCedula }}
+        </p>
+      </div>
+
       <!-- Campo para el Cargo -->
       <div>
         <label for="cargo" class="block text-sm font-medium text-gray-700">Cargo</label>
@@ -69,11 +79,13 @@ const newMember = ref<Miembro>({
   cargo: '',
   email: '',
   idMiembro: 0,
+  numCedula: '',
   asistenciaMiembros: [],
 })
 
 const errors = ref({
   nombre: '',
+  numCedula: '',
   cargo: '',
   email: '',
 })
@@ -111,6 +123,11 @@ const validateFields = () => {
 
   if (!newMember.value.nombre) {
     errors.value.nombre = 'El nombre es obligatorio.'
+    isValid = false
+  }
+
+  if (!newMember.value.numCedula) {
+    errors.value.numCedula = 'La Cedula es obligatorio.'
     isValid = false
   }
 

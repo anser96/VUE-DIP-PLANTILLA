@@ -12,6 +12,7 @@
           <tr>
             <th>ID</th>
             <th>Nombre</th>
+            <th>Cedula</th>
             <th>Cargo</th>
             <th>Email</th>
             <th>Acciones</th>
@@ -21,6 +22,7 @@
           <tr v-for="member in members" :key="member.idMiembro">
             <td>{{ member.idMiembro }}</td>
             <td>{{ member.nombre || 'Sin nombre' }}</td>
+            <td>{{ member.numCedula || 'Sin cedula' }}</td>
             <td>{{ member.cargo || 'Sin cargo' }}</td>
             <td>{{ member.email || 'Sin email' }}</td>
             <td class="flex gap-2">
@@ -47,6 +49,8 @@
         <!-- Deshabilitado -->
         <label>Nombre:</label>
         <input v-model="selectedMember.nombre" class="input" />
+        <label>Cedula:</label>
+        <input v-model="selectedMember.numCedula" class="input" />
         <label>Cargo:</label>
         <input v-model="selectedMember.cargo" class="input" />
         <label>Email:</label>
@@ -126,6 +130,7 @@
         <h2 class="text-2xl font-bold mb-4">Información de {{ selectedMember.nombre }}</h2>
         <p><strong>ID:</strong> {{ selectedMember.idMiembro }}</p>
         <p><strong>Nombre:</strong> {{ selectedMember.nombre }}</p>
+        <p><strong>Cedula:</strong> {{ selectedMember.numMiembroCedula }}</p>
         <p><strong>Cargo:</strong> {{ selectedMember.cargo }}</p>
         <p><strong>Email:</strong> {{ selectedMember.email }}</p>
 
