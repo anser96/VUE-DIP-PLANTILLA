@@ -75,7 +75,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import ConfirmModal from '../../components/ConfirmModal.vue';
 import { getActas, aprobarActaService } from '../../services/actaService.ts';
-import { PlusIcon, EyeIcon, PencilIcon, TrashIcon, CheckIcon } from '@heroicons/vue/24/solid';
+import { PlusIcon, EyeIcon, CheckIcon, FunnelIcon} from '@heroicons/vue/24/solid';
 import { ActaDetail } from '../../Utils/Interfaces/MeetingRecords';
 
 const actas = ref<ActaDetail[]>([]);

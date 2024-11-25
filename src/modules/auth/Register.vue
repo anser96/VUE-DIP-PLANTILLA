@@ -13,6 +13,22 @@
     <div class="w-full max-w-md p-8 space-y-6 bg-base-100 dark:bg-base-300 shadow-md rounded-lg">
       <h2 class="text-center text-3xl font-bold text-base-content dark:text-white">Crear una Cuenta</h2>
       <form @submit.prevent="submitRegister" class="space-y-4">
+        
+        <!-- Agregar el campo de selección de roles en el formulario -->
+<div>
+  <label for="rol" class="block text-sm font-medium text-base-content dark:text-gray-200">Rol</label>
+  <select
+    id="rol"
+    v-model="user.rol"
+    class="select select-bordered w-full"
+    :class="{'input-error': errors.rol}"
+    required
+  >
+    <option disabled value="">Seleccione un rol</option>
+    <option v-for="rol in roles" :key="rol" :value="rol">{{ rol }}</option>
+  </select>
+  <p v-if="errors.rol" class="text-error text-sm mt-1">{{ errors.rol }}</p>
+</div>
         <!-- Campo de Nombre -->
         <div>
           <label for="nombre" class="block text-sm font-medium text-base-content dark:text-gray-200">Nombre</label>
@@ -83,19 +99,26 @@ import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { register } from '../../services/authService';
 import { useAuthStore } from '../../store/auth';
+import { Rol } from '../../Utils/Interfaces/MeetingRecords';
 
+// Lista de roles para el select
+const roles = Object.values(Rol);
 // Datos del formulario de registro
 const user = ref({
+  idUsuario: 0, // Add a default value for idUsuario
   nombre: '',
   correo: '',
-  contrasena: ''
+  contrasena: '',
+  rol: ''
 });
 
 // Errores de validación
 const errors = ref({
+  idUsuario : null,
   nombre: '',
   correo: '',
-  contrasena: ''
+  contrasena: '',
+  rol: ''
 });
 
 // Estado de carga y mensaje de error
@@ -105,12 +128,13 @@ const authError = ref('');
 // Instancia de router
 const router = useRouter();
 
-// Validar los campos del formulario
+// Modificar la validación para incluir el rol
 const validateFields = () => {
   let isValid = true;
   errors.value.nombre = '';
   errors.value.correo = '';
   errors.value.contrasena = '';
+  errors.value.rol = '';
 
   if (!user.value.nombre) {
     errors.value.nombre = 'El nombre es obligatorio.';
@@ -122,6 +146,10 @@ const validateFields = () => {
   }
   if (!user.value.contrasena) {
     errors.value.contrasena = 'La contraseña es obligatoria.';
+    isValid = false;
+  }
+  if (!user.value.rol) {
+    errors.value.rol = 'El rol es obligatorio.';
     isValid = false;
   }
 

@@ -49,8 +49,10 @@ export const useAuthStore = defineStore("auth", {
       });
 
       // Eliminar el token de localStorage
+      sessionStorage.clear();  
       localStorage.removeItem('auth');
       router.push('/login');
+
     },
 
     loadToken(): void {

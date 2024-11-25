@@ -199,4 +199,16 @@ export interface Usuario {
   nombre: string
   correo: string
   contrasena?: string
+  rol?: string
+}
+
+export enum Rol {
+  ESTUDIANTE = 'ESTUDIANTE',
+  INVITADO = 'INVITADO',
+  INTEGRANTECOMITE = 'INTEGRANTECOMITE',
+  ADMINISTRADOR = 'ADMINISTRADOR',
+  SECRETARIO = 'SECRETARIO',
+  DOCENTE = 'DOCENTE',
+  PRESIDENTE = 'PRESIDENTE',
+  MODERADOR = 'MODERADOR'
 }
