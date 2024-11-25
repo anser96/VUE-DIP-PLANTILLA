@@ -8,16 +8,8 @@
       <!-- Campo para la Ubicación -->
       <div>
         <label for="location" class="block text-sm font-medium text-gray-700">Ubicación</label>
-        <input
-          v-if="!isViewing"
-          type="text"
-          id="location"
-          v-model="newSession.lugar"
-          class="input input-bordered w-full"
-          placeholder="Ingrese la ubicación"
-          :disabled="isViewing"
-          required
-        />
+        <input v-if="!isViewing" type="text" id="location" v-model="newSession.lugar"
+          class="input input-bordered w-full" placeholder="Ingrese la ubicación" :disabled="isViewing" required />
         <p v-if="isViewing" class="mt-2 text-gray-900">{{ newSession.lugar }}</p>
         <p v-if="errors.lugar && !isViewing" class="text-red-500 text-sm mt-1">{{ errors.lugar }}</p>
       </div>
@@ -25,15 +17,8 @@
       <!-- Campo para la Fecha -->
       <div>
         <label for="fecha" class="block text-sm font-medium text-gray-700">Fecha</label>
-        <input
-          v-if="!isViewing"
-          type="date"
-          id="fecha"
-          v-model="newSession.fecha"
-          class="input input-bordered w-full"
-          :disabled="isViewing"
-          required
-        />
+        <input v-if="!isViewing" type="date" id="fecha" v-model="newSession.fecha" class="input input-bordered w-full"
+          :disabled="isViewing" required />
         <p v-if="isViewing" class="mt-2 text-gray-900">{{ newSession.fecha }}</p>
         <p v-if="errors.fecha && !isViewing" class="text-red-500 text-sm mt-1">{{ errors.fecha }}</p>
       </div>
@@ -41,15 +26,8 @@
       <!-- Campo para la Hora de Inicio -->
       <div>
         <label for="startTime" class="block text-sm font-medium text-gray-700">Hora de Inicio</label>
-        <input
-          v-if="!isViewing"
-          type="time"
-          id="startTime"
-          v-model="newSession.horaInicio"
-          class="input input-bordered w-full"
-          :disabled="isViewing"
-          required
-        />
+        <input v-if="!isViewing" type="time" id="startTime" v-model="newSession.horaInicio"
+          class="input input-bordered w-full" :disabled="isViewing" required />
         <p v-if="isViewing" class="mt-2 text-gray-900">{{ newSession.horaInicio }}</p>
         <p v-if="errors.horaInicio && !isViewing" class="text-red-500 text-sm mt-1">{{ errors.horaInicio }}</p>
       </div>
@@ -57,15 +35,8 @@
       <!-- Campo para la Hora de Fin -->
       <div>
         <label for="endTime" class="block text-sm font-medium text-gray-700">Hora de Fin</label>
-        <input
-          v-if="!isViewing"
-          type="time"
-          id="endTime"
-          v-model="newSession.horaFinal"
-          class="input input-bordered w-full"
-          :disabled="isViewing"
-          required
-        />
+        <input v-if="!isViewing" type="time" id="endTime" v-model="newSession.horaFinal"
+          class="input input-bordered w-full" :disabled="isViewing" required />
         <p v-if="isViewing" class="mt-2 text-gray-900">{{ newSession.horaFinal }}</p>
         <p v-if="errors.horaFinal && !isViewing" class="text-red-500 text-sm mt-1">{{ errors.horaFinal }}</p>
       </div>
@@ -73,16 +44,9 @@
       <!-- Campo para el Presidente -->
       <div>
         <label for="president" class="block text-sm font-medium text-gray-700">Presidente</label>
-        <input
-          v-if="!isViewing"
-          type="text"
-          id="president"
-          v-model="newSession.presidente"
-          class="input input-bordered w-full"
-          :disabled="isViewing"
-          placeholder="Ingrese el nombre del presidente"
-          required
-        />
+        <input v-if="!isViewing" type="text" id="president" v-model="newSession.presidente"
+          class="input input-bordered w-full" :disabled="isViewing" placeholder="Ingrese el nombre del presidente"
+          required />
         <p v-if="isViewing" class="mt-2 text-gray-900">{{ newSession.presidente }}</p>
         <p v-if="errors.presidente && !isViewing" class="text-red-500 text-sm mt-1">{{ errors.presidente }}</p>
       </div>
@@ -90,15 +54,8 @@
       <!-- Campo para el Secretario -->
       <div>
         <label for="secretary" class="block text-sm font-medium text-gray-700">Secretario</label>
-        <input
-          v-if="!isViewing"
-          type="text"
-          id="secretary"
-          v-model="newSession.secretario"
-          class="input input-bordered w-full"
-          :disabled="isViewing"
-          placeholder="Ingrese el nombre del secretario"
-        />
+        <input v-if="!isViewing" type="text" id="secretary" v-model="newSession.secretario"
+          class="input input-bordered w-full" :disabled="isViewing" placeholder="Ingrese el nombre del secretario" />
         <p v-if="isViewing" class="mt-2 text-gray-900">{{ newSession.secretario }}</p>
         <p v-if="errors.secretario && !isViewing" class="text-red-500 text-sm mt-1">{{ errors.secretario }}</p>
       </div>
@@ -106,14 +63,8 @@
       <!-- Campo para Contenido de la Reunión -->
       <div>
         <label for="contenido" class="block text-sm font-medium text-gray-700">Contenido de la Reunión</label>
-        <textarea
-          v-if="!isViewing"
-          id="contenido"
-          v-model="contenido"
-          class="input input-bordered w-full h-32"
-          placeholder="Escriba el contenido de la reunión"
-          :disabled="isViewing"
-        >
+        <textarea v-if="!isViewing" id="contenido" v-model="contenido" class="input input-bordered w-full h-32"
+          placeholder="Escriba el contenido de la reunión" :disabled="isViewing">
         </textarea>
         <p v-if="isViewing" class="mt-2 text-gray-900 whitespace-pre">{{ contenido }}</p>
       </div>
@@ -152,21 +103,14 @@
                 </select>
               </td>
               <td class="px-6 py-4">
-                <input
-                  v-if="miembro.estadoAsistencia === 'EXCUSA'"
-                  v-model="miembro.excusa"
-                  placeholder="Ingrese la excusa"
-                  class="input input-bordered"
-                  type="text"
-                />
+                <input v-if="miembro.estadoAsistencia === 'EXCUSA'" v-model="miembro.excusa"
+                  placeholder="Ingrese la excusa" class="input input-bordered" type="text" />
               </td>
               <td class="px-6 py-4">
                 <!-- Botón para asignar tarea -->
-                <button
-                  type="button"
+                <button type="button"
                   @click="assignTask({ id: miembro.idMiembro, nombre: miembro.nombre, tipo: 'Miembro' })"
-                  class="btn btn-primary"
-                >
+                  class="btn btn-primary">
                   Asignar Tarea
                 </button>
               </td>
@@ -204,21 +148,14 @@
                 </select>
               </td>
               <td class="px-6 py-4">
-                <input
-                  v-if="invitado.estadoAsistencia === 'EXCUSA'"
-                  v-model="invitado.excusa"
-                  placeholder="Ingrese la excusa"
-                  class="input input-bordered"
-                  type="text"
-                />
+                <input v-if="invitado.estadoAsistencia === 'EXCUSA'" v-model="invitado.excusa"
+                  placeholder="Ingrese la excusa" class="input input-bordered" type="text" />
               </td>
               <td class="px-6 py-4">
                 <!-- Botón para asignar tarea -->
-                <button
-                  type="button"
+                <button type="button"
                   @click="assignTask({ id: invitado.idInvitado, nombre: invitado.nombre, tipo: 'Invitado' })"
-                  class="btn btn-primary"
-                >
+                  class="btn btn-primary">
                   Asignar Tarea
                 </button>
               </td>
@@ -228,14 +165,11 @@
       </div>
 
       <!-- Botón de Verificar Quórum -->
-      <div
-        v-if="
-          !isViewing &&
-          isEditing &&
-          (newSession.asistenciaMiembros.length > 0 || newSession.asistenciaInvitados.length > 0)
-        "
-        class="flex justify-end mt-6"
-      >
+      <div v-if="
+        !isViewing &&
+        isEditing &&
+        (newSession.asistenciaMiembros.length > 0 || newSession.asistenciaInvitados.length > 0)
+      " class="flex justify-end mt-6">
         <button type="button" @click="verificarQuorum" class="btn btn-primary">Verificar Quórum</button>
       </div>
 
@@ -247,18 +181,12 @@
       </div>
 
       <!-- Modales para invitados y miembros -->
-      <InvitadosModal
-        :show="showInvitadosModal"
-        @add-invitado="addInvitadoToLocalList"
-        @close="showInvitadosModal = false"
-      />
-      <MiembrosModal
-        :show="showMiembrosModal"
-        @add-miembro="addMiembroToLocalList"
-        @close="showMiembrosModal = false"
-      />
+      <InvitadosModal :show="showInvitadosModal" @add-invitado="addInvitadoToLocalList"
+        @close="showInvitadosModal = false" />
+      <MiembrosModal :show="showMiembrosModal" @add-miembro="addMiembroToLocalList"
+        @close="showMiembrosModal = false" />
 
-      <<!-- Modal para asignar tarea -->
+      <!-- Modal para asignar tarea -->
       <div v-if="isTaskModalVisible" class="modal-background">
         <div class="modal-content">
           <h2 class="text-2xl font-bold mb-4">Asignar Tarea a {{ selectedParticipant.nombre }}</h2>
@@ -271,12 +199,8 @@
           </select>
 
           <p class="text-xs my-2">*Si lo prefiere puede crear una nueva tarea para asignar*</p>
-          <button
-            type="button"
-            class="btn btn-info mt-2 mb-4 btn-sm"
-            style="display: block"
-            @click="openNewTaskModal(selectedParticipant.id)"
-          >
+          <button type="button" class="btn btn-info mt-2 mb-4 btn-sm" style="display: block"
+            @click="openNewTaskModal(selectedParticipant.id)">
             Nueva Tarea
           </button>
 
@@ -511,12 +435,12 @@ const verificarQuorum = async () => {
   const quorumData: QuorumEntry[] = [
     ...newSession.value.asistenciaMiembros.map(
       (miembro: any) =>
-        ({
-          idPersona: miembro.idMiembro,
-          tipo: 'miembro',
-          estadoAsistencia: miembro.estadoAsistencia,
-          excusa: miembro.estadoAsistencia === 'EXCUSA' ? miembro.excusa : undefined,
-        } as QuorumEntry),
+      ({
+        idPersona: miembro.idMiembro,
+        tipo: 'miembro',
+        estadoAsistencia: miembro.estadoAsistencia,
+        excusa: miembro.estadoAsistencia === 'EXCUSA' ? miembro.excusa : undefined,
+      } as QuorumEntry),
     ),
     ...newSession.value.asistenciaInvitados.map((invitado: any) => ({
       idPersona: invitado.idInvitado,
@@ -626,6 +550,7 @@ const closeTaskModal = () => {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
+
 .tareas-asignadas {
   min-height: 100px;
   max-height: 200px;

@@ -7,20 +7,35 @@
         <router-link to="/members/create" class="btn btn-primary"> Crear Nuevo Miembro </router-link>
       </div>
 
+<!-- Componente de Filtro Genérico -->
+<FilterMiembros :filters="filterDefinitions" :isModalVisible="isFilterModalVisible" @filter="applyFilter"
+        @close="isFilterModalVisible = false" />
+
+      <div class="join flex justify-end">
+        <!-- Botón para abrir el modal de filtros -->
+        <button @click="isFilterModalVisible = true" class="btn join-item btn-primary mb-4">
+          <FunnelIcon class="w-5 h-5" /> Filtros
+        </button>
+        <!-- Botón para limpiar los filtros -->
+        <button @click="clearFilters" class="btn join-item btn-primary mb-4">Limpiar Filtros</button>
+      </div>
+
       <table class="table w-full">
         <thead>
           <tr>
             <th>ID</th>
             <th>Nombre</th>
+            <th>Cedula</th>
             <th>Cargo</th>
             <th>Email</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="member in members" :key="member.idMiembro">
+          <tr v-for="member in filteredMembers" :key="member.idMiembro">
             <td>{{ member.idMiembro }}</td>
             <td>{{ member.nombre || 'Sin nombre' }}</td>
+            <td>{{ member.numCedula || 'Sin cedula' }}</td>
             <td>{{ member.cargo || 'Sin cargo' }}</td>
             <td>{{ member.email || 'Sin email' }}</td>
             <td class="flex gap-2">
@@ -32,7 +47,10 @@
           </tr>
         </tbody>
       </table>
-
+      <!-- Mensaje si no hay sesiones disponibles -->
+      <div v-if="filteredMembers.length === 0">
+        <p>No hay Miembros disponibles.</p>
+      </div>
       <ConfirmModal :show="isModalVisible" @confirm="confirmDelete" @cancel="cancelDelete" />
     </div>
 
@@ -47,6 +65,8 @@
         <!-- Deshabilitado -->
         <label>Nombre:</label>
         <input v-model="selectedMember.nombre" class="input" />
+        <label>Cedula:</label>
+        <input v-model="selectedMember.numCedula" class="input" />
         <label>Cargo:</label>
         <input v-model="selectedMember.cargo" class="input" />
         <label>Email:</label>
@@ -126,6 +146,7 @@
         <h2 class="text-2xl font-bold mb-4">Información de {{ selectedMember.nombre }}</h2>
         <p><strong>ID:</strong> {{ selectedMember.idMiembro }}</p>
         <p><strong>Nombre:</strong> {{ selectedMember.nombre }}</p>
+        <p><strong>Cedula:</strong> {{ selectedMember.numMiembroCedula }}</p>
         <p><strong>Cargo:</strong> {{ selectedMember.cargo }}</p>
         <p><strong>Email:</strong> {{ selectedMember.email }}</p>
 
@@ -140,13 +161,16 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import ConfirmModal from '../../components/ConfirmModal.vue'
 import { deleteMiembro, getMiembros } from '../../services/miembroService'
+import { FunnelIcon } from '@heroicons/vue/24/outline';
 import { asignarTareaExistente, asignarTareaNueva, getTareas, getTareasAsignadas } from '../../services/tareaServices'
 import { ApiResponse, Miembro, Tarea } from '../../Utils/Interfaces/MeetingRecords'
+import FilterMiembros from '../../components/FilterMiembros.vue';
 
 const members = ref<Miembro[]>([])
 const tasks = ref<Tarea[]>([])
 const tareasAsignadas = ref<Tarea[]>([])
 const isModalVisible = ref(false)
+const isFilterModalVisible = ref(false)
 const isEditModalVisible = ref(false)
 const isNewTaskModalVisible = ref(false)
 const isTaskModalVisible = ref(false)
@@ -160,6 +184,36 @@ const task = ref<Tarea>({
   idTarea: 0,
 } as Tarea)
 
+const filteredMembers = ref<Miembro[]>([])
+const filters = ref({
+  cedula: '',
+  correo: '',
+  cargo: '',
+})
+
+const clearFilters = () => {
+  filters.value = {
+  cedula: '',
+  correo: '',
+  cargo: '',
+}
+  filteredMembers.value = [...members.value] // Restablecer a todas las sesiones cargadas inicialmente
+}
+
+// Definiciones de filtros
+interface Filter {
+  key: string
+  label: string
+  type: 'text' | 'text'| 'text'
+  placeholder?: string
+}
+
+const filterDefinitions: Filter[] = [
+  { key: 'cedula', label: 'Cedula', type: 'text', placeholder: 'Buscar por Cedula' },
+  { key: 'correo', label: 'Correo', type: 'text', placeholder: 'Buscar por Correo' },
+  { key: 'cargo', label: 'Cargo', type: 'text', placeholder: 'Cargo' },
+]
+
 const route = useRoute()
 const isChildRouteActive = computed(() =>
   route.matched.some((r) => r.path.includes('/members/create') || r.path.includes('/members/edit')),
@@ -167,19 +221,46 @@ const isChildRouteActive = computed(() =>
 
 const LoadMembers = async () => {
   try {
-    const response: ApiResponse<Miembro[]> = await getMiembros()
-    if (Array.isArray(response)) {
-      members.value = response
-    } else if ('data' in response && Array.isArray(response.data)) {
-      members.value = response.data
-    } else if ('results' in response && Array.isArray(response.results)) {
-      members.value = response.results
-    } else {
-      console.error('Estructura inesperada de los datos de miembros:', response)
-    }
+    const response = await getMiembros();
+    members.value = response.data || [];
+    filteredMembers.value = [...members.value];  // Inicia filteredActs con las actas cargadas
+    console.log('Actas cargadas:', members.value);
   } catch (error) {
-    console.error('Error al cargar los miembros:', error)
+    console.error('Error al cargar actas:', error);
   }
+}
+
+
+// Función para aplicar filtros sobre todos los campos, incluyendo anidados
+const applyFilter = (filterValues: Record<string, string>) => {
+  filteredMembers.value = members.value.filter((miembro) => {
+    return Object.entries(filterValues).every(([_, value]) => {
+      if (!value) return true // Ignora filtros vacíos
+      return searchInObject(miembro, value) // Llama a la función recursiva para buscar en cualquier campo
+    })
+  })
+}
+
+// Función recursiva para buscar el valor dentro de cualquier campo del objeto (incluyendo anidados)
+const searchInObject = (obj: any, searchTerm: string): boolean => {
+  const lowerSearchTerm = searchTerm.toLowerCase()
+
+  for (const key in obj) {
+    if (!obj.hasOwnProperty(key)) continue
+
+    const value = obj[key]
+
+    // Si el campo es un objeto o un array, aplica la búsqueda de forma recursiva
+    if (typeof value === 'object' && value !== null) {
+      if (searchInObject(value, lowerSearchTerm)) {
+        return true // Encuentra el término de búsqueda en un campo anidado
+      }
+    } else if (String(value).toLowerCase().includes(lowerSearchTerm)) {
+      // Convierte el valor en string y busca el término en el campo actual
+      return true
+    }
+  }
+  return false
 }
 
 onMounted(LoadMembers)
@@ -191,17 +272,21 @@ const showConfirmModal = (id: number) => {
 }
 
 const confirmDelete = async () => {
-  if (memberIdToDelete.value !== null) {
-    const responseDelet = await deleteMiembro(memberIdToDelete.value)
-    if (!responseDelet.data) return
-    const index = members.value.findIndex((member) => member.idMiembro === memberIdToDelete.value)
-    if (index !== -1) {
-      members.value.splice(index, 1)
+  if (memberIdToDelete.value === null) return;
+
+  try {
+    const response = await deleteMiembro(memberIdToDelete.value);
+    if (response.data) {
+      // Elimina al miembro de la lista
+      members.value = members.value.filter(member => member.idMiembro !== memberIdToDelete.value);
+      filteredMembers.value = [...members.value]; // Actualiza la lista filtrada
     }
+    isModalVisible.value = false;
+    memberIdToDelete.value = null;
+  } catch (error) {
+    console.error('Error al eliminar miembro:', error);
   }
-  isModalVisible.value = false
-  memberIdToDelete.value = null
-}
+};
 
 const cancelDelete = () => {
   isModalVisible.value = false
@@ -233,6 +318,8 @@ const saveMember = () => {
     const updatedMember = { ...selectedMember.value }
     delete updatedMember.idMiembro // Elimina el ID antes de guardarlo
     members.value[index] = { ...updatedMember, idMiembro: selectedMember.value.idMiembro } // Mantener el ID original
+    filteredMembers.value = [...members.value];
+    
   }
   closeEditModal() // Cerrar el modal después de guardar los cambios
 }

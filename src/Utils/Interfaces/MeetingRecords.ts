@@ -38,6 +38,7 @@ export interface AsistenciaMiembro {
   nombre: string
   cargo: string
   email: string
+  numCedula: number
   estadoAsistencia: string
   excusa: string
 }
@@ -47,6 +48,7 @@ export interface AsistenciaInvitado {
   nombre: string
   dependencia: string
   email: string
+  numCedula: number
   estadoAsistencia: string
   excusa: string
 }
@@ -55,6 +57,7 @@ export interface Invitado {
   nombre: string
   dependencia: string
   email: string
+  numCedula: number
   estadoAsistencia: string
   asistenciaInvitados: AsistenciaInvitado[] // Relación con asistencia
 }
@@ -91,6 +94,7 @@ export interface Miembro {
   cargo: string
   email: string
   excusa?: string // Add the excusa property
+  numCedula: number
   asistenciaMiembros: AsistenciaMiembro[] // Relación con asistencia
   listaTareas: number[]
 }
@@ -99,6 +103,7 @@ export interface AsistenciaInvitado {
   nombre: string
   dependencia: string
   email: string
+  numCedula: number
   estadoAsistencia: string
 }
 
@@ -157,6 +162,10 @@ export interface ApiResponse<T> {
 export interface ApiResponseSesionDTO extends ApiResponse<Sesion> {}
 
 export interface ApiResponseListSesionDTO extends ApiResponse<Sesion[]> {}
+
+export interface ApiResponseSolicitud extends ApiResponse<Solicitud> {}
+
+export interface ApiResponseListSolicitudDTO extends ApiResponse<Solicitud[]> {}
 
 export interface ApiResponseActa extends ApiResponse<Acta> {}
 

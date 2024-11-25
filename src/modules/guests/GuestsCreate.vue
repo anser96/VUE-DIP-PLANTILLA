@@ -8,14 +8,8 @@
       <!-- Campo para el Nombre -->
       <div>
         <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
-        <input
-          type="text"
-          id="nombre"
-          v-model="newGuest.nombre"
-          class="input input-bordered w-full"
-          placeholder="Ingrese el nombre"
-          required
-        />
+        <input type="text" id="nombre" v-model="newGuest.nombre" class="input input-bordered w-full"
+          placeholder="Ingrese el nombre" required />
         <p v-if="errors.nombre" class="text-red-500 text-sm mt-1">
           {{ errors.nombre }}
         </p>
@@ -24,14 +18,8 @@
       <!-- Campo para la Dependencia -->
       <div>
         <label for="dependencia" class="block text-sm font-medium text-gray-700">Dependencia</label>
-        <input
-          type="text"
-          id="dependencia"
-          v-model="newGuest.dependencia"
-          class="input input-bordered w-full"
-          placeholder="Ingrese la dependencia"
-          required
-        />
+        <input type="text" id="dependencia" v-model="newGuest.dependencia" class="input input-bordered w-full"
+          placeholder="Ingrese la dependencia" required />
         <p v-if="errors.dependencia" class="text-red-500 text-sm mt-1">
           {{ errors.dependencia }}
         </p>
@@ -40,16 +28,20 @@
       <!-- Campo para el Email -->
       <div>
         <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-        <input
-          type="email"
-          id="email"
-          v-model="newGuest.email"
-          class="input input-bordered w-full"
-          placeholder="Ingrese el email"
-          required
-        />
+        <input type="email" id="email" v-model="newGuest.email" class="input input-bordered w-full"
+          placeholder="Ingrese el email" required />
         <p v-if="errors.email" class="text-red-500 text-sm mt-1">
           {{ errors.email }}
+        </p>
+      </div>
+
+      <!-- Campo para la Cédula -->
+      <div>
+        <label for="numCedula" class="block text-sm font-medium text-gray-700">Cédula</label>
+        <input type="text" id="numCedula" v-model="newGuest.numCedula" class="input input-bordered w-full"
+          placeholder="Ingrese la cédula" required />
+        <p v-if="errors.numCedula" class="text-red-500 text-sm mt-1">
+          {{ errors.numCedula }}
         </p>
       </div>
 
@@ -76,6 +68,7 @@ const newGuest = ref<Invitado>({
   estadoAsistencia: '',
   email: '',
   idInvitado: 0,
+  numCedula: '',
   asistenciaInvitados: [],
 })
 
@@ -83,6 +76,7 @@ const errors = ref({
   nombre: '',
   dependencia: '',
   email: '',
+  numCedula: '' // Cambiado a numCedula
 })
 
 const router = useRouter()
@@ -123,12 +117,17 @@ const validateFields = () => {
   }
 
   if (!newGuest.value.dependencia) {
-    errors.value.dependencia = 'La dependencia es obligatorio.'
+    errors.value.dependencia = 'La dependencia es obligatoria.'
     isValid = false
   }
 
   if (!newGuest.value.email) {
     errors.value.email = 'El email es obligatorio.'
+    isValid = false
+  }
+
+  if (!newGuest.value.numCedula) { // Se cambia de "cedula" a "numCedula"
+    errors.value.numCedula = 'El número de cédula es obligatorio.'
     isValid = false
   }
 

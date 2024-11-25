@@ -3,10 +3,13 @@
     <div v-if="!isChildRouteActive">
       <h1 class="text-3xl font-bold mb-4">Lista de Invitados</h1>
 
+      <!-- Botón para abrir el modal de filtro -->
       <div class="flex justify-end mb-4">
-        <router-link to="/guests/create" class="btn btn-primary">Crear Nuevo Invitado</router-link>
+        <button @click="openFilterModal" class="btn btn-primary">Filtrar Invitados</button>
+        <router-link to="/guests/create" class="btn btn-primary ml-2">Crear Nuevo Invitado</router-link>
       </div>
 
+      <!-- Tabla de invitados -->
       <table class="table w-full">
         <thead>
           <tr>
@@ -14,15 +17,17 @@
             <th>Nombre</th>
             <th>Dependencia</th>
             <th>Correo Electrónico</th>
+            <th>Cedula</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="guest in guests" :key="guest.idInvitado">
+          <tr v-for="guest in filteredGuests" :key="guest.idInvitado">
             <td>{{ guest.idInvitado }}</td>
             <td>{{ guest.nombre }}</td>
             <td>{{ guest.dependencia }}</td>
             <td>{{ guest.email }}</td>
+            <td>{{ guest.numCedula }}</td>
             <td class="flex gap-2">
               <button @click="viewGuests(guest)" class="btn btn-info btn-sm">Ver</button>
               <button @click="openEditModal(guest)" class="btn btn-warning btn-sm">Editar</button>
@@ -33,7 +38,31 @@
         </tbody>
       </table>
 
+      <!-- Modal de confirmación -->
       <ConfirmModal :show="isModalVisible" @confirm="confirmDelete" @cancel="cancelDelete" />
+
+      <!-- Modal de Filtro de Invitados -->
+      <div v-if="isFilterModalVisible" class="modal-background">
+        <div class="modal-content">
+          <h2 class="text-2xl font-bold mb-4">Filtrar Invitados</h2>
+
+          <form @submit.prevent="applyFilter">
+            <label>Cédula:</label>
+            <input v-model="filter.cedula" class="input" placeholder="Filtrar por cédula" />
+
+            <label>Correo Electrónico:</label>
+            <input v-model="filter.correo" class="input" placeholder="Filtrar por correo" />
+
+            <label>Dependencia:</label>
+            <input v-model="filter.dependencia" class="input" placeholder="Filtrar por dependencia" />
+
+            <div class="flex justify-between gap-2 mt-4">
+              <button @click="closeFilterModal" class="btn btn-secondary">Cerrar</button>
+              <button @click="closeFilterModal" class="btn btn-success">Aplicar filtro</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
 
     <router-view v-else />
@@ -42,8 +71,6 @@
     <div v-if="isEditModalVisible" class="modal-background">
       <div class="modal-content">
         <h2 class="text-2xl font-bold mb-4">Editar Invitado</h2>
-
-        <!-- ID deshabilitado para que no se pueda editar -->
         <label>ID:</label>
         <input v-model="selectedGuest.idInvitado" class="input" disabled />
         <label>Nombre:</label>
@@ -52,12 +79,14 @@
         <input v-model="selectedGuest.dependencia" class="input" />
         <label>Correo Electrónico:</label>
         <input v-model="selectedGuest.email" class="input" />
+        <label>Cedula:</label>
+        <input v-model="selectedGuest.numCedula" class="input" />
         <button @click="closeEditModal" class="btn btn-secondary mt-4">Cerrar</button>
         <button @click="saveGuest" class="btn btn-success mt-4">Guardar Cambios</button>
       </div>
     </div>
 
-    <!-- Modal para asignar tarea -->
+    <!-- Modal de Asignar Tarea -->
     <div v-if="isTaskModalVisible" class="modal-background">
       <div class="modal-content">
         <h2 class="text-2xl font-bold mb-4">Asignar Tarea a {{ selectedGuest.nombre }}</h2>
@@ -70,10 +99,8 @@
         </select>
 
         <p class="text-xs my-2">*Si lo prefiere puede crear una nueva tarea para asignar*</p>
-        <button
-          class="btn btn-info mt-2 mb-4 btn-sm"
-          style="display: block"
-          @click="openNewTaskModal(selectedGuest.idInvitado)" >Nueva Tarea</button>
+        <button class="btn btn-info mt-2 mb-4 btn-sm" style="display: block"
+          @click="openNewTaskModal(selectedGuest.idInvitado)">Nueva Tarea</button>
 
         <label>Tareas asignadas</label>
         <div class="tareas-asignadas">
@@ -90,11 +117,10 @@
       </div>
     </div>
 
-    <!-- Modal para crear tarea a asignar -->
+    <!-- Modal de Crear Nueva Tarea -->
     <div v-if="isNewTaskModalVisible" class="modal-background">
       <div class="modal-content">
         <h2 class="text-2xl font-bold mb-4">Editar Tarea</h2>
-
         <label>Descripción:</label>
         <input v-model="nuevaTarea.descripcion" class="input" />
 
@@ -125,6 +151,7 @@
         <p><strong>Nombre:</strong> {{ selectedGuest.nombre }}</p>
         <p><strong>Dependencia:</strong> {{ selectedGuest.dependencia }}</p>
         <p><strong>Correo Electrónico:</strong> {{ selectedGuest.email }}</p>
+        <p><strong>Cedula:</strong> {{ selectedGuest.numCedula }}</p>
 
         <button @click="closeViewModal" class="btn btn-secondary mt-4">Cerrar</button>
       </div>
@@ -140,29 +167,39 @@ import { deleteInvitado, getInvitados } from '../../services/invitadoServices'
 import { asignarTareaExistente, asignarTareaNueva, getTareas, getTareasAsignadas } from '../../services/tareaServices'
 import { ApiResponse, Invitado, Tarea } from '../../Utils/Interfaces/MeetingRecords'
 
+// Estado de los invitados y tareas
 const guests = ref<Invitado[]>([])
 const tasks = ref<Tarea[]>([])
 const tareasAsignadas = ref<Tarea[]>([])
+
+// Modales
 const isModalVisible = ref(false)
 const isEditModalVisible = ref(false)
 const isTaskModalVisible = ref(false)
 const isNewTaskModalVisible = ref(false)
 const isViewModalVisible = ref(false)
-const guestIdToDelete = ref<number | null>(null)
-const selectedGuest = ref<any>(null)
-const nuevaTarea = ref<Tarea>({
-  tipoResponsable: 'invitado',
-} as Tarea)
 
-const task = ref({
-  idTarea: 0,
+// Filtro
+const isFilterModalVisible = ref(false)
+const filter = ref({
+  cedula: '',
+  correo: '',
+  dependencia: ''
 })
 
+// Guest seleccionado y Tarea
+const guestIdToDelete = ref<number | null>(null)
+const selectedGuest = ref<any>(null)
+const nuevaTarea = ref<Tarea>({ tipoResponsable: 'invitado' } as Tarea)
+const task = ref({ idTarea: 0 })
+
+// Ruta actual
 const route = useRoute()
 const isChildRouteActive = computed(() =>
-  route.matched.some((r) => r.path.includes('/guests/create') || r.path.includes('/guests/edit')),
+  route.matched.some((r) => r.path.includes('/guests/create') || r.path.includes('/guests/edit'))
 )
 
+// Cargar los invitados
 const LoadGuests = async () => {
   try {
     const response: ApiResponse<Invitado[]> = await getInvitados()
@@ -182,6 +219,21 @@ const LoadGuests = async () => {
 
 onMounted(LoadGuests)
 watch(route, LoadGuests)
+
+const applyFilter = () => {
+  const filtered = guests.value.filter((guest) => {
+    return (
+      (!filter.value.cedula || guest.numCedula.toString().includes(filter.value.cedula)) &&
+      (!filter.value.correo || guest.email.includes(filter.value.correo)) &&
+      (!filter.value.dependencia || guest.dependencia.includes(filter.value.dependencia))
+    )
+  })
+  return filtered
+}
+
+
+// Computada para invitados filtrados
+const filteredGuests = computed(() => applyFilter())
 
 // Funciones para el modal de confirmación
 const showConfirmModal = (id: number) => {
@@ -306,7 +358,17 @@ const viewGuests = (guest: Invitado) => {
 const closeViewModal = () => {
   isViewModalVisible.value = false
 }
+
+// Funciones para el filtro
+const openFilterModal = () => {
+  isFilterModalVisible.value = true
+}
+
+const closeFilterModal = () => {
+  isFilterModalVisible.value = false
+}
 </script>
+
 
 <style scoped>
 .modal-background {
@@ -329,6 +391,7 @@ const closeViewModal = () => {
   max-width: 500px;
   width: 100%;
 }
+
 .select,
 .input {
   width: 100%;
@@ -337,6 +400,7 @@ const closeViewModal = () => {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
+
 .tareas-asignadas {
   min-height: 100px;
   max-height: 200px;

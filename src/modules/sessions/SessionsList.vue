@@ -4,12 +4,8 @@
       <h1 class="text-3xl font-bold mb-4">Lista de Sesiones</h1>
 
       <!-- Componente de Filtro Genérico -->
-      <GenericFilter
-        :filters="filterDefinitions"
-        :isModalVisible="isFilterModalVisible"
-        @filter="applyFilter"
-        @close="isFilterModalVisible = false"
-      />
+      <GenericFilter :filters="filterDefinitions" :isModalVisible="isFilterModalVisible" @filter="applyFilter"
+        @close="isFilterModalVisible = false" />
 
       <div class="join flex justify-end">
         <!-- Botón para abrir la modal de filtros -->
@@ -54,12 +50,8 @@
             <td>{{ session.secretario }}</td>
             <td class="flex gap-2">
               <router-link :to="`/sessions/${session.idSesion}`" class="btn btn-info btn-sm">Ver</router-link>
-              <router-link
-                v-if="isActaPendiente(session)"
-                :to="`/sessions/edit/${session.idSesion}`"
-                class="btn btn-warning btn-sm"
-                >Editar</router-link
-              >
+              <router-link v-if="isActaPendiente(session)" :to="`/sessions/edit/${session.idSesion}`"
+                class="btn btn-warning btn-sm">Editar</router-link>
               <button @click="showConfirmModal(session.idSesion ?? 0)" class="btn btn-error btn-sm">Eliminar</button>
             </td>
           </tr>
