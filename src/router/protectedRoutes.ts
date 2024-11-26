@@ -113,18 +113,18 @@ function createCrudRoutes(configs: CrudRouteConfig[]): RouteRecordRaw[] {
 
 
 const crudConfigs: CrudRouteConfig[] = [
-  { basePath: 'tasks', listComponent: TasksList, formComponent: TaskAssignmentsForm, RouteName: 'Tareas', allowedRoles: ['ADMINISTRADOR', 'MODERADOR'] },
-  { basePath: 'requests', listComponent: RequestsList, formComponent: RequestsForm, EditComponent: SoliEdit, RouteName: 'Solicitudes', allowedRoles: ['ADMINISTRADOR', 'INTEGRANTECOMITE'] },
-  { basePath: 'sessions', listComponent: SessionsList, formComponent: SessionsForm, RouteName: 'Sesiones', allowedRoles: ['SECRETARIO', 'ADMINISTRADOR'] },
-  { basePath: 'members', listComponent: MembersList, formComponent: MembersForm, RouteName: 'Miembros', allowedRoles: ['ADMINISTRADOR'] },
-  { basePath: 'applicants', listComponent: ApplicantsList, formComponent: ApplicantsForm, RouteName: 'Solicitantes', allowedRoles: ['SECRETARIO'] },
+  { basePath: 'tasks', listComponent: TasksList, formComponent: TaskAssignmentsForm, RouteName: 'Tareas', allowedRoles: ['ESTUDIANTE','ADMINISTRADOR'] },
+  { basePath: 'requests', listComponent: RequestsList, formComponent: RequestsForm, EditComponent: SoliEdit, RouteName: 'Solicitudes', allowedRoles: ['DOCENTE','INVITADO','ESTUDIANTE','ADMINISTRADOR', 'INTEGRANTECOMITE'] },
+  { basePath: 'sessions', listComponent: SessionsList, formComponent: SessionsForm, RouteName: 'Sesiones', allowedRoles: ['DOCENTE','MODERADOR','INVITADO','ESTUDIANTE','SECRETARIO', 'ADMINISTRADOR'] },
+  { basePath: 'members', listComponent: MembersList, formComponent: MembersForm, RouteName: 'Miembros', allowedRoles: ['MODERADOR','ADMINISTRADOR'] },
+  { basePath: 'applicants', listComponent: ApplicantsList, formComponent: ApplicantsForm, RouteName: 'Solicitantes', allowedRoles: ['SECRETARIO','ADMINISTRADOR'] },
   { basePath: 'guests', listComponent: GuestsList, formComponent: GuestsCreate, RouteName: 'Invitados', allowedRoles: ['MODERADOR', 'ADMINISTRADOR'] },
-  { basePath: 'propositions', listComponent: PropositionsList, formComponent: PropositionsCreate, RouteName: 'Proposiciones', allowedRoles: ['INTEGRANTECOMITE'] },
-  { basePath: 'acts', listComponent: ActsList, formComponent: null, detailComponent: ActsDetail, RouteName: 'Actas', allowedRoles: ['SECRETARIO', 'ADMINISTRADOR'] },
+  { basePath: 'propositions', listComponent: PropositionsList, formComponent: PropositionsCreate, RouteName: 'Proposiciones', allowedRoles: ['DOCENTE','INTEGRANTECOMITE','ADMINISTRADOR'] },
+  { basePath: 'acts', listComponent: ActsList, formComponent: null, detailComponent: ActsDetail, RouteName: 'Actas', allowedRoles: ['DOCENTE','INVITADO','ESTUDIANTE','SECRETARIO', 'ADMINISTRADOR'] },
   { basePath: 'attendance', listComponent: AttendanceList, formComponent: AttendanceForm, RouteName: 'Asistencia', allowedRoles: ['MODERADOR', 'ADMINISTRADOR'] },
   { basePath: 'descriptions', listComponent: DescriptionList, formComponent: DescriptionForm, RouteName: 'Descripciones', allowedRoles: ['ADMINISTRADOR'] },
-  { basePath: 'task-assignments', listComponent: TaskAssignmentsList, formComponent: TaskAssignmentsForm, RouteName: 'Asignaciones de Tareas', allowedRoles: ['MODERADOR'] },
-  { basePath: 'session-order', listComponent: SessionOrderList, formComponent: SessionOrderForm, RouteName: 'Orden de Sesión', allowedRoles: ['MODERADOR'] },
+  { basePath: 'task-assignments', listComponent: TaskAssignmentsList, formComponent: TaskAssignmentsForm, RouteName: 'Asignaciones de Tareas', allowedRoles: ['INVITADO','ADMINISTRADOR'] },
+  { basePath: 'session-order', listComponent: SessionOrderList, formComponent: SessionOrderForm, RouteName: 'Orden de Sesión', allowedRoles: ['INVITADO','ESTUDIANTE','ADMINISTRADOR'] },
 ];
 
 
