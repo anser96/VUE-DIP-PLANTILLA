@@ -51,6 +51,15 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue';
+
+onMounted(() => {
+  const hasReloaded = sessionStorage.getItem('hasReloaded');
+  if (!hasReloaded) {
+    sessionStorage.setItem('hasReloaded', 'true');
+    location.reload(); // Recargar la página una vez
+  }
+});
 </script>
 
 <style scoped>

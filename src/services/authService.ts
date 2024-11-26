@@ -1,7 +1,22 @@
-import { LoginData, LoginResponse } from "../Utils/Interfaces/MeetingRecords";
+import { LoginData, LoginResponse, Usuario } from "../Utils/Interfaces/MeetingRecords";
 
 // URL base de la API, usando la variable de entorno
 const API_URL = `${import.meta.env.VITE_API_URL}/auth`;
+
+// Método para obtener los permisos del rol
+export const getPermisosPorRol = async (rol: string): Promise<string[]> => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/roles/permisos?rol=${rol}`);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || `Error: ${response.status} - ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error al obtener permisos para el rol:', error);
+    throw error;
+  }
+};
 
 // Método para iniciar sesión usando fetch
 export const login = async (data: LoginData): Promise<LoginResponse> => {
@@ -35,7 +50,7 @@ export const login = async (data: LoginData): Promise<LoginResponse> => {
 };
 
 // Método para registrarse
-export const register = async (data: LoginData): Promise<void> => {
+export const register = async (data: Usuario): Promise<void> => {
   try {
     const response = await fetch(`${API_URL}/register`, {
       method: 'POST',

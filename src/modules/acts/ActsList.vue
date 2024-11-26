@@ -97,6 +97,7 @@ import { FunnelIcon } from '@heroicons/vue/24/outline';
 import { Acta, ActaDetail } from '../../Utils/Interfaces/MeetingRecords';
 import FilterActas from '../../components/FilterActas.vue';
 
+
 const actas = ref<ActaDetail[]>([]);
 const isModalVisible = ref(false);
 const isFilterModalVisible = ref(false)
@@ -181,7 +182,7 @@ const searchInObject = (obj: any, searchTerm: string, key: string): boolean => {
 }
 
 // Lógica para aprobar acta
-const aprobarActa = async (actaId) => {
+const aprobarActa = async (actaId: number) => {
   try {
     const response = await aprobarActaService(actaId);
 
@@ -193,12 +194,13 @@ const aprobarActa = async (actaId) => {
     }
   } catch (error) {
     // Verificar si es un error de respuesta del backend y capturar mensaje
-    if (error.response) {
-      const errorMessage = error.response.data?.message || "Ocurrió un error al intentar aprobar el acta.";
+    const err = error as any;
+    if (err.response) {
+      const errorMessage = err.response.data?.message || "Ocurrió un error al intentar aprobar el acta.";
       console.error("Error específico del backend:", errorMessage);
       alert(errorMessage);
     } else {
-      console.error("Error al aprobar el acta:", error.message);
+      console.error("Error al aprobar el acta:", err.message);
       alert("Ocurrió un error al intentar aprobar el acta.");
     }
   }
